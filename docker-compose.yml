@@ -1,0 +1,45 @@
+# Local development: Fastify (watch) + Vite (hot reload) + SQLite volume.
+# Run: yarn start  OR  docker compose up --build
+# Open UI: http://localhost:5173
+services:
+  api:
+    image: proletariat-hub-dev:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    command: ['yarn', 'workspace', 'api', 'dev']
+    environment:
+      DATABASE_URL: file:/data/app.db
+      HOST: 0.0.0.0
+      PORT: 3000
+    volumes:
+      - ./apps/api/src:/app/apps/api/src
+      - ./apps/api/drizzle:/app/apps/api/drizzle
+      - ./apps/api/tsconfig.json:/app/apps/api/tsconfig.json
+      - ./apps/api/drizzle.config.ts:/app/apps/api/drizzle.config.ts
+      - ./packages/contracts:/app/packages/contracts
+      # Same SQLite file path as local dev (repo ./data/app.db)
+      - ./data:/data
+    ports:
+      - '3000:3000'
+
+  web:
+    image: proletariat-hub-dev:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    command: ['yarn', 'workspace', 'web', 'dev']
+    environment:
+      VITE_PROXY_API: http://api:3000
+      # Reliable file watching on Docker Desktop (Mac/Windows) bind mounts
+      CHOKIDAR_USEPOLLING: 'true'
+    volumes:
+      - ./apps/web/src:/app/apps/web/src
+      - ./apps/web/index.html:/app/apps/web/index.html
+      - ./apps/web/vite.config.ts:/app/apps/web/vite.config.ts
+      - ./apps/web/tsconfig.json:/app/apps/web/tsconfig.json
+      - ./packages/contracts:/app/packages/contracts
+    ports:
+      - '5173:5173'
+    depends_on:
+      - api

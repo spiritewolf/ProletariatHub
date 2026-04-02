@@ -1,0 +1,24 @@
+{
+  "name": "proletariat-hub",
+  "private": true,
+  "packageManager": "yarn@4.6.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "format": "prettier --write \"**/*.{ts,tsx,json,md,yml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,json,md,yml}\"",
+    "start": "docker compose up --build",
+    "stop": "docker compose down",
+    "start:prod": "docker compose -f docker-compose.prod.yml up --build",
+    "stop:prod": "docker compose -f docker-compose.prod.yml down",
+    "dev": "concurrently -n api,web \"yarn dev:api\" \"yarn dev:web\"",
+    "dev:api": "yarn workspace api dev",
+    "dev:web": "yarn workspace web dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "prettier": "^3.8.1"
+  }
+}

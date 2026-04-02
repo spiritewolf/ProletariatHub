@@ -1,0 +1,14 @@
+node_modules
+.DS_Store
+dist
+.env
+.env.local
+*.db
+*.db-journal
+data/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

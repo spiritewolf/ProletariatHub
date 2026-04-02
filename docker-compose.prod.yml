@@ -1,0 +1,29 @@
+# Production-style stack: compiled API, nginx serves built React and proxies /api to the API.
+# Run: docker compose -f docker-compose.prod.yml up --build
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: file:/data/app.db
+      HOST: 0.0.0.0
+      PORT: 3000
+    volumes:
+      - sqlite-data-prod:/data
+    ports:
+      - '3000:3000'
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_BASE: ''
+    ports:
+      - '8080:8080'
+    depends_on:
+      - api
+
+volumes:
+  sqlite-data-prod:
