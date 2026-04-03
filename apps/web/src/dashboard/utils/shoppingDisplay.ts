@@ -1,5 +1,6 @@
 import type { DashboardShoppingItemWidget } from '@proletariat-hub/contracts';
-import { ShoppingItemPriority } from './shoppingPriorityDisplay';
+
+import { getShoppingItemPriority, ShoppingItemPriority } from './shoppingPriorityDisplay';
 
 export enum ShoppingPurchaseChannel {
   Online = 'online',
@@ -13,10 +14,19 @@ export const SHOPPING_PURCHASE_CHANNEL_LABEL: Record<ShoppingPurchaseChannel, st
   [ShoppingPurchaseChannel.Either]: 'Either',
 };
 
+const SHOPPING_PURCHASE_CHANNEL_BY_VALUE: Record<
+  DashboardShoppingItemWidget['purchaseType'],
+  ShoppingPurchaseChannel
+> = {
+  online: ShoppingPurchaseChannel.Online,
+  in_person: ShoppingPurchaseChannel.InPerson,
+  either: ShoppingPurchaseChannel.Either,
+};
+
 export function getShoppingPurchaseChannelLabel(
   purchaseType: DashboardShoppingItemWidget['purchaseType'],
 ): string {
-  return SHOPPING_PURCHASE_CHANNEL_LABEL[purchaseType as ShoppingPurchaseChannel];
+  return SHOPPING_PURCHASE_CHANNEL_LABEL[SHOPPING_PURCHASE_CHANNEL_BY_VALUE[purchaseType]];
 }
 
 export enum ShoppingCategoryGroupFallback {
@@ -57,5 +67,7 @@ export function formatShoppingWidgetRowMeta(item: DashboardShoppingItemWidget): 
 export function filterUrgentShoppingItems(
   items: DashboardShoppingItemWidget[],
 ): DashboardShoppingItemWidget[] {
-  return items.filter((item) => item.priority === ShoppingItemPriority.Urgent);
+  return items.filter(
+    (item) => getShoppingItemPriority(item.priority) === ShoppingItemPriority.Urgent,
+  );
 }

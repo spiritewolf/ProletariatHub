@@ -2,4 +2,13 @@ node_modules
 dist
 .yarn
 *.db
+*.db-journal
 coverage
+yarn.lock
+**/package.json
+**/tsconfig.json
+**/tsconfig.*.json
+**/.env
+**/.env.*
+**/drizzle/**
+**/*config*.{js,cjs,mjs,ts,json,yml,yaml}

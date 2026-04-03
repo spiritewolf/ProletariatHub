@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import {
   completeTodoBodySchema,
   completeTodoResponseSchema,
@@ -5,11 +7,11 @@ import {
   createTodoResponseSchema,
   todosListResponseSchema,
 } from '@proletariat-hub/contracts';
-import { and, eq } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
-import { randomUUID } from 'node:crypto';
+import { and, eq } from 'drizzle-orm';
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+
 import { attachSession, requirePasswordGateCleared, requireSetupComplete } from '../auth/hooks.js';
 import { db } from '../db/index.js';
 import { comrades, todos } from '../db/schema.js';
@@ -39,9 +41,7 @@ function canCompleteTodo(todo: TodoRow, comradeId: string): boolean {
   if (todo.visibility === 'private') {
     return todo.createdByComradeId === comradeId;
   }
-  return (
-    todo.assignedComradeId === comradeId || todo.createdByComradeId === comradeId
-  );
+  return todo.assignedComradeId === comradeId || todo.createdByComradeId === comradeId;
 }
 
 function loadTodoWithNames(todoId: string) {
@@ -57,11 +57,11 @@ function loadTodoWithNames(todoId: string) {
   const assigneeUsername =
     row.assignedComradeId == null
       ? null
-      : db
+      : (db
           .select({ username: comrades.username })
           .from(comrades)
           .where(eq(comrades.id, row.assignedComradeId))
-          .get()?.username ?? null;
+          .get()?.username ?? null);
   if (!creator) {
     return null;
   }
@@ -138,11 +138,7 @@ export const todosRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(500).send({ error: 'Failed to load created todo' });
     }
     return createTodoResponseSchema.parse({
-      todo: serializeTodoListItem(
-        loaded.row,
-        loaded.creatorUsername,
-        loaded.assigneeUsername,
-      ),
+      todo: serializeTodoListItem(loaded.row, loaded.creatorUsername, loaded.assigneeUsername),
     });
   });
 
@@ -187,11 +183,7 @@ export const todosRoutes: FastifyPluginAsync = async (fastify) => {
       return reply.status(500).send({ error: 'Failed to load todo' });
     }
     return completeTodoResponseSchema.parse({
-      todo: serializeTodoListItem(
-        loaded.row,
-        loaded.creatorUsername,
-        loaded.assigneeUsername,
-      ),
+      todo: serializeTodoListItem(loaded.row, loaded.creatorUsername, loaded.assigneeUsername),
     });
   });
 };

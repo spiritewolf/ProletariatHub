@@ -33,8 +33,16 @@ export const createTodoBodySchema = z
     category: z.string().trim().max(100).optional(),
     visibility: todoVisibilitySchema,
     assignedComradeId: z.uuid().optional().nullable(),
-    dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
-    dueTime: z.string().regex(/^\d{2}:\d{2}$/).optional().nullable(),
+    dueDate: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional()
+      .nullable(),
+    dueTime: z
+      .string()
+      .regex(/^\d{2}:\d{2}$/)
+      .optional()
+      .nullable(),
     recurrence: todoRecurrenceSchema.optional(),
     annoyingModeEnabled: z.boolean().optional(),
     notes: z.string().trim().max(2000).optional(),

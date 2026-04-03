@@ -1,5 +1,6 @@
 import { Box, Flex, Heading, HStack, Text } from '@chakra-ui/react';
 import type { ReactNode } from 'react';
+
 import { flowPalette } from '../../flow-theme';
 
 type Props = {
@@ -14,13 +15,7 @@ type Props = {
   layout?: 'fullscreen' | 'embedded';
 };
 
-function WizardHeader({
-  subtitle,
-  progressFill,
-}: {
-  subtitle: string;
-  progressFill: number;
-}) {
+function WizardHeader({ subtitle, progressFill }: { subtitle: string; progressFill: number }) {
   return (
     <Box as="header" mb={8}>
       <Flex justify="space-between" align="flex-start" gap={4} mb={progressFill > 0 ? 6 : 0}>

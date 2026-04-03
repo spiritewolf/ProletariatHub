@@ -1,5 +1,6 @@
-import { asc, inArray } from 'drizzle-orm';
 import type { TodoListItem } from '@proletariat-hub/contracts';
+import { asc, inArray } from 'drizzle-orm';
+
 import { db } from '../db/index.js';
 import { comrades, todos } from '../db/schema.js';
 import { serializeTodoListItem } from './serializeTodoListItem.js';

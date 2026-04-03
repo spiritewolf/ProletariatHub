@@ -1,8 +1,9 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
+
 import { AppPath } from '../../appPaths';
-import { DashboardCopy } from '../utils/dashboardCopy';
 import { dashboardTheme } from '../dashboardTheme';
+import { DashboardCopy } from '../utils/dashboardCopy';
 
 type DashboardSidebarNavProps = {
   onLogout: () => void;
@@ -44,6 +45,29 @@ export function DashboardSidebarNav({ onLogout }: DashboardSidebarNavProps) {
         }}
       >
         {DashboardCopy.sidebarIconDashboard}
+      </Link>
+      <Link
+        to={AppPath.Docs}
+        style={{
+          width: '100%',
+          height: '36px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: dashboardTheme.sidebarFg,
+          fontSize: '14px',
+          borderRadius: '4px',
+          textDecoration: 'none',
+        }}
+        title={DashboardCopy.sidebarNavDocs}
+        onMouseEnter={(event) => {
+          event.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)';
+        }}
+        onMouseLeave={(event) => {
+          event.currentTarget.style.backgroundColor = 'transparent';
+        }}
+      >
+        {DashboardCopy.sidebarIconDocs}
       </Link>
       <Link
         to={AppPath.Shopping}

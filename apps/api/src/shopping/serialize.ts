@@ -1,8 +1,6 @@
-import {
-  shoppingItemRowSchema,
-  type ShoppingItemRow,
-} from '@proletariat-hub/contracts';
+import { type ShoppingItemRow, shoppingItemRowSchema } from '@proletariat-hub/contracts';
 import type { InferSelectModel } from 'drizzle-orm';
+
 import type { shoppingListItems } from '../db/schema.js';
 
 type ShoppingListItemRow = InferSelectModel<typeof shoppingListItems>;

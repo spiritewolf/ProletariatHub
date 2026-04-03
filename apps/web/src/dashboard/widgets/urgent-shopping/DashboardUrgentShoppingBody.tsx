@@ -1,5 +1,6 @@
 import { Box, Text } from '@chakra-ui/react';
 import type { DashboardShoppingItemWidget } from '@proletariat-hub/contracts';
+
 import { MutedCaption } from '../../../components/shared/MutedCaption';
 import { DashboardListRow } from '../../components/DashboardListRow';
 import { DashboardPriorityBadge } from '../../components/DashboardPriorityBadge';
@@ -17,7 +18,9 @@ type DashboardUrgentShoppingBodyProps = {
 
 export function DashboardUrgentShoppingBody({ urgentItems }: DashboardUrgentShoppingBodyProps) {
   if (urgentItems.length === 0) {
-    return <MutedCaption text={DashboardCopy.urgentShoppingEmpty} mutedColor={dashboardTheme.meta} />;
+    return (
+      <MutedCaption text={DashboardCopy.urgentShoppingEmpty} mutedColor={dashboardTheme.meta} />
+    );
   }
 
   return (

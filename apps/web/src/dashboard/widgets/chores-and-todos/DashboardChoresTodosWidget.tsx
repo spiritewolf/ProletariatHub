@@ -1,14 +1,15 @@
 import { Box } from '@chakra-ui/react';
-import { useState } from 'react';
 import type { AuthenticatedComrade, DashboardSummary } from '@proletariat-hub/contracts';
+import { useState } from 'react';
+
 import { MutedCaption } from '../../../components/shared/MutedCaption';
 import { DashboardWidget } from '../../components/DashboardWidget';
 import { dashboardTheme } from '../../dashboardTheme';
 import { DashboardCopy } from '../../utils/dashboardCopy';
 import { DashboardWorkTab } from '../../utils/dashboardWorkTab';
 import { DashboardChoresTab } from './chores/DashboardChoresTab';
-import { DashboardTodosTab } from './todos/DashboardTodosTab';
 import { DashboardWorkTabButtons } from './DashboardWorkTabButtons';
+import { DashboardTodosTab } from './todos/DashboardTodosTab';
 
 type DashboardChoresTodosWidgetProps = {
   summary: DashboardSummary | null;

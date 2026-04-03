@@ -15,18 +15,24 @@ export const CHORE_FREQUENCY_DISPLAY_LABEL: Record<ChoreRecurrenceFrequency, str
   [ChoreRecurrenceFrequency.Custom]: 'Custom',
 };
 
-export function getChoreFrequencyDisplayLabel(
-  frequency: ChoreListItem['frequency'],
-): string {
-  return CHORE_FREQUENCY_DISPLAY_LABEL[frequency as ChoreRecurrenceFrequency];
+const CHORE_RECURRENCE_BY_VALUE: Record<ChoreListItem['frequency'], ChoreRecurrenceFrequency> = {
+  daily: ChoreRecurrenceFrequency.Daily,
+  weekly: ChoreRecurrenceFrequency.Weekly,
+  monthly: ChoreRecurrenceFrequency.Monthly,
+  custom: ChoreRecurrenceFrequency.Custom,
+};
+
+export function getChoreFrequencyDisplayLabel(frequency: ChoreListItem['frequency']): string {
+  return CHORE_FREQUENCY_DISPLAY_LABEL[CHORE_RECURRENCE_BY_VALUE[frequency]];
 }
 
 export function formatChoreRowMetaLine(chore: ChoreListItem): string {
   const frequencyLabel = getChoreFrequencyDisplayLabel(chore.frequency);
   const assignee = chore.assigneeUsername;
+  const rotateSegment = chore.rotateAcrossHub ? ' · rotating' : '';
   const lastCompletedSegment =
     chore.lastCompletedAt != null
       ? ` · last ${new Date(chore.lastCompletedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
       : '';
-  return `${frequencyLabel} · ${assignee}${lastCompletedSegment}`;
+  return `${frequencyLabel} · ${assignee}${rotateSegment}${lastCompletedSegment}`;
 }

@@ -1,10 +1,11 @@
 import { Button, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
+import { accountPatchBodySchema, accountPatchResponseSchema } from '@proletariat-hub/contracts';
 import { type FormEvent, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { AppPath } from '../appPaths';
-import { accountPatchBodySchema, accountPatchResponseSchema } from '@proletariat-hub/contracts';
 import { z } from 'zod';
+
 import { apiJsonValidated } from '../api';
+import { AppPath } from '../appPaths';
 import { useAuth } from '../auth/AuthContext';
 import {
   AuthenticationWizard,
@@ -118,50 +119,32 @@ export function ChangePasswordPage() {
         progressFill={isAdminOnboarding ? 1 : 0}
       >
         <FlowCard>
-        {isAdminOnboarding ? <FlowStepLabel step={1} /> : null}
-        <Heading as="h2" size="xl" mb={3} color={flowPalette.text}>
-          {isAdminOnboarding ? 'Welcome, Comrade' : 'Secure your account'}
-        </Heading>
-        <Text color={flowPalette.muted} mb={6} fontSize="sm" lineHeight="tall">
-          {isAdminOnboarding ? (
-            <>
-              Let&apos;s build your collective. A <strong>Comrade</strong> is any member of your
-              household. Your <strong>Hub</strong> is the household itself.
-            </>
-          ) : (
-            <>
-              The revolution starts with good opsec. Set a new password (8+ characters) before you
-              join the dashboard.
-            </>
-          )}
-        </Text>
-        <form onSubmit={onSubmit}>
-          <Stack gap={5}>
-            <Field.Root>
-              <Field.Label color={flowPalette.text}>Current password</Field.Label>
-              <Input
-                type="password"
-                autoComplete="current-password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
-                borderColor={flowPalette.border}
-                _focusVisible={{
-                  borderColor: flowPalette.maroon,
-                  boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
-                }}
-              />
-              <Field.HelperText color={flowPalette.muted} fontSize="xs">
-                One last time with your existing password — then we move forward.
-              </Field.HelperText>
-            </Field.Root>
+          {isAdminOnboarding ? <FlowStepLabel step={1} /> : null}
+          <Heading as="h2" size="xl" mb={3} color={flowPalette.text}>
+            {isAdminOnboarding ? 'Welcome, Comrade' : 'Secure your account'}
+          </Heading>
+          <Text color={flowPalette.muted} mb={6} fontSize="sm" lineHeight="tall">
             {isAdminOnboarding ? (
+              <>
+                Let&apos;s build your collective. A <strong>Comrade</strong> is any member of your
+                household. Your <strong>Hub</strong> is the household itself.
+              </>
+            ) : (
+              <>
+                The revolution starts with good opsec. Set a new password (8+ characters) before you
+                join the dashboard.
+              </>
+            )}
+          </Text>
+          <form onSubmit={onSubmit}>
+            <Stack gap={5}>
               <Field.Root>
-                <Field.Label color={flowPalette.text}>Your username</Field.Label>
+                <Field.Label color={flowPalette.text}>Current password</Field.Label>
                 <Input
-                  autoComplete="username"
-                  value={usernameField}
-                  onChange={(e) => setUsernameField(e.target.value)}
+                  type="password"
+                  autoComplete="current-password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
                   required
                   borderColor={flowPalette.border}
                   _focusVisible={{
@@ -169,64 +152,82 @@ export function ChangePasswordPage() {
                     boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
                   }}
                 />
+                <Field.HelperText color={flowPalette.muted} fontSize="xs">
+                  One last time with your existing password — then we move forward.
+                </Field.HelperText>
               </Field.Root>
-            ) : null}
-            <Field.Root>
-              <Field.Label color={flowPalette.text}>
-                {isAdminOnboarding ? 'Set a password' : 'New password'}
-              </Field.Label>
-              <Input
-                type="password"
-                autoComplete="new-password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                minLength={8}
-                borderColor={flowPalette.border}
-                _focusVisible={{
-                  borderColor: flowPalette.maroon,
-                  boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
-                }}
-              />
-            </Field.Root>
-            <Field.Root>
-              <Field.Label color={flowPalette.text}>Confirm password</Field.Label>
-              <Input
-                type="password"
-                autoComplete="new-password"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                required
-                minLength={8}
-                borderColor={flowPalette.border}
-                _focusVisible={{
-                  borderColor: flowPalette.maroon,
-                  boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
-                }}
-              />
-            </Field.Root>
-            {error ? (
-              <Text color={flowPalette.error} fontSize="sm">
-                {error}
-              </Text>
-            ) : null}
-            <Button
-              type="submit"
-              loading={pending}
-              bg={flowPalette.maroon}
-              color={flowPalette.pageBg}
-              _hover={{ bg: flowPalette.maroonDark }}
-              size="lg"
-              width="full"
-            >
-              {pending
-                ? 'Saving…'
-                : isAdminOnboarding
-                  ? 'Continue the march →'
-                  : 'Seized for the collective →'}
-            </Button>
-          </Stack>
-        </form>
+              {isAdminOnboarding ? (
+                <Field.Root>
+                  <Field.Label color={flowPalette.text}>Your username</Field.Label>
+                  <Input
+                    autoComplete="username"
+                    value={usernameField}
+                    onChange={(e) => setUsernameField(e.target.value)}
+                    required
+                    borderColor={flowPalette.border}
+                    _focusVisible={{
+                      borderColor: flowPalette.maroon,
+                      boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
+                    }}
+                  />
+                </Field.Root>
+              ) : null}
+              <Field.Root>
+                <Field.Label color={flowPalette.text}>
+                  {isAdminOnboarding ? 'Set a password' : 'New password'}
+                </Field.Label>
+                <Input
+                  type="password"
+                  autoComplete="new-password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  borderColor={flowPalette.border}
+                  _focusVisible={{
+                    borderColor: flowPalette.maroon,
+                    boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
+                  }}
+                />
+              </Field.Root>
+              <Field.Root>
+                <Field.Label color={flowPalette.text}>Confirm password</Field.Label>
+                <Input
+                  type="password"
+                  autoComplete="new-password"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  required
+                  minLength={8}
+                  borderColor={flowPalette.border}
+                  _focusVisible={{
+                    borderColor: flowPalette.maroon,
+                    boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
+                  }}
+                />
+              </Field.Root>
+              {error ? (
+                <Text color={flowPalette.error} fontSize="sm">
+                  {error}
+                </Text>
+              ) : null}
+              <Button
+                type="submit"
+                loading={pending}
+                bg={flowPalette.maroon}
+                color={flowPalette.pageBg}
+                _hover={{ bg: flowPalette.maroonDark }}
+                size="lg"
+                width="full"
+              >
+                {pending
+                  ? 'Saving…'
+                  : isAdminOnboarding
+                    ? 'Continue the march →'
+                    : 'Seized for the collective →'}
+              </Button>
+            </Stack>
+          </form>
         </FlowCard>
       </AuthenticationWizard>
     </AuthenticatedShell>

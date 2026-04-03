@@ -1,4 +1,5 @@
 import { z } from 'zod';
+
 import { authenticatedComradeSchema } from './authenticated-comrade.js';
 
 export const setupComradeRowSchema = z.object({

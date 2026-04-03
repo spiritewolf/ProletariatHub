@@ -1,5 +1,6 @@
-import { todoListItemSchema, type TodoListItem } from '@proletariat-hub/contracts';
+import { type TodoListItem, todoListItemSchema } from '@proletariat-hub/contracts';
 import type { InferSelectModel } from 'drizzle-orm';
+
 import { todos } from '../db/schema.js';
 
 type TodoRow = InferSelectModel<typeof todos>;

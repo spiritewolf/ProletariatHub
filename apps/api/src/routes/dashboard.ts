@@ -1,16 +1,30 @@
 import {
   choreListItemSchema,
   dashboardComradeRowSchema,
+  dashboardDocsPreviewSchema,
+  dashboardReminderRowSchema,
+  type DashboardShoppingItemWidget,
   dashboardShoppingItemWidgetSchema,
   dashboardSummarySchema,
-  type DashboardShoppingItemWidget,
 } from '@proletariat-hub/contracts';
-import { and, asc, eq, isNull } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
+import { and, asc, count, desc, eq, isNull } from 'drizzle-orm';
 import type { FastifyPluginAsync } from 'fastify';
+
 import { attachSession, requirePasswordGateCleared, requireSetupComplete } from '../auth/hooks.js';
+import { isHubRotationEnabled } from '../chores/rotation.js';
 import { db } from '../db/index.js';
-import { chores, comrades, hubs, shoppingListItems, shoppingLists } from '../db/schema.js';
+import {
+  chores,
+  comrades,
+  contacts,
+  credentialEntries,
+  hubs,
+  referenceNotes,
+  shoppingListItems,
+  shoppingLists,
+} from '../db/schema.js';
+import { listVisibleUpcomingReminderRows } from '../reminders/listVisibleUpcomingReminderRows.js';
 import { ensureDefaultHubShoppingList } from '../shopping/ensureDefaultHubShoppingList.js';
 import { ensureDefaultPersonalShoppingList } from '../shopping/ensureDefaultPersonalShoppingList.js';
 import { listVisibleOpenTodos } from '../todos/listVisibleOpenTodos.js';
@@ -146,6 +160,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
         lastCompletedAt: chore.lastCompletedAt ?? null,
         nextDueAt: chore.nextDueAt ?? null,
         annoyingModeEnabled: chore.annoyingModeEnabled,
+        rotateAcrossHub: isHubRotationEnabled(chore.frequencyRuleJson),
       }),
     );
 
@@ -162,9 +177,7 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
       statusParts.push('Shopping lists clear');
     }
     if (choresAssigned.length > 0) {
-      statusParts.push(
-        `${choresAssigned.length} chore${choresAssigned.length === 1 ? '' : 's'}`,
-      );
+      statusParts.push(`${choresAssigned.length} chore${choresAssigned.length === 1 ? '' : 's'}`);
     } else {
       statusParts.push('No chores yet');
     }
@@ -178,6 +191,57 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
       statusParts.push('No open to-dos');
     }
 
+    const upcomingReminders = listVisibleUpcomingReminderRows(comrade.hubId, comrade.id, {
+      maxRows: 500,
+    });
+    if (upcomingReminders.length > 0) {
+      statusParts.push(
+        `${upcomingReminders.length} reminder${upcomingReminders.length === 1 ? '' : 's'} upcoming`,
+      );
+    } else {
+      statusParts.push('No reminders');
+    }
+
+    const calendarPreview = upcomingReminders.slice(0, 12).map((r) =>
+      dashboardReminderRowSchema.parse({
+        id: r.id,
+        title: r.title,
+        category: r.category,
+        eventDate: r.eventDate,
+        eventTime: r.eventTime ?? null,
+        status: r.status,
+      }),
+    );
+
+    const hubId = comrade.hubId;
+    const referenceNoteCount = Number(
+      db.select({ c: count() }).from(referenceNotes).where(eq(referenceNotes.hubId, hubId)).get()
+        ?.c ?? 0,
+    );
+    const credentialCount = Number(
+      db
+        .select({ c: count() })
+        .from(credentialEntries)
+        .where(eq(credentialEntries.hubId, hubId))
+        .get()?.c ?? 0,
+    );
+    const contactCount = Number(
+      db.select({ c: count() }).from(contacts).where(eq(contacts.hubId, hubId)).get()?.c ?? 0,
+    );
+    const recentNoteRows = db
+      .select({ id: referenceNotes.id, title: referenceNotes.title })
+      .from(referenceNotes)
+      .where(eq(referenceNotes.hubId, hubId))
+      .orderBy(desc(referenceNotes.updatedAt))
+      .limit(5)
+      .all();
+    const docsPreview = dashboardDocsPreviewSchema.parse({
+      referenceNoteCount,
+      credentialCount,
+      contactCount,
+      recentNotes: recentNoteRows.map((r) => ({ id: r.id, title: r.title })),
+    });
+
     const payload = {
       greeting: `★ Hey ${comrade.username}, the collective awaits.`,
       today,
@@ -190,8 +254,8 @@ export const dashboardRoutes: FastifyPluginAsync = async (fastify) => {
       comrades: comradesPayload,
       choresAssigned,
       todosAssigned,
-      calendarPreview: [],
-      docsPreview: null,
+      calendarPreview,
+      docsPreview,
     };
     return dashboardSummarySchema.parse(payload);
   });

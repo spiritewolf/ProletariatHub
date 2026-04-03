@@ -1,17 +1,24 @@
+import { randomUUID } from 'node:crypto';
+
 import {
+  choreListItemSchema,
   choresListResponseSchema,
   completeChoreBodySchema,
   completeChoreResponseSchema,
   createChoreBodySchema,
   createChoreResponseSchema,
-  choreListItemSchema,
 } from '@proletariat-hub/contracts';
-import { and, asc, eq } from 'drizzle-orm';
 import type { InferSelectModel } from 'drizzle-orm';
-import { randomUUID } from 'node:crypto';
+import { and, asc, eq } from 'drizzle-orm';
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+
 import { attachSession, requirePasswordGateCleared, requireSetupComplete } from '../auth/hooks.js';
+import {
+  buildChoreFrequencyRuleJson,
+  isHubRotationEnabled,
+  nextHubRotatingAssigneeId,
+} from '../chores/rotation.js';
 import { db } from '../db/index.js';
 import { choreCompletions, chores, comrades } from '../db/schema.js';
 import { parseJsonBody } from '../lib/parseJsonBody.js';
@@ -33,6 +40,7 @@ function serializeChoreListItem(chore: ChoreRow, assigneeUsername: string) {
     lastCompletedAt: chore.lastCompletedAt ?? null,
     nextDueAt: chore.nextDueAt ?? null,
     annoyingModeEnabled: chore.annoyingModeEnabled,
+    rotateAcrossHub: isHubRotationEnabled(chore.frequencyRuleJson),
   });
 }
 
@@ -89,7 +97,7 @@ export const choresRoutes: FastifyPluginAsync = async (fastify) => {
         description: body.description ?? null,
         assignedComradeId: body.assignedComradeId,
         frequency: body.frequency ?? 'weekly',
-        frequencyRuleJson: null,
+        frequencyRuleJson: buildChoreFrequencyRuleJson(body.rotateAcrossHub ?? false),
         lastCompletedAt: null,
         nextDueAt: null,
         annoyingModeEnabled: body.annoyingModeEnabled ?? false,
@@ -142,8 +150,17 @@ export const choresRoutes: FastifyPluginAsync = async (fastify) => {
       })
       .run();
 
+    const nextAssignedComradeId = isHubRotationEnabled(choreRow.frequencyRuleJson)
+      ? nextHubRotatingAssigneeId(hubId, choreRow.assignedComradeId)
+      : choreRow.assignedComradeId;
+
     db.update(chores)
-      .set({ lastCompletedAt: now, nextDueAt: null, updatedAt: now })
+      .set({
+        assignedComradeId: nextAssignedComradeId,
+        lastCompletedAt: now,
+        nextDueAt: null,
+        updatedAt: now,
+      })
       .where(eq(chores.id, choreId))
       .run();
 

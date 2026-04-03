@@ -1,5 +1,6 @@
 import { Flex, Text } from '@chakra-ui/react';
 import { useMemo } from 'react';
+
 import { dashboardTheme } from '../dashboardTheme';
 
 type PageChromeTopBarProps = {

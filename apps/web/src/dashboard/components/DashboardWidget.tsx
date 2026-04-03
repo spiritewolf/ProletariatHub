@@ -1,12 +1,13 @@
 import { Box, Flex, type FlexProps, Text } from '@chakra-ui/react';
 import type { ReactNode } from 'react';
+
 import { dashboardTheme } from '../dashboardTheme';
 
-type DashboardWidgetProps = {
+interface DashboardWidgetProps extends FlexProps {
   title: string;
   action?: ReactNode;
   children: ReactNode;
-} & FlexProps;
+}
 
 export function DashboardWidget({ title, action, children, ...flexProps }: DashboardWidgetProps) {
   return (

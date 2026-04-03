@@ -1,4 +1,5 @@
 import type { DashboardShoppingItemWidget } from '@proletariat-hub/contracts';
+
 import { dashboardTheme } from '../dashboardTheme';
 
 export enum ShoppingItemPriority {
@@ -23,14 +24,30 @@ export const SHOPPING_PRIORITY_BADGE_TEXT: Record<ShoppingItemPriority, string> 
   [ShoppingItemPriority.Low]: ShoppingItemPriority.Low,
 };
 
-export function getShoppingPriorityBadgeStyles(
+const SHOPPING_PRIORITY_BY_VALUE: Record<
+  DashboardShoppingItemWidget['priority'],
+  ShoppingItemPriority
+> = {
+  urgent: ShoppingItemPriority.Urgent,
+  medium: ShoppingItemPriority.Medium,
+  low: ShoppingItemPriority.Low,
+};
+
+export function getShoppingItemPriority(
   priority: DashboardShoppingItemWidget['priority'],
-): { bg: string; color: string } {
-  return SHOPPING_PRIORITY_BADGE_STYLES[priority as ShoppingItemPriority];
+): ShoppingItemPriority {
+  return SHOPPING_PRIORITY_BY_VALUE[priority];
+}
+
+export function getShoppingPriorityBadgeStyles(priority: DashboardShoppingItemWidget['priority']): {
+  bg: string;
+  color: string;
+} {
+  return SHOPPING_PRIORITY_BADGE_STYLES[getShoppingItemPriority(priority)];
 }
 
 export function getShoppingPriorityBadgeText(
   priority: DashboardShoppingItemWidget['priority'],
 ): string {
-  return SHOPPING_PRIORITY_BADGE_TEXT[priority as ShoppingItemPriority];
+  return SHOPPING_PRIORITY_BADGE_TEXT[getShoppingItemPriority(priority)];
 }

@@ -1,5 +1,6 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import type { DashboardComradeRow } from '@proletariat-hub/contracts';
+
 import { dashboardTheme } from '../../dashboardTheme';
 import { DashboardCopy } from '../../utils/dashboardCopy';
 
@@ -41,15 +42,7 @@ export function DashboardComradesStrip({ comrades }: DashboardComradesStripProps
           {DashboardCopy.comradesAddLabel}
         </Text>
       </Flex>
-      <Flex
-        flex={1}
-        minH={0}
-        align="center"
-        px={2}
-        gap={2}
-        overflowX="auto"
-        overflowY="hidden"
-      >
+      <Flex flex={1} minH={0} align="center" px={2} gap={2} overflowX="auto" overflowY="hidden">
         {comrades?.map((comrade) => (
           <Flex
             key={comrade.id}

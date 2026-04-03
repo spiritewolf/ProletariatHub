@@ -1,4 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify';
+
 import { SESSION_COOKIE } from './constants.js';
 import { loadComradeBySessionId, touchSession } from './session.js';
 

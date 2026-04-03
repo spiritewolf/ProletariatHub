@@ -1,27 +1,20 @@
-import {
-  Box,
-  Button,
-  Field,
-  Flex,
-  Input,
-  NativeSelect,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
-import { type FormEvent, useCallback, useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { AppPath } from '../appPaths';
+import { Box, Button, Field, Flex, Input, NativeSelect, Stack, Text } from '@chakra-ui/react';
 import {
   createShoppingItemBodySchema,
   createShoppingItemResponseSchema,
-  shoppingItemsResponseSchema,
-  shoppingItemSingleResponseSchema,
-  shoppingListsResponseSchema,
   type ShoppingItemRow,
+  shoppingItemSingleResponseSchema,
   type ShoppingItemsListStatus,
+  shoppingItemsResponseSchema,
   type ShoppingListRow,
+  shoppingListsResponseSchema,
+  shoppingPrioritySchema,
 } from '@proletariat-hub/contracts';
+import { type FormEvent, useCallback, useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
+
 import { apiJsonValidated } from '../api';
+import { AppPath } from '../appPaths';
 import { useAuth } from '../auth/AuthContext';
 import { DashboardListRow } from '../dashboard/components/DashboardListRow';
 import { DashboardPriorityBadge } from '../dashboard/components/DashboardPriorityBadge';
@@ -30,6 +23,11 @@ import { dashboardTheme } from '../dashboard/dashboardTheme';
 import { AuthenticatedShell } from '../dashboard/shell/AuthenticatedShell';
 import { PageChromeTopBar } from '../dashboard/shell/PageChromeTopBar';
 import { getShoppingPurchaseChannelLabel } from '../dashboard/utils/shoppingDisplay';
+
+function parseShoppingPriority(value: string): 'urgent' | 'medium' | 'low' | null {
+  const parsed = shoppingPrioritySchema.safeParse(value);
+  return parsed.success ? parsed.data : null;
+}
 
 function formatOrderedAt(ms: number): string {
   return new Date(ms).toLocaleString(undefined, {
@@ -383,9 +381,12 @@ export function ShoppingPage() {
                           {...inputStyles}
                           h="32px"
                           value={newItemPriority}
-                          onChange={(e) =>
-                            setNewItemPriority(e.target.value as 'urgent' | 'medium' | 'low')
-                          }
+                          onChange={(e) => {
+                            const nextPriority = parseShoppingPriority(e.target.value);
+                            if (nextPriority !== null) {
+                              setNewItemPriority(nextPriority);
+                            }
+                          }}
                         >
                           <option value="urgent">Urgent</option>
                           <option value="medium">Medium</option>

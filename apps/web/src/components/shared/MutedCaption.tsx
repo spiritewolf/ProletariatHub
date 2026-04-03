@@ -6,11 +6,7 @@ type MutedCaptionProps = {
   fontSize?: string;
 };
 
-export function MutedCaption({
-  text,
-  mutedColor,
-  fontSize = '9px',
-}: MutedCaptionProps) {
+export function MutedCaption({ text, mutedColor, fontSize = '9px' }: MutedCaptionProps) {
   return (
     <Text fontSize={fontSize} color={mutedColor}>
       {text}

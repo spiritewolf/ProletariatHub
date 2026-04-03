@@ -34,7 +34,7 @@ function errorMessageFromPayload(payload: unknown, httpStatus: number): string {
 export async function apiJsonValidated<T>(
   path: string,
   successSchema: ZodType<T>,
-  init?: RequestInit & { json?: unknown },
+  init?: RequestInitWithJson,
 ): Promise<T> {
   const { json, headers: initHeaders, body, ...rest } = init ?? {};
   const headers = new Headers(initHeaders);
@@ -60,4 +60,33 @@ export async function apiJsonValidated<T>(
     throw new Error('Unexpected response from server');
   }
   return parsedSuccess.data;
+}
+
+/** DELETE (or other) expecting 204 No Content and an empty body. */
+export async function apiNoContent(path: string, init?: RequestInitWithJson): Promise<void> {
+  const { json, headers: initHeaders, body, ...rest } = init ?? {};
+  const headers = new Headers(initHeaders);
+  if (json !== undefined) {
+    headers.set('Content-Type', 'application/json');
+  }
+
+  const response = await fetch(`${base}${path}`, {
+    ...rest,
+    credentials: 'include',
+    headers,
+    body: json !== undefined ? JSON.stringify(json) : body,
+  });
+
+  const payload: unknown = await readJsonFromResponse(response);
+
+  if (!response.ok) {
+    throw new Error(errorMessageFromPayload(payload, response.status));
+  }
+  if (response.status !== 204) {
+    throw new Error(`Expected 204, got ${response.status}`);
+  }
+}
+
+interface RequestInitWithJson extends RequestInit {
+  json?: unknown;
 }

@@ -1,7 +1,10 @@
 import { z } from 'zod';
+
 import { choreListItemSchema } from './chores.js';
-import { todoListItemSchema } from './todos.js';
+import { dashboardDocsPreviewSchema } from './docs.js';
+import { dashboardReminderRowSchema } from './reminders.js';
 import { shoppingPrioritySchema, shoppingPurchaseTypeSchema } from './shopping.js';
+import { todoListItemSchema } from './todos.js';
 
 /** Open shopping line item for dashboard widgets (hub or personal list). */
 export const dashboardShoppingItemWidgetSchema = z.object({
@@ -32,8 +35,8 @@ export const dashboardSummarySchema = z.object({
   comrades: z.array(dashboardComradeRowSchema),
   choresAssigned: z.array(choreListItemSchema),
   todosAssigned: z.array(todoListItemSchema),
-  calendarPreview: z.array(z.unknown()),
-  docsPreview: z.unknown().nullable(),
+  calendarPreview: z.array(dashboardReminderRowSchema),
+  docsPreview: dashboardDocsPreviewSchema,
 });
 
 export type DashboardSummary = z.infer<typeof dashboardSummarySchema>;

@@ -1,5 +1,7 @@
-import { eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
+
+import { eq } from 'drizzle-orm';
+
 import { db } from '../db/index.js';
 import { comrades, sessions } from '../db/schema.js';
 

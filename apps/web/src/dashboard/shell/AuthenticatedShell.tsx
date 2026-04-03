@@ -1,5 +1,6 @@
 import { Flex } from '@chakra-ui/react';
 import type { ReactNode } from 'react';
+
 import { useAuth } from '../../auth/AuthContext';
 import { dashboardTheme } from '../dashboardTheme';
 import { DashboardSidebarNav } from '../sidebar/DashboardSidebarNav';

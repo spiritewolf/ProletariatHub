@@ -7,7 +7,7 @@ export const loginBodySchema = z.object({
   password: z.string(),
 });
 
-export type LoginBody = z.infer<typeof loginBodySchema>;
+export type LoginFormState = z.infer<typeof loginBodySchema>;
 
 export const accountPatchBodySchema = z
   .object({

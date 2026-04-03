@@ -1,23 +1,24 @@
 import {
+  type AuthenticatedComrade,
+  loginSuccessResponseSchema,
+  okResponseSchema,
+  sessionResponseSchema,
+} from '@proletariat-hub/contracts';
+import {
   createContext,
+  type ReactNode,
   useCallback,
   useContext,
   useEffect,
   useMemo,
   useState,
-  type ReactNode,
 } from 'react';
-import {
-  loginSuccessResponseSchema,
-  okResponseSchema,
-  sessionResponseSchema,
-  type AuthenticatedComrade,
-} from '@proletariat-hub/contracts';
+
 import { apiJsonValidated } from '../api';
 
 type AuthState = {
   authenticatedComrade: AuthenticatedComrade | null;
-  loading: boolean;
+  isLoading: boolean;
   refreshAuthenticatedComrade: () => Promise<void>;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -29,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [authenticatedComrade, setAuthenticatedComrade] = useState<AuthenticatedComrade | null>(
     null,
   );
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   const refreshAuthenticatedComrade = useCallback(async () => {
     try {
@@ -54,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       } finally {
         if (!cancelled) {
-          setLoading(false);
+          setIsLoading(false);
         }
       }
     })();
@@ -79,12 +80,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       authenticatedComrade,
-      loading,
+      isLoading,
       refreshAuthenticatedComrade,
       login,
       logout,
     }),
-    [authenticatedComrade, loading, refreshAuthenticatedComrade, login, logout],
+    [authenticatedComrade, isLoading, refreshAuthenticatedComrade, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

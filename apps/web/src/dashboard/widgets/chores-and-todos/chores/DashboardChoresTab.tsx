@@ -1,17 +1,21 @@
 import { Box, Button, Flex, Input, NativeSelect, Text } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import {
+  type ChoreListItem,
   completeChoreResponseSchema,
   createChoreResponseSchema,
-  type ChoreListItem,
   type DashboardComradeRow,
 } from '@proletariat-hub/contracts';
-import { MutedCaption } from '../../../../components/shared/MutedCaption';
+import { useEffect, useState } from 'react';
+
 import { apiJsonValidated } from '../../../../api';
+import { MutedCaption } from '../../../../components/shared/MutedCaption';
 import { DashboardListRow } from '../../../components/DashboardListRow';
 import { dashboardTheme } from '../../../dashboardTheme';
-import { dashboardApiChoreCompletePath, DashboardApiResource } from '../../../utils/dashboardApiPaths';
 import { formatChoreRowMetaLine } from '../../../utils/choreDisplay';
+import {
+  dashboardApiChoreCompletePath,
+  DashboardApiResource,
+} from '../../../utils/dashboardApiPaths';
 import { DashboardCopy } from '../../../utils/dashboardCopy';
 import { DASHBOARD_ANNOYING_MODE_HINT_COLOR } from '../../../utils/dashboardUiTokens';
 
@@ -21,9 +25,26 @@ type DashboardChoresTabProps = {
   onRefresh: () => Promise<void>;
 };
 
+const CHORE_ASSIGN_ROTATE_OPTION_VALUE = '__rotate_hub__';
+
+function parseChoreFrequency(value: string): ChoreListItem['frequency'] | null {
+  switch (value) {
+    case 'daily':
+    case 'weekly':
+    case 'monthly':
+    case 'custom':
+      return value;
+    default:
+      return null;
+  }
+}
+
 export function DashboardChoresTab({ chores, comrades, onRefresh }: DashboardChoresTabProps) {
   const [title, setTitle] = useState('');
   const [assigneeComradeId, setAssigneeComradeId] = useState('');
+  const [frequency, setFrequency] = useState<ChoreListItem['frequency']>('weekly');
+  const [rotateAcrossHub, setRotateAcrossHub] = useState(false);
+  const [annoyingModeEnabled, setAnnoyingModeEnabled] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [completingChoreId, setCompletingChoreId] = useState<string | null>(null);
 
@@ -31,11 +52,10 @@ export function DashboardChoresTab({ chores, comrades, onRefresh }: DashboardCho
     if (comrades.length === 0) {
       return;
     }
-    setAssigneeComradeId((previous) => (previous === '' ? comrades[0]!.id : previous));
+    setAssigneeComradeId((previous) => (previous === '' ? comrades[0].id : previous));
   }, [comrades]);
 
-  const canSubmitAdd =
-    title.trim().length > 0 && assigneeComradeId.length > 0 && !isAdding;
+  const canSubmitAdd = title.trim().length > 0 && assigneeComradeId.length > 0 && !isAdding;
 
   return (
     <Flex direction="column" gap={2}>
@@ -69,8 +89,17 @@ export function DashboardChoresTab({ chores, comrades, onRefresh }: DashboardCho
             <NativeSelect.Field
               h="26px"
               fontSize="10px"
-              value={assigneeComradeId}
-              onChange={(event) => setAssigneeComradeId(event.target.value)}
+              value={rotateAcrossHub ? CHORE_ASSIGN_ROTATE_OPTION_VALUE : assigneeComradeId}
+              onChange={(event) => {
+                const selected = event.target.value;
+                if (selected === CHORE_ASSIGN_ROTATE_OPTION_VALUE) {
+                  setRotateAcrossHub(true);
+                  setAssigneeComradeId((previous) => previous || comrades[0]?.id || '');
+                  return;
+                }
+                setRotateAcrossHub(false);
+                setAssigneeComradeId(selected);
+              }}
               borderColor={dashboardTheme.cardBorder}
             >
               {comrades.map((comrade) => (
@@ -78,6 +107,50 @@ export function DashboardChoresTab({ chores, comrades, onRefresh }: DashboardCho
                   {comrade.username}
                 </option>
               ))}
+              <option value={CHORE_ASSIGN_ROTATE_OPTION_VALUE}>
+                {DashboardCopy.assignRotateOption}
+              </option>
+            </NativeSelect.Field>
+          </NativeSelect.Root>
+        </Box>
+        <Box minW="88px">
+          <Text fontSize="8px" color={dashboardTheme.meta} mb={0.5}>
+            {DashboardCopy.frequencyFieldLabel}
+          </Text>
+          <NativeSelect.Root size="xs">
+            <NativeSelect.Field
+              h="26px"
+              fontSize="10px"
+              value={frequency}
+              onChange={(event) => {
+                const nextFrequency = parseChoreFrequency(event.target.value);
+                if (nextFrequency !== null) {
+                  setFrequency(nextFrequency);
+                }
+              }}
+              borderColor={dashboardTheme.cardBorder}
+            >
+              <option value="daily">{DashboardCopy.frequencyDailyOption}</option>
+              <option value="weekly">{DashboardCopy.frequencyWeeklyOption}</option>
+              <option value="monthly">{DashboardCopy.frequencyMonthlyOption}</option>
+              <option value="custom">{DashboardCopy.frequencyCustomOption}</option>
+            </NativeSelect.Field>
+          </NativeSelect.Root>
+        </Box>
+        <Box minW="72px">
+          <Text fontSize="8px" color={dashboardTheme.meta} mb={0.5}>
+            {DashboardCopy.nudgeFieldLabel}
+          </Text>
+          <NativeSelect.Root size="xs">
+            <NativeSelect.Field
+              h="26px"
+              fontSize="10px"
+              value={annoyingModeEnabled ? 'on' : 'off'}
+              onChange={(event) => setAnnoyingModeEnabled(event.target.value === 'on')}
+              borderColor={dashboardTheme.cardBorder}
+            >
+              <option value="off">{DashboardCopy.nudgeOffOption}</option>
+              <option value="on">{DashboardCopy.nudgeOnOption}</option>
             </NativeSelect.Field>
           </NativeSelect.Root>
         </Box>
@@ -95,7 +168,13 @@ export function DashboardChoresTab({ chores, comrades, onRefresh }: DashboardCho
               try {
                 await apiJsonValidated(DashboardApiResource.Chores, createChoreResponseSchema, {
                   method: 'POST',
-                  json: { title: title.trim(), assignedComradeId: assigneeComradeId },
+                  json: {
+                    title: title.trim(),
+                    assignedComradeId: assigneeComradeId,
+                    frequency,
+                    rotateAcrossHub,
+                    annoyingModeEnabled,
+                  },
                 });
                 setTitle('');
                 await onRefresh();

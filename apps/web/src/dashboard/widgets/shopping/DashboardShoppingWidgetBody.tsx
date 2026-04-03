@@ -1,6 +1,7 @@
 import { Box, Text } from '@chakra-ui/react';
-import { useMemo } from 'react';
 import type { DashboardShoppingItemWidget } from '@proletariat-hub/contracts';
+import { useMemo } from 'react';
+
 import { MutedCaption } from '../../../components/shared/MutedCaption';
 import { DashboardListRow } from '../../components/DashboardListRow';
 import { DashboardPriorityBadge } from '../../components/DashboardPriorityBadge';

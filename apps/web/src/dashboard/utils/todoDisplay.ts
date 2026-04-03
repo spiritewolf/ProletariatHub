@@ -1,4 +1,5 @@
 import type { CreateTodoBody, TodoListItem } from '@proletariat-hub/contracts';
+
 import { TodoVisibilityScope } from './todoVisibilityScope';
 
 export { TodoVisibilityScope };
@@ -32,17 +33,21 @@ export const TODO_VISIBILITY_FORM_OPTIONS: ReadonlyArray<{
   },
 ];
 
+const TODO_VISIBILITY_SCOPE_BY_VALUE: Record<TodoListItem['visibility'], TodoVisibilityScope> = {
+  hub: TodoVisibilityScope.Hub,
+  assigned: TodoVisibilityScope.Assigned,
+  private: TodoVisibilityScope.Private,
+};
+
 export function getTodoVisibilityDisplayLabel(scope: TodoListItem['visibility']): string {
-  return TODO_VISIBILITY_DISPLAY_LABEL[scope as TodoVisibilityScope];
+  return TODO_VISIBILITY_DISPLAY_LABEL[TODO_VISIBILITY_SCOPE_BY_VALUE[scope]];
 }
 
-export function formatDashboardTodoMetaLine(
-  todo: TodoListItem,
-  currentComradeId: string,
-): string {
-  const visibilityLabel = getTodoVisibilityDisplayLabel(todo.visibility);
+export function formatDashboardTodoMetaLine(todo: TodoListItem, currentComradeId: string): string {
+  const visibility = TODO_VISIBILITY_SCOPE_BY_VALUE[todo.visibility];
+  const visibilityLabel = getTodoVisibilityDisplayLabel(visibility);
   const assignmentSummary =
-    todo.visibility === TodoVisibilityScope.Private
+    visibility === TodoVisibilityScope.Private
       ? todo.createdByComradeId === currentComradeId
         ? TodoDashboardMetaCopy.assignmentYours
         : `${TodoDashboardMetaCopy.creatorPrefix}${todo.creatorUsername}`

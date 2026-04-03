@@ -12,6 +12,7 @@ export const choreListItemSchema = z.object({
   lastCompletedAt: z.number().int().nullable(),
   nextDueAt: z.number().int().nullable(),
   annoyingModeEnabled: z.boolean(),
+  rotateAcrossHub: z.boolean(),
 });
 
 export const choresListResponseSchema = z.object({
@@ -24,6 +25,7 @@ export const createChoreBodySchema = z.object({
   assignedComradeId: z.uuid(),
   frequency: choreFrequencySchema.optional(),
   annoyingModeEnabled: z.boolean().optional(),
+  rotateAcrossHub: z.boolean().optional(),
 });
 
 export const createChoreResponseSchema = z.object({

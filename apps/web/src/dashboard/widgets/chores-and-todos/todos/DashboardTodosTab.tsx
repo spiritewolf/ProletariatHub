@@ -1,18 +1,20 @@
 import { Box, Button, Flex, Input, NativeSelect, Text } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import {
   completeTodoResponseSchema,
   createTodoResponseSchema,
   type DashboardComradeRow,
   type TodoListItem,
+  todoVisibilitySchema,
 } from '@proletariat-hub/contracts';
-import { MutedCaption } from '../../../../components/shared/MutedCaption';
+import { useEffect, useState } from 'react';
+
 import { apiJsonValidated } from '../../../../api';
+import { MutedCaption } from '../../../../components/shared/MutedCaption';
 import { DashboardListRow } from '../../../components/DashboardListRow';
 import { dashboardTheme } from '../../../dashboardTheme';
 import {
-  dashboardApiTodoCompletePath,
   DashboardApiResource,
+  dashboardApiTodoCompletePath,
 } from '../../../utils/dashboardApiPaths';
 import { DashboardCopy } from '../../../utils/dashboardCopy';
 import { DASHBOARD_ANNOYING_MODE_HINT_COLOR } from '../../../utils/dashboardUiTokens';
@@ -51,7 +53,7 @@ export function DashboardTodosTab({
     if (visibilityScope === TodoVisibilityScope.Hub) {
       setAssigneeComradeId('');
     } else if (visibilityScope === TodoVisibilityScope.Assigned) {
-      setAssigneeComradeId((previous) => (previous === '' ? comrades[0]!.id : previous));
+      setAssigneeComradeId((previous) => (previous === '' ? comrades[0].id : previous));
     }
   }, [visibilityScope, comrades]);
 
@@ -59,6 +61,21 @@ export function DashboardTodosTab({
     title.trim().length > 0 &&
     !isAdding &&
     (visibilityScope !== TodoVisibilityScope.Assigned || assigneeComradeId.length > 0);
+
+  const getVisibilityScopeValue = (value: string): TodoVisibilityScope | null => {
+    const parsed = todoVisibilitySchema.safeParse(value);
+    if (!parsed.success) {
+      return null;
+    }
+    switch (parsed.data) {
+      case 'hub':
+        return TodoVisibilityScope.Hub;
+      case 'assigned':
+        return TodoVisibilityScope.Assigned;
+      case 'private':
+        return TodoVisibilityScope.Private;
+    }
+  };
 
   return (
     <Flex direction="column" gap={2}>
@@ -93,9 +110,12 @@ export function DashboardTodosTab({
               h="26px"
               fontSize="10px"
               value={visibilityScope}
-              onChange={(event) =>
-                setVisibilityScope(event.target.value as TodoVisibilityScope)
-              }
+              onChange={(event) => {
+                const nextScope = getVisibilityScopeValue(event.target.value);
+                if (nextScope !== null) {
+                  setVisibilityScope(nextScope);
+                }
+              }}
               borderColor={dashboardTheme.cardBorder}
             >
               {TODO_VISIBILITY_FORM_OPTIONS.map((option) => (

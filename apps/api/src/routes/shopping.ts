@@ -1,18 +1,20 @@
+import { randomUUID } from 'node:crypto';
+
 import {
   createShoppingItemBodySchema,
   createShoppingItemResponseSchema,
   markShoppingItemOrderedBodySchema,
   markShoppingItemReopenedBodySchema,
+  shoppingItemSingleResponseSchema,
   shoppingItemsQuerySchema,
   shoppingItemsResponseSchema,
-  shoppingItemSingleResponseSchema,
   shoppingListRowSchema,
   shoppingListsResponseSchema,
 } from '@proletariat-hub/contracts';
 import { and, asc, count, desc, eq, isNotNull, isNull, max } from 'drizzle-orm';
-import { randomUUID } from 'node:crypto';
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+
 import { attachSession, requirePasswordGateCleared, requireSetupComplete } from '../auth/hooks.js';
 import { db } from '../db/index.js';
 import { shoppingListItems, shoppingLists } from '../db/schema.js';

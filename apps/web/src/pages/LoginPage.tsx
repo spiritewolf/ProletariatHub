@@ -1,21 +1,28 @@
 import { Button, Code, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
-import { type FormEvent, useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginBodySchema, LoginFormState } from '@proletariat-hub/contracts';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { Navigate, useNavigate } from 'react-router-dom';
+
 import { AppPath } from '../appPaths';
-import { loginBodySchema } from '@proletariat-hub/contracts';
-import { FlowCard, AuthenticationWizard } from '../components/flow/AuthenticationWizard';
-import { flowPalette } from '../flow-theme';
 import { useAuth } from '../auth/AuthContext';
+import { AuthenticationWizard, FlowCard } from '../components/flow/AuthenticationWizard';
+import { flowPalette } from '../flow-theme';
 
 export function LoginPage() {
-  const { login, authenticatedComrade, loading } = useAuth();
+  const { login, authenticatedComrade, isLoading } = useAuth();
   const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const formMethods = useForm<LoginFormState>({
+    resolver: zodResolver(loginBodySchema),
+    defaultValues: { username: '', password: '' },
+  });
+  const { handleSubmit } = formMethods;
 
-  if (loading) {
+  if (isLoading) {
     return (
       <AuthenticationWizard subtitle="the household collective" progressFill={0}>
         <FlowCard>
@@ -28,27 +35,26 @@ export function LoginPage() {
     return <Navigate to={AppPath.Root} replace />;
   }
 
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault();
-    setError(null);
+  const onSubmit = handleSubmit(async (data) => {
+    const dataValidation = loginBodySchema.safeParse(data);
 
-    const bodyCheck = loginBodySchema.safeParse({ username, password });
-    if (!bodyCheck.success) {
-      const first = bodyCheck.error.issues[0];
-      setError(first?.message ?? 'Check your input');
+    if (!dataValidation.success) {
+      setError(
+        dataValidation.error.issues[0]?.message ?? 'There was an issue submitting your login.',
+      );
       return;
     }
 
     setPending(true);
     try {
-      await login(bodyCheck.data.username, bodyCheck.data.password);
-      navigate(AppPath.Root, { replace: true });
+      await login(dataValidation.data.username, dataValidation.data.password);
+      await navigate(AppPath.Root, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
       setPending(false);
     }
-  }
+  });
 
   return (
     <AuthenticationWizard subtitle="the household collective" progressFill={0}>
@@ -74,14 +80,13 @@ export function LoginPage() {
               <Field.Label color={flowPalette.text}>Username</Field.Label>
               <Input
                 autoComplete="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
                 required
                 borderColor={flowPalette.border}
                 _focusVisible={{
                   borderColor: flowPalette.maroon,
                   boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
                 }}
+                {...formMethods.register('username')}
               />
             </Field.Root>
             <Field.Root>
@@ -89,14 +94,13 @@ export function LoginPage() {
               <Input
                 type="password"
                 autoComplete="current-password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 required
                 borderColor={flowPalette.border}
                 _focusVisible={{
                   borderColor: flowPalette.maroon,
                   boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
                 }}
+                {...formMethods.register('password')}
               />
             </Field.Root>
             {error ? (

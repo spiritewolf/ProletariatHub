@@ -1,4 +1,5 @@
 import { createSystem, defaultConfig } from '@chakra-ui/react';
+
 import { flowPalette } from './flow-theme';
 
 /**

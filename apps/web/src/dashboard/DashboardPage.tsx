@@ -1,33 +1,41 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { dashboardSummarySchema } from '@proletariat-hub/contracts';
+import { useQuery } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo } from 'react';
 import { Navigate } from 'react-router-dom';
-import { dashboardSummarySchema, type DashboardSummary } from '@proletariat-hub/contracts';
-import { AppPath } from '../appPaths';
+
 import { apiJsonValidated } from '../api';
+import { AppPath } from '../appPaths';
 import { useAuth } from '../auth/AuthContext';
 import { MutedCaption } from '../components/shared/MutedCaption';
+import { DashboardInlineRouterLink } from './components/DashboardInlineRouterLink';
+import { DashboardWidget } from './components/DashboardWidget';
+import { dashboardTheme } from './dashboardTheme';
+import { DashboardSidebarNav } from './sidebar/DashboardSidebarNav';
+import { DashboardTopBar } from './top-bar/DashboardTopBar';
 import { DashboardApiResource } from './utils/dashboardApiPaths';
 import { DashboardCopy } from './utils/dashboardCopy';
+import { dashboardQueryKeys } from './utils/dashboardQueryKeys';
 import {
   formatHubHouseholdWidgetTitle,
   formatPersonalShoppingWidgetTitle,
 } from './utils/dashboardTitles';
 import { filterUrgentShoppingItems } from './utils/shoppingDisplay';
-import { dashboardTheme } from './dashboardTheme';
-import { DashboardInlineRouterLink } from './components/DashboardInlineRouterLink';
-import { DashboardWidget } from './components/DashboardWidget';
-import { DashboardSidebarNav } from './sidebar/DashboardSidebarNav';
-import { DashboardTopBar } from './top-bar/DashboardTopBar';
 import { DashboardChoresTodosWidget } from './widgets/chores-and-todos/DashboardChoresTodosWidget';
 import { DashboardComradesStrip } from './widgets/comrades/DashboardComradesStrip';
+import { DashboardDocsWidget } from './widgets/docs/DashboardDocsWidget';
 import { DashboardMediaServicesGrid } from './widgets/media-services/DashboardMediaServicesGrid';
+import { DashboardRemindersWidget } from './widgets/reminders/DashboardRemindersWidget';
 import { DashboardShoppingWidgetBody } from './widgets/shopping/DashboardShoppingWidgetBody';
 import { DashboardUrgentShoppingBody } from './widgets/urgent-shopping/DashboardUrgentShoppingBody';
 
 export function DashboardPage() {
   const { authenticatedComrade, logout } = useAuth();
-  const [summary, setSummary] = useState<DashboardSummary | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const summaryQuery = useQuery({
+    queryKey: dashboardQueryKeys.summary,
+    queryFn: () => apiJsonValidated(DashboardApiResource.Summary, dashboardSummarySchema),
+  });
+  const summary = summaryQuery.data ?? null;
 
   useEffect(() => {
     const htmlElement = document.documentElement;
@@ -43,20 +51,8 @@ export function DashboardPage() {
   }, []);
 
   const loadSummary = useCallback(async () => {
-    try {
-      const data = await apiJsonValidated(DashboardApiResource.Summary, dashboardSummarySchema);
-      setSummary(data);
-      setLoadError(null);
-    } catch (error: unknown) {
-      setLoadError(
-        error instanceof Error ? error.message : DashboardCopy.dashboardLoadError,
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadSummary();
-  }, [loadSummary]);
+    await summaryQuery.refetch();
+  }, [summaryQuery]);
 
   const urgentShoppingItems = useMemo(() => {
     if (!summary) {
@@ -87,9 +83,11 @@ export function DashboardPage() {
         <DashboardTopBar summary={summary} />
 
         <Flex direction="column" flex={1} minH={0} p={3} gap={3} bg={dashboardTheme.mainBg}>
-          {loadError ? (
+          {summaryQuery.error ? (
             <Text fontSize="10px" color="red.600" flexShrink={0}>
-              {loadError}
+              {summaryQuery.error instanceof Error
+                ? summaryQuery.error.message
+                : DashboardCopy.dashboardLoadError}
             </Text>
           ) : null}
 
@@ -155,14 +153,18 @@ export function DashboardPage() {
               action={<Box fontSize="9px">{DashboardCopy.remindersAdd}</Box>}
               flex="1"
             >
-              <MutedCaption text={DashboardCopy.remindersPlaceholder} mutedColor={dashboardTheme.meta} />
+              <DashboardRemindersWidget
+                reminders={summary?.calendarPreview}
+                comrades={summary?.comrades ?? []}
+                onRefresh={loadSummary}
+              />
             </DashboardWidget>
             <DashboardWidget
               title={DashboardCopy.mediaServicesWidgetTitle}
               action={
-                <Box fontSize="9px" _hover={{ cursor: 'default' }}>
+                <DashboardInlineRouterLink to={AppPath.Docs} fontSize="9px">
                   {DashboardCopy.mediaManage}
-                </Box>
+                </DashboardInlineRouterLink>
               }
               flex="1"
             >
@@ -171,13 +173,13 @@ export function DashboardPage() {
             <DashboardWidget
               title={DashboardCopy.docsWidgetTitle}
               action={
-                <Box fontSize="9px" _hover={{ cursor: 'default' }}>
+                <DashboardInlineRouterLink to={AppPath.Docs} fontSize="9px">
                   {DashboardCopy.docsViewAll}
-                </Box>
+                </DashboardInlineRouterLink>
               }
               flex="1"
             >
-              <MutedCaption text={DashboardCopy.docsPlaceholder} mutedColor={dashboardTheme.meta} />
+              <DashboardDocsWidget docsPreview={summary?.docsPreview} />
             </DashboardWidget>
           </Flex>
 

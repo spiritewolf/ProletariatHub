@@ -1,5 +1,6 @@
 import { Text } from '@chakra-ui/react';
 import type { DashboardShoppingItemWidget } from '@proletariat-hub/contracts';
+
 import {
   getShoppingPriorityBadgeStyles,
   getShoppingPriorityBadgeText,

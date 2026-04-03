@@ -1,4 +1,5 @@
-import { authenticatedComradeSchema, type AuthenticatedComrade } from '@proletariat-hub/contracts';
+import { type AuthenticatedComrade, authenticatedComradeSchema } from '@proletariat-hub/contracts';
+
 import type { ComradeRow } from './session.js';
 
 export function serializeAuthenticatedComrade(

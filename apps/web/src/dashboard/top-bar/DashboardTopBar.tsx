@@ -1,7 +1,8 @@
 import { Flex, Text } from '@chakra-ui/react';
 import type { DashboardSummary } from '@proletariat-hub/contracts';
-import { DashboardCopy } from '../utils/dashboardCopy';
+
 import { dashboardTheme } from '../dashboardTheme';
+import { DashboardCopy } from '../utils/dashboardCopy';
 
 type DashboardTopBarProps = {
   summary: DashboardSummary | null;

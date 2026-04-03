@@ -1,14 +1,16 @@
-import { and, eq } from 'drizzle-orm';
 import { randomUUID } from 'node:crypto';
-import type { FastifyPluginAsync, FastifyReply } from 'fastify';
+
 import {
   hubPatchBodySchema,
   hubPatchResponseSchema,
+  setupCompleteResponseSchema,
   setupComradeBodySchema,
   setupComradesListResponseSchema,
-  setupCompleteResponseSchema,
   setupCreateComradeResponseSchema,
 } from '@proletariat-hub/contracts';
+import { and, eq } from 'drizzle-orm';
+import type { FastifyPluginAsync, FastifyReply } from 'fastify';
+
 import { attachSession, requirePasswordGateCleared } from '../auth/hooks.js';
 import { serializeAuthenticatedComrade } from '../auth/serialize.js';
 import { db } from '../db/index.js';

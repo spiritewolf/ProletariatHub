@@ -12,19 +12,20 @@ import {
   Wrap,
   WrapItem,
 } from '@chakra-ui/react';
-import { type FormEvent, useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { AppPath } from '../appPaths';
 import {
   hubPatchBodySchema,
   hubPatchResponseSchema,
-  setupComradeBodySchema,
-  setupComradesListResponseSchema,
   setupCompleteResponseSchema,
-  setupCreateComradeResponseSchema,
+  setupComradeBodySchema,
   type SetupComradeRow,
+  setupComradesListResponseSchema,
+  setupCreateComradeResponseSchema,
 } from '@proletariat-hub/contracts';
+import { type FormEvent, useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
+
 import { apiJsonValidated } from '../api';
+import { AppPath } from '../appPaths';
 import { useAuth } from '../auth/AuthContext';
 import {
   AuthenticationWizard,
@@ -175,177 +176,24 @@ export function SetupWizardPage() {
 
   return (
     <AuthenticatedShell topBar={<PageChromeTopBar title="Hub setup" />}>
-      <AuthenticationWizard
-        layout="embedded"
-        subtitle={headerSubtitle}
-        progressFill={step}
-      >
-      {step === 2 && !hubSaved ? (
-        <FlowCard>
-          <FlowStepLabel step={2} />
-          <Heading as="h2" size="xl" mb={3} color={flowPalette.text}>
-            Name your Hub
-          </Heading>
-          <Text color={flowPalette.muted} mb={6} fontSize="sm" lineHeight="tall">
-            What shall the collective be called? This name greets every Comrade when they log in.
-          </Text>
-          <form onSubmit={saveHub}>
-            <Stack gap={5}>
-              <Field.Root>
-                <Field.Label color={flowPalette.text}>Hub name</Field.Label>
-                <Input
-                  value={hubName}
-                  onChange={(e) => setHubName(e.target.value)}
-                  required
-                  borderColor={flowPalette.border}
-                  _focusVisible={{
-                    borderColor: flowPalette.maroon,
-                    boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
-                  }}
-                />
-              </Field.Root>
-              {error ? (
-                <Text color={flowPalette.error} fontSize="sm">
-                  {error}
-                </Text>
-              ) : null}
-              <Button
-                type="submit"
-                loading={pending}
-                bg={flowPalette.maroon}
-                color={flowPalette.pageBg}
-                _hover={{ bg: flowPalette.maroonDark }}
-                size="lg"
-                width="full"
-              >
-                {pending ? 'Saving…' : 'Onward, Comrade →'}
-              </Button>
-            </Stack>
-          </form>
-        </FlowCard>
-      ) : null}
-
-      {step === 2 && hubSaved ? (
-        <FlowCard>
-          <FlowStepLabel step={2} />
-          <Heading as="h2" size="xl" mb={3} color={flowPalette.text}>
-            Name your Hub
-          </Heading>
-          <Box
-            borderRadius="lg"
-            bg={flowPalette.pageBg}
-            borderWidth="1px"
-            borderColor={flowPalette.border}
-            p={4}
-            mb={4}
-            fontSize="sm"
-            color={flowPalette.text}
-          >
-            The people of <strong>{authenticatedComrade.hubName}</strong> will see this name on
-            their login screen. You can update it anytime in Settings.
-          </Box>
-          <Text fontSize="xs" fontWeight="bold" color={flowPalette.maroon} mb={4}>
-            ★ Hub created
-          </Text>
-          <Stack gap={3}>
-            <Button
-              type="button"
-              bg={flowPalette.maroon}
-              color={flowPalette.pageBg}
-              _hover={{ bg: flowPalette.maroonDark }}
-              size="lg"
-              width="full"
-              onClick={() => setStep(3)}
-            >
-              Onward, Comrade →
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              color={flowPalette.muted}
-              onClick={() => setHubSaved(false)}
-            >
-              Edit name
-            </Button>
-          </Stack>
-        </FlowCard>
-      ) : null}
-
-      {step === 3 ? (
-        <FlowCard>
-          <FlowStepLabel step={3} />
-          <Heading as="h2" size="xl" mb={3} color={flowPalette.text}>
-            Recruit your Comrades
-          </Heading>
-          <Text color={flowPalette.muted} mb={6} fontSize="sm" lineHeight="tall">
-            Add your household. They&apos;ll get the default password and be asked to change it on
-            first login.
-          </Text>
-          <Stack as="ul" gap={3} listStyleType="none" mb={6} pl={0}>
-            {recruits.map((c) => (
-              <Flex
-                as="li"
-                key={c.id}
-                align="center"
-                gap={3}
-                py={2}
-                borderBottomWidth="1px"
-                borderColor={flowPalette.border}
-              >
-                <Avatar.Root size="sm" bg={flowPalette.maroon} color={flowPalette.pageBg}>
-                  <Avatar.Fallback>{comradeInitial(c.username)}</Avatar.Fallback>
-                </Avatar.Root>
-                <Box>
-                  <Text fontWeight="medium" color={flowPalette.text}>
-                    {c.username}
-                  </Text>
-                  <Text fontSize="xs" color={flowPalette.muted}>
-                    Comrade ★
-                  </Text>
-                  {c.notificationPhone ? (
-                    <Text fontSize="xs" color={flowPalette.muted} mt={1}>
-                      {c.notificationPhone}
-                    </Text>
-                  ) : null}
-                </Box>
-              </Flex>
-            ))}
-          </Stack>
-          <Box
-            borderRadius="xl"
-            borderWidth="2px"
-            borderStyle="dashed"
-            borderColor={flowPalette.border}
-            p={5}
-            mb={4}
-          >
-            <Text fontWeight="semibold" color={flowPalette.maroon} mb={4}>
-              + New Comrade
+      <AuthenticationWizard layout="embedded" subtitle={headerSubtitle} progressFill={step}>
+        {step === 2 && !hubSaved ? (
+          <FlowCard>
+            <FlowStepLabel step={2} />
+            <Heading as="h2" size="xl" mb={3} color={flowPalette.text}>
+              Name your Hub
+            </Heading>
+            <Text color={flowPalette.muted} mb={6} fontSize="sm" lineHeight="tall">
+              What shall the collective be called? This name greets every Comrade when they log in.
             </Text>
-            <form onSubmit={addRecruit}>
-              <Stack gap={4}>
+            <form onSubmit={saveHub}>
+              <Stack gap={5}>
                 <Field.Root>
-                  <Field.Label color={flowPalette.text}>Username</Field.Label>
+                  <Field.Label color={flowPalette.text}>Hub name</Field.Label>
                   <Input
-                    value={recruitUsername}
-                    onChange={(e) => setRecruitUsername(e.target.value)}
-                    placeholder="john"
+                    value={hubName}
+                    onChange={(e) => setHubName(e.target.value)}
                     required
-                    borderColor={flowPalette.border}
-                    _focusVisible={{
-                      borderColor: flowPalette.maroon,
-                      boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
-                    }}
-                  />
-                </Field.Root>
-                <Field.Root>
-                  <Field.Label color={flowPalette.text}>Phone (optional)</Field.Label>
-                  <Input
-                    type="tel"
-                    value={recruitPhone}
-                    onChange={(e) => setRecruitPhone(e.target.value)}
-                    placeholder="+1 555…"
-                    autoComplete="tel"
                     borderColor={flowPalette.border}
                     _focusVisible={{
                       borderColor: flowPalette.maroon,
@@ -361,133 +209,288 @@ export function SetupWizardPage() {
                 <Button
                   type="submit"
                   loading={pending}
-                  bg={flowPalette.maroonSoft}
-                  color="white"
-                  _hover={{ bg: flowPalette.maroon }}
+                  bg={flowPalette.maroon}
+                  color={flowPalette.pageBg}
+                  _hover={{ bg: flowPalette.maroonDark }}
+                  size="lg"
                   width="full"
                 >
-                  {pending ? '…' : 'Enlist ★'}
+                  {pending ? 'Saving…' : 'Onward, Comrade →'}
                 </Button>
               </Stack>
             </form>
-          </Box>
-          <Stack gap={2}>
-            <Button
-              type="button"
-              variant="outline"
-              borderColor={flowPalette.border}
-              onClick={() => setStep(4)}
-            >
-              Skip for now
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
-              color={flowPalette.muted}
-              onClick={() => setStep(2)}
-            >
-              Back
-            </Button>
-          </Stack>
-        </FlowCard>
-      ) : null}
+          </FlowCard>
+        ) : null}
 
-      {step === 4 ? (
-        <FlowCard>
-          <Text fontSize="4xl" textAlign="center" color={flowPalette.maroon} aria-hidden mb={2}>
-            ★
-          </Text>
-          <Heading as="h2" size="xl" mb={3} color={flowPalette.text} textAlign="center">
-            The collective is assembled!
-          </Heading>
-          <Text color={flowPalette.muted} mb={6} fontSize="sm" lineHeight="tall" textAlign="center">
-            Your Hub is live. Comrades will be prompted to change their password on first login —
-            the revolution starts with good opsec.
-          </Text>
-          <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} mb={6}>
+        {step === 2 && hubSaved ? (
+          <FlowCard>
+            <FlowStepLabel step={2} />
+            <Heading as="h2" size="xl" mb={3} color={flowPalette.text}>
+              Name your Hub
+            </Heading>
             <Box
               borderRadius="lg"
               bg={flowPalette.pageBg}
-              p={4}
               borderWidth="1px"
               borderColor={flowPalette.border}
-            >
-              <Text
-                fontSize="xs"
-                fontWeight="bold"
-                color={flowPalette.maroon}
-                letterSpacing="0.08em"
-              >
-                ★ HUB
-              </Text>
-              <Text fontWeight="semibold" color={flowPalette.text} mt={2}>
-                {authenticatedComrade.hubName}
-              </Text>
-            </Box>
-            <Box
-              borderRadius="lg"
-              bg={flowPalette.pageBg}
               p={4}
-              borderWidth="1px"
-              borderColor={flowPalette.border}
+              mb={4}
+              fontSize="sm"
+              color={flowPalette.text}
             >
-              <Text
-                fontSize="xs"
-                fontWeight="bold"
-                color={flowPalette.maroon}
-                letterSpacing="0.08em"
-              >
-                ★ COMRADES ENLISTED
-              </Text>
-              <Wrap mt={3} gap={2}>
-                {recruits.map((c) => (
-                  <WrapItem key={c.id}>
-                    <Box
-                      as="span"
-                      px={2}
-                      py={1}
-                      borderRadius="md"
-                      bg="white"
-                      borderWidth="1px"
-                      borderColor={flowPalette.border}
-                      fontSize="sm"
-                    >
-                      {c.username}
-                    </Box>
-                  </WrapItem>
-                ))}
-              </Wrap>
+              The people of <strong>{authenticatedComrade.hubName}</strong> will see this name on
+              their login screen. You can update it anytime in Settings.
             </Box>
-          </SimpleGrid>
-          {error ? (
-            <Text color={flowPalette.error} fontSize="sm" textAlign="center" mb={4}>
-              {error}
+            <Text fontSize="xs" fontWeight="bold" color={flowPalette.maroon} mb={4}>
+              ★ Hub created
             </Text>
-          ) : null}
-          <Stack gap={2}>
-            <Button
-              type="button"
-              loading={pending}
-              bg={flowPalette.maroon}
-              color={flowPalette.pageBg}
-              _hover={{ bg: flowPalette.maroonDark }}
-              size="lg"
-              width="full"
-              onClick={() => void finish()}
+            <Stack gap={3}>
+              <Button
+                type="button"
+                bg={flowPalette.maroon}
+                color={flowPalette.pageBg}
+                _hover={{ bg: flowPalette.maroonDark }}
+                size="lg"
+                width="full"
+                onClick={() => setStep(3)}
+              >
+                Onward, Comrade →
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                color={flowPalette.muted}
+                onClick={() => setHubSaved(false)}
+              >
+                Edit name
+              </Button>
+            </Stack>
+          </FlowCard>
+        ) : null}
+
+        {step === 3 ? (
+          <FlowCard>
+            <FlowStepLabel step={3} />
+            <Heading as="h2" size="xl" mb={3} color={flowPalette.text}>
+              Recruit your Comrades
+            </Heading>
+            <Text color={flowPalette.muted} mb={6} fontSize="sm" lineHeight="tall">
+              Add your household. They&apos;ll get the default password and be asked to change it on
+              first login.
+            </Text>
+            <Stack as="ul" gap={3} listStyleType="none" mb={6} pl={0}>
+              {recruits.map((c) => (
+                <Flex
+                  as="li"
+                  key={c.id}
+                  align="center"
+                  gap={3}
+                  py={2}
+                  borderBottomWidth="1px"
+                  borderColor={flowPalette.border}
+                >
+                  <Avatar.Root size="sm" bg={flowPalette.maroon} color={flowPalette.pageBg}>
+                    <Avatar.Fallback>{comradeInitial(c.username)}</Avatar.Fallback>
+                  </Avatar.Root>
+                  <Box>
+                    <Text fontWeight="medium" color={flowPalette.text}>
+                      {c.username}
+                    </Text>
+                    <Text fontSize="xs" color={flowPalette.muted}>
+                      Comrade ★
+                    </Text>
+                    {c.notificationPhone ? (
+                      <Text fontSize="xs" color={flowPalette.muted} mt={1}>
+                        {c.notificationPhone}
+                      </Text>
+                    ) : null}
+                  </Box>
+                </Flex>
+              ))}
+            </Stack>
+            <Box
+              borderRadius="xl"
+              borderWidth="2px"
+              borderStyle="dashed"
+              borderColor={flowPalette.border}
+              p={5}
+              mb={4}
             >
-              {pending ? '…' : 'Begin the revolution ★'}
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
+              <Text fontWeight="semibold" color={flowPalette.maroon} mb={4}>
+                + New Comrade
+              </Text>
+              <form onSubmit={addRecruit}>
+                <Stack gap={4}>
+                  <Field.Root>
+                    <Field.Label color={flowPalette.text}>Username</Field.Label>
+                    <Input
+                      value={recruitUsername}
+                      onChange={(e) => setRecruitUsername(e.target.value)}
+                      placeholder="john"
+                      required
+                      borderColor={flowPalette.border}
+                      _focusVisible={{
+                        borderColor: flowPalette.maroon,
+                        boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
+                      }}
+                    />
+                  </Field.Root>
+                  <Field.Root>
+                    <Field.Label color={flowPalette.text}>Phone (optional)</Field.Label>
+                    <Input
+                      type="tel"
+                      value={recruitPhone}
+                      onChange={(e) => setRecruitPhone(e.target.value)}
+                      placeholder="+1 555…"
+                      autoComplete="tel"
+                      borderColor={flowPalette.border}
+                      _focusVisible={{
+                        borderColor: flowPalette.maroon,
+                        boxShadow: `0 0 0 1px ${flowPalette.maroon}`,
+                      }}
+                    />
+                  </Field.Root>
+                  {error ? (
+                    <Text color={flowPalette.error} fontSize="sm">
+                      {error}
+                    </Text>
+                  ) : null}
+                  <Button
+                    type="submit"
+                    loading={pending}
+                    bg={flowPalette.maroonSoft}
+                    color="white"
+                    _hover={{ bg: flowPalette.maroon }}
+                    width="full"
+                  >
+                    {pending ? '…' : 'Enlist ★'}
+                  </Button>
+                </Stack>
+              </form>
+            </Box>
+            <Stack gap={2}>
+              <Button
+                type="button"
+                variant="outline"
+                borderColor={flowPalette.border}
+                onClick={() => setStep(4)}
+              >
+                Skip for now
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                color={flowPalette.muted}
+                onClick={() => setStep(2)}
+              >
+                Back
+              </Button>
+            </Stack>
+          </FlowCard>
+        ) : null}
+
+        {step === 4 ? (
+          <FlowCard>
+            <Text fontSize="4xl" textAlign="center" color={flowPalette.maroon} aria-hidden mb={2}>
+              ★
+            </Text>
+            <Heading as="h2" size="xl" mb={3} color={flowPalette.text} textAlign="center">
+              The collective is assembled!
+            </Heading>
+            <Text
               color={flowPalette.muted}
-              onClick={() => setStep(3)}
+              mb={6}
+              fontSize="sm"
+              lineHeight="tall"
+              textAlign="center"
             >
-              Back
-            </Button>
-          </Stack>
-        </FlowCard>
-      ) : null}
+              Your Hub is live. Comrades will be prompted to change their password on first login —
+              the revolution starts with good opsec.
+            </Text>
+            <SimpleGrid columns={{ base: 1, sm: 2 }} gap={4} mb={6}>
+              <Box
+                borderRadius="lg"
+                bg={flowPalette.pageBg}
+                p={4}
+                borderWidth="1px"
+                borderColor={flowPalette.border}
+              >
+                <Text
+                  fontSize="xs"
+                  fontWeight="bold"
+                  color={flowPalette.maroon}
+                  letterSpacing="0.08em"
+                >
+                  ★ HUB
+                </Text>
+                <Text fontWeight="semibold" color={flowPalette.text} mt={2}>
+                  {authenticatedComrade.hubName}
+                </Text>
+              </Box>
+              <Box
+                borderRadius="lg"
+                bg={flowPalette.pageBg}
+                p={4}
+                borderWidth="1px"
+                borderColor={flowPalette.border}
+              >
+                <Text
+                  fontSize="xs"
+                  fontWeight="bold"
+                  color={flowPalette.maroon}
+                  letterSpacing="0.08em"
+                >
+                  ★ COMRADES ENLISTED
+                </Text>
+                <Wrap mt={3} gap={2}>
+                  {recruits.map((c) => (
+                    <WrapItem key={c.id}>
+                      <Box
+                        as="span"
+                        px={2}
+                        py={1}
+                        borderRadius="md"
+                        bg="white"
+                        borderWidth="1px"
+                        borderColor={flowPalette.border}
+                        fontSize="sm"
+                      >
+                        {c.username}
+                      </Box>
+                    </WrapItem>
+                  ))}
+                </Wrap>
+              </Box>
+            </SimpleGrid>
+            {error ? (
+              <Text color={flowPalette.error} fontSize="sm" textAlign="center" mb={4}>
+                {error}
+              </Text>
+            ) : null}
+            <Stack gap={2}>
+              <Button
+                type="button"
+                loading={pending}
+                bg={flowPalette.maroon}
+                color={flowPalette.pageBg}
+                _hover={{ bg: flowPalette.maroonDark }}
+                size="lg"
+                width="full"
+                onClick={() => void finish()}
+              >
+                {pending ? '…' : 'Begin the revolution ★'}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                color={flowPalette.muted}
+                onClick={() => setStep(3)}
+              >
+                Back
+              </Button>
+            </Stack>
+          </FlowCard>
+        ) : null}
       </AuthenticationWizard>
     </AuthenticatedShell>
   );

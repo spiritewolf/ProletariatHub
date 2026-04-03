@@ -1,5 +1,3 @@
-import { and, eq } from 'drizzle-orm';
-import type { FastifyPluginAsync } from 'fastify';
 import {
   accountPatchBodySchema,
   accountPatchResponseSchema,
@@ -7,6 +5,9 @@ import {
   loginSuccessResponseSchema,
   sessionResponseSchema,
 } from '@proletariat-hub/contracts';
+import { and, eq } from 'drizzle-orm';
+import type { FastifyPluginAsync } from 'fastify';
+
 import { SESSION_COOKIE } from '../auth/constants.js';
 import { attachSession } from '../auth/hooks.js';
 import { serializeAuthenticatedComrade } from '../auth/serialize.js';
