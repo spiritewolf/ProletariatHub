@@ -1,14 +1,19 @@
-/** Maroon / blush palette for auth & setup flows (Chakra + shared constants). */
+import { dashboardTheme } from './dashboard/dashboardTheme';
+
+/**
+ * Auth & setup flows — aliases dashboard mockup tokens so every surface stays consistent.
+ * (Extended tokens like maroonSoft / error are flow-only.)
+ */
 export const flowPalette = {
-  maroon: '#801530',
+  maroon: dashboardTheme.title,
   maroonDark: '#5c0f24',
   maroonSoft: '#a33b56',
-  pageBg: '#fdf2f4',
-  cardBg: '#ffffff',
-  text: '#2b141c',
-  muted: '#6b4a56',
-  border: '#e8d5dc',
-  progressEmpty: '#e8d5dc',
-  progressFill: '#801530',
+  pageBg: dashboardTheme.mainChromeBg,
+  cardBg: dashboardTheme.cardBg,
+  text: dashboardTheme.text,
+  muted: dashboardTheme.meta,
+  border: dashboardTheme.cardBorder,
+  progressEmpty: dashboardTheme.cardBorder,
+  progressFill: dashboardTheme.title,
   error: '#b91c1c',
 } as const;

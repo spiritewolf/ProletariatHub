@@ -1,6 +1,7 @@
 import { Button, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { AppPath } from '../appPaths';
 import { accountPatchBodySchema, accountPatchResponseSchema } from '@proletariat-hub/contracts';
 import { z } from 'zod';
 import { apiJsonValidated } from '../api';
@@ -10,6 +11,8 @@ import {
   FlowCard,
   FlowStepLabel,
 } from '../components/flow/AuthenticationWizard';
+import { AuthenticatedShell } from '../dashboard/shell/AuthenticatedShell';
+import { PageChromeTopBar } from '../dashboard/shell/PageChromeTopBar';
 import { flowPalette } from '../flow-theme';
 
 const changePasswordFormSchema = z
@@ -45,10 +48,10 @@ export function ChangePasswordPage() {
   }, [authenticatedComrade]);
 
   if (!authenticatedComrade) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={AppPath.Login} replace />;
   }
   if (!authenticatedComrade.mustChangePassword) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={AppPath.Root} replace />;
   }
 
   const isAdminOnboarding = authenticatedComrade.isAdmin;
@@ -56,6 +59,10 @@ export function ChangePasswordPage() {
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
     setError(null);
+    const comrade = authenticatedComrade;
+    if (!comrade) {
+      return;
+    }
 
     const formParsed = changePasswordFormSchema.safeParse({
       currentPassword,
@@ -75,7 +82,7 @@ export function ChangePasswordPage() {
 
     if (isAdminOnboarding) {
       const nextUsername = usernameField.trim();
-      if (nextUsername.length > 0 && nextUsername !== authenticatedComrade.username) {
+      if (nextUsername.length > 0 && nextUsername !== comrade.username) {
         patchBody.newUsername = nextUsername;
       }
     }
@@ -102,11 +109,15 @@ export function ChangePasswordPage() {
   }
 
   return (
-    <AuthenticationWizard
-      subtitle="the household collective"
-      progressFill={isAdminOnboarding ? 1 : 0}
+    <AuthenticatedShell
+      topBar={<PageChromeTopBar title={isAdminOnboarding ? 'Welcome' : 'Account'} />}
     >
-      <FlowCard>
+      <AuthenticationWizard
+        layout="embedded"
+        subtitle="the household collective"
+        progressFill={isAdminOnboarding ? 1 : 0}
+      >
+        <FlowCard>
         {isAdminOnboarding ? <FlowStepLabel step={1} /> : null}
         <Heading as="h2" size="xl" mb={3} color={flowPalette.text}>
           {isAdminOnboarding ? 'Welcome, Comrade' : 'Secure your account'}
@@ -216,7 +227,8 @@ export function ChangePasswordPage() {
             </Button>
           </Stack>
         </form>
-      </FlowCard>
-    </AuthenticationWizard>
+        </FlowCard>
+      </AuthenticationWizard>
+    </AuthenticatedShell>
   );
 }

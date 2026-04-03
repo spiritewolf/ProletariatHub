@@ -14,6 +14,7 @@ import {
 } from '@chakra-ui/react';
 import { type FormEvent, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { AppPath } from '../appPaths';
 import {
   hubPatchBodySchema,
   hubPatchResponseSchema,
@@ -30,6 +31,8 @@ import {
   FlowCard,
   FlowStepLabel,
 } from '../components/flow/AuthenticationWizard';
+import { AuthenticatedShell } from '../dashboard/shell/AuthenticatedShell';
+import { PageChromeTopBar } from '../dashboard/shell/PageChromeTopBar';
 import { flowPalette } from '../flow-theme';
 
 export function SetupWizardPage() {
@@ -83,16 +86,16 @@ export function SetupWizardPage() {
   }, [step, authenticatedComrade?.isAdmin]);
 
   if (!authenticatedComrade) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={AppPath.Login} replace />;
   }
   if (!authenticatedComrade.isAdmin) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={AppPath.Root} replace />;
   }
   if (authenticatedComrade.mustChangePassword) {
-    return <Navigate to="/change-password" replace />;
+    return <Navigate to={AppPath.ChangePassword} replace />;
   }
   if (authenticatedComrade.hasCompletedSetup) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={AppPath.Root} replace />;
   }
 
   const headerSubtitle =
@@ -171,7 +174,12 @@ export function SetupWizardPage() {
   }
 
   return (
-    <AuthenticationWizard subtitle={headerSubtitle} progressFill={step}>
+    <AuthenticatedShell topBar={<PageChromeTopBar title="Hub setup" />}>
+      <AuthenticationWizard
+        layout="embedded"
+        subtitle={headerSubtitle}
+        progressFill={step}
+      >
       {step === 2 && !hubSaved ? (
         <FlowCard>
           <FlowStepLabel step={2} />
@@ -480,6 +488,7 @@ export function SetupWizardPage() {
           </Stack>
         </FlowCard>
       ) : null}
-    </AuthenticationWizard>
+      </AuthenticationWizard>
+    </AuthenticatedShell>
   );
 }

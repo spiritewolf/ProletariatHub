@@ -1,10 +1,12 @@
 import { Center, Spinner, Text } from '@chakra-ui/react';
 import { BrowserRouter, Navigate, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './auth/AuthContext';
+import { dashboardTheme } from './dashboard/dashboardTheme';
 import { ChangePasswordPage } from './pages/ChangePasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { LoginPage } from './pages/LoginPage';
 import { SetupWizardPage } from './pages/SetupWizardPage';
+import { ShoppingPage } from './pages/ShoppingPage';
 
 function AuthedLayout() {
   const { authenticatedComrade, loading } = useAuth();
@@ -12,8 +14,8 @@ function AuthedLayout() {
 
   if (loading) {
     return (
-      <Center minH="100vh" bg="#0f0f12" color="#e8e8ef">
-        <Spinner size="lg" color="#801530" />
+      <Center minH="100vh" bg={dashboardTheme.mainChromeBg} color={dashboardTheme.text}>
+        <Spinner size="lg" color={dashboardTheme.title} />
         <Text ml={4}>Loading…</Text>
       </Center>
     );
@@ -51,6 +53,7 @@ function AppRoutes() {
         <Route path="/change-password" element={<ChangePasswordPage />} />
         <Route path="/setup" element={<SetupWizardPage />} />
         <Route path="/" element={<DashboardPage />} />
+        <Route path="/shopping" element={<ShoppingPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

@@ -8,9 +8,78 @@ type Props = {
   /** 0 = hide progress bar; 1–4 = filled segments. */
   progressFill?: number;
   children: ReactNode;
+  /**
+   * Full-screen blush page (login). When false, only inner column — use inside AuthenticatedShell.
+   */
+  layout?: 'fullscreen' | 'embedded';
 };
 
-export function AuthenticationWizard({ subtitle, progressFill = 0, children }: Props) {
+function WizardHeader({
+  subtitle,
+  progressFill,
+}: {
+  subtitle: string;
+  progressFill: number;
+}) {
+  return (
+    <Box as="header" mb={8}>
+      <Flex justify="space-between" align="flex-start" gap={4} mb={progressFill > 0 ? 6 : 0}>
+        <Box>
+          <Heading as="h1" size="lg" letterSpacing="-0.02em" color={flowPalette.maroon}>
+            ★ ProletariatHub
+          </Heading>
+          <Text mt={2} fontSize="sm" color={flowPalette.muted}>
+            {subtitle}
+          </Text>
+        </Box>
+        <Text fontSize="xl" color={flowPalette.maroonSoft} aria-hidden userSelect="none">
+          ★★
+        </Text>
+      </Flex>
+      {progressFill > 0 ? (
+        <HStack
+          gap={2}
+          role="progressbar"
+          aria-valuenow={progressFill}
+          aria-valuemin={1}
+          aria-valuemax={4}
+          aria-label={`Step ${progressFill} of 4`}
+        >
+          {[1, 2, 3, 4].map((stepIndex) => {
+            const filled = stepIndex <= progressFill;
+            return (
+              <Box
+                key={stepIndex}
+                flex={1}
+                h="6px"
+                borderRadius="full"
+                bg={filled ? flowPalette.progressFill : flowPalette.progressEmpty}
+              />
+            );
+          })}
+        </HStack>
+      ) : null}
+    </Box>
+  );
+}
+
+export function AuthenticationWizard({
+  subtitle,
+  progressFill = 0,
+  children,
+  layout = 'fullscreen',
+}: Props) {
+  const inner = (
+    <Box maxW="28rem" mx="auto" w="100%">
+      <WizardHeader subtitle={subtitle} progressFill={progressFill} />
+      <Box as="main">{children}</Box>
+    </Box>
+  );
+
+  if (layout === 'embedded') {
+    return inner;
+  }
+
   return (
     <Box
       minH="100vh"
@@ -19,47 +88,7 @@ export function AuthenticationWizard({ subtitle, progressFill = 0, children }: P
       py={{ base: 8, md: 12 }}
       px={4}
     >
-      <Box maxW="28rem" mx="auto">
-        <Box as="header" mb={8}>
-          <Flex justify="space-between" align="flex-start" gap={4} mb={progressFill > 0 ? 6 : 0}>
-            <Box>
-              <Heading as="h1" size="lg" letterSpacing="-0.02em" color={flowPalette.maroon}>
-                ★ ProletariatHub
-              </Heading>
-              <Text mt={2} fontSize="sm" color={flowPalette.muted}>
-                {subtitle}
-              </Text>
-            </Box>
-            <Text fontSize="xl" color={flowPalette.maroonSoft} aria-hidden userSelect="none">
-              ★★
-            </Text>
-          </Flex>
-          {progressFill > 0 ? (
-            <HStack
-              gap={2}
-              role="progressbar"
-              aria-valuenow={progressFill}
-              aria-valuemin={1}
-              aria-valuemax={4}
-              aria-label={`Step ${progressFill} of 4`}
-            >
-              {[1, 2, 3, 4].map((stepIndex) => {
-                const filled = stepIndex <= progressFill;
-                return (
-                  <Box
-                    key={stepIndex}
-                    flex={1}
-                    h="6px"
-                    borderRadius="full"
-                    bg={filled ? flowPalette.progressFill : flowPalette.progressEmpty}
-                  />
-                );
-              })}
-            </HStack>
-          ) : null}
-        </Box>
-        <Box as="main">{children}</Box>
-      </Box>
+      {inner}
     </Box>
   );
 }

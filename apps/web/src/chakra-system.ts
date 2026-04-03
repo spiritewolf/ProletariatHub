@@ -18,8 +18,8 @@ export const appSystem = createSystem(defaultConfig, {
   },
   globalCss: {
     body: {
-      bg: '#0f0f12',
-      color: '#e8e8ef',
+      bg: flowPalette.pageBg,
+      color: flowPalette.text,
     },
   },
 });

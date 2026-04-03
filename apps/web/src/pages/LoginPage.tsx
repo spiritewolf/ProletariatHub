@@ -1,6 +1,7 @@
 import { Button, Code, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
 import { type FormEvent, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { AppPath } from '../appPaths';
 import { loginBodySchema } from '@proletariat-hub/contracts';
 import { FlowCard, AuthenticationWizard } from '../components/flow/AuthenticationWizard';
 import { flowPalette } from '../flow-theme';
@@ -24,7 +25,7 @@ export function LoginPage() {
     );
   }
   if (authenticatedComrade) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={AppPath.Root} replace />;
   }
 
   async function onSubmit(e: FormEvent) {
@@ -41,7 +42,7 @@ export function LoginPage() {
     setPending(true);
     try {
       await login(bodyCheck.data.username, bodyCheck.data.password);
-      navigate('/', { replace: true });
+      navigate(AppPath.Root, { replace: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {
