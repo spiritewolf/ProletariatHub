@@ -13,9 +13,6 @@ import {
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { apiJsonValidated } from '../api';
-import { AppPath } from '../appPaths';
-import { useAuth } from '../auth/AuthContext';
 import { DashboardListRow } from '../dashboard/components/DashboardListRow';
 import { DashboardPriorityBadge } from '../dashboard/components/DashboardPriorityBadge';
 import { DashboardWidget } from '../dashboard/components/DashboardWidget';
@@ -23,6 +20,9 @@ import { dashboardTheme } from '../dashboard/dashboardTheme';
 import { AuthenticatedShell } from '../dashboard/shell/AuthenticatedShell';
 import { PageChromeTopBar } from '../dashboard/shell/PageChromeTopBar';
 import { getShoppingPurchaseChannelLabel } from '../dashboard/utils/shoppingDisplay';
+import { useAuth } from '../features/auth/useAuth';
+import { apiJsonValidated } from '../lib/api';
+import { AppPath } from '../lib/appPaths';
 
 function parseShoppingPriority(value: string): 'urgent' | 'medium' | 'low' | null {
   const parsed = shoppingPrioritySchema.safeParse(value);

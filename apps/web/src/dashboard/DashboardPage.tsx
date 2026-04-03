@@ -4,10 +4,10 @@ import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo } from 'react';
 import { Navigate } from 'react-router-dom';
 
-import { apiJsonValidated } from '../api';
-import { AppPath } from '../appPaths';
-import { useAuth } from '../auth/AuthContext';
 import { MutedCaption } from '../components/shared/MutedCaption';
+import { useAuth } from '../features/auth/useAuth';
+import { apiJsonValidated } from '../lib/api';
+import { AppPath } from '../lib/appPaths';
 import { DashboardInlineRouterLink } from './components/DashboardInlineRouterLink';
 import { DashboardWidget } from './components/DashboardWidget';
 import { dashboardTheme } from './dashboardTheme';

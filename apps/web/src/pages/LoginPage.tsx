@@ -5,10 +5,10 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Navigate, useNavigate } from 'react-router-dom';
 
-import { AppPath } from '../appPaths';
-import { useAuth } from '../auth/AuthContext';
 import { AuthenticationWizard, FlowCard } from '../components/flow/AuthenticationWizard';
-import { flowPalette } from '../flow-theme';
+import { useAuth } from '../features/auth/useAuth';
+import { AppPath } from '../lib/appPaths';
+import { flowPalette } from '../styles/flow-theme';
 
 export function LoginPage() {
   const { login, authenticatedComrade, isLoading } = useAuth();

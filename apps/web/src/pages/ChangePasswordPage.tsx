@@ -4,9 +4,6 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { z } from 'zod';
 
-import { apiJsonValidated } from '../api';
-import { AppPath } from '../appPaths';
-import { useAuth } from '../auth/AuthContext';
 import {
   AuthenticationWizard,
   FlowCard,
@@ -14,7 +11,10 @@ import {
 } from '../components/flow/AuthenticationWizard';
 import { AuthenticatedShell } from '../dashboard/shell/AuthenticatedShell';
 import { PageChromeTopBar } from '../dashboard/shell/PageChromeTopBar';
-import { flowPalette } from '../flow-theme';
+import { useAuth } from '../features/auth/useAuth';
+import { apiJsonValidated } from '../lib/api';
+import { AppPath } from '../lib/appPaths';
+import { flowPalette } from '../styles/flow-theme';
 
 const changePasswordFormSchema = z
   .object({
