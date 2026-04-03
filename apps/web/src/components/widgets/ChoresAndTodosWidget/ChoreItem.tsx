@@ -1,7 +1,7 @@
 import { Box, Button, Text } from '@chakra-ui/react';
 import type { ChoreListItem } from '@proletariat-hub/contracts';
 
-import { formatChoreRowMetaLine } from '../../../features/dashboard/choreDisplay';
+import { formatChoreRowMetaLine } from '../../../features/chores/choreDisplay';
 import { DashboardCopy } from '../../../features/dashboard/dashboardCopy';
 import { DASHBOARD_ANNOYING_MODE_HINT_COLOR } from '../../../features/dashboard/dashboardUiTokens';
 import { dashboardTheme } from '../../../styles/dashboardTheme';

@@ -1,12 +1,13 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router';
 
-import { AppLayoutRoute } from './routes/_app';
-import { ChangePasswordPage } from './routes/_app.change-password';
-import { DashboardPage } from './routes/_app.dashboard';
-import { DocsPage } from './routes/_app.docs';
-import { SetupWizardPage } from './routes/_app.setup';
-import { ShoppingPage } from './routes/_app.shopping';
-import { LoginPage } from './routes/_auth.login';
+import AppLayoutRoute from '@/components/layout/AppLayoutRoute';
+
+import ChangePasswordPage from './routes/ChangePasswordPage';
+import DashboardPage from './routes/DashboardPage';
+import DocsPage from './routes/DocsPage';
+import LoginPage from './routes/LoginPage';
+import SetupWizardPage from './routes/SetupWizardPage';
+import ShoppingPage from './routes/ShoppingPage';
 
 export function AppRoutes(): React.ReactElement {
   return (

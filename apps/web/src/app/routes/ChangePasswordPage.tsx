@@ -1,7 +1,7 @@
 import { Button, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
 import { accountPatchBodySchema } from '@proletariat-hub/contracts';
 import { type FormEvent, useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 import { z } from 'zod';
 
 import { DashboardShell } from '@/components/layout/DashboardShell';
@@ -30,7 +30,7 @@ const changePasswordFormSchema = z
     }
   });
 
-export function ChangePasswordPage(): React.ReactElement {
+export default function ChangePasswordPage(): React.ReactElement {
   const { authenticatedComrade, refreshAuthenticatedComrade } = useAuth();
   const { updateAccount } = useChangePassword();
   const [currentPassword, setCurrentPassword] = useState('');

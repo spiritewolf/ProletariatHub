@@ -4,7 +4,7 @@ import type { DashboardShoppingItemWidget } from '@proletariat-hub/contracts';
 import {
   getShoppingPriorityBadgeStyles,
   getShoppingPriorityBadgeText,
-} from '../../features/dashboard/shoppingPriorityDisplay';
+} from '../../features/shopping/shoppingPriorityDisplay';
 
 type DashboardPriorityBadgeProps = {
   priority: DashboardShoppingItemWidget['priority'];

@@ -1,5 +1,5 @@
 import { Box, Button, Flex } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 import { DashboardCopy } from '../../features/dashboard/dashboardCopy';
 import { AppPath } from '../../lib/appPaths';

@@ -3,12 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 
 import { apiJsonValidated } from '@/lib/api';
 
-import { DashboardApiResource } from './dashboardApiPaths';
+import { DASHBOARD_SUMMARY_API_PATH } from './dashboardApiPaths';
 import { dashboardQueryKeys } from './dashboardQueryKeys';
 
 export function useDashboardSummary() {
   return useQuery({
     queryKey: dashboardQueryKeys.summary,
-    queryFn: () => apiJsonValidated(DashboardApiResource.Summary, dashboardSummarySchema),
+    queryFn: () => apiJsonValidated(DASHBOARD_SUMMARY_API_PATH, dashboardSummarySchema),
   });
 }

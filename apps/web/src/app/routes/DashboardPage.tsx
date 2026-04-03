@@ -1,6 +1,6 @@
 import { Box, Flex, Text } from '@chakra-ui/react';
 import { useCallback, useEffect, useMemo } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 
 import { GreetingBar } from '@/components/layout/GreetingBar';
 import { Sidebar } from '@/components/layout/Sidebar';
@@ -15,18 +15,17 @@ import { RemindersWidget } from '@/components/widgets/RemindersWidget';
 import { ShoppingListWidget } from '@/components/widgets/ShoppingListWidget';
 import { UrgentItemsWidget } from '@/components/widgets/UrgentItemsWidget';
 import { useAuth } from '@/features/auth/useAuth';
-import { AppPath } from '@/lib/appPaths';
-import { dashboardTheme } from '@/styles/dashboardTheme';
-
-import { DashboardCopy } from './dashboardCopy';
+import { DashboardCopy } from '@/features/dashboard/dashboardCopy';
 import {
   formatHubHouseholdWidgetTitle,
   formatPersonalShoppingWidgetTitle,
-} from './dashboardTitles';
-import { filterUrgentShoppingItems } from './shoppingDisplay';
-import { useDashboardSummary } from './useDashboard';
+} from '@/features/dashboard/dashboardTitles';
+import { useDashboardSummary } from '@/features/dashboard/useDashboard';
+import { filterUrgentShoppingItems } from '@/features/shopping/shoppingDisplay';
+import { AppPath } from '@/lib/appPaths';
+import { dashboardTheme } from '@/styles/dashboardTheme';
 
-export function DashboardPage(): React.ReactElement {
+export default function DashboardPage(): React.ReactElement {
   const { authenticatedComrade, logout } = useAuth();
   const summaryQuery = useDashboardSummary();
   const summary = summaryQuery.data ?? null;

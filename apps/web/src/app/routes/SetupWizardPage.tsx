@@ -18,7 +18,7 @@ import {
   type SetupComradeRow,
 } from '@proletariat-hub/contracts';
 import { type FormEvent, useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { PageChromeTopBar } from '@/components/layout/PageChromeTopBar';
@@ -30,7 +30,7 @@ import { useSetup } from '@/features/auth/useSetup';
 import { AppPath } from '@/lib/appPaths';
 import { flowPalette } from '@/styles/flow-theme';
 
-export function SetupWizardPage(): React.ReactElement {
+export default function SetupWizardPage(): React.ReactElement {
   const { authenticatedComrade, refreshAuthenticatedComrade } = useAuth();
   const { fetchComrades, saveHubName, addComrade, completeSetup } = useSetup();
   const [step, setStep] = useState<2 | 3 | 4>(2);

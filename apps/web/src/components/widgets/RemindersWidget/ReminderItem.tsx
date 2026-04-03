@@ -1,8 +1,8 @@
 import { Button, Text } from '@chakra-ui/react';
 import type { DashboardReminderRow } from '@proletariat-hub/contracts';
 
+import { formatReminderRowMetaLine } from '../../../features/calendar/reminderDisplay';
 import { DashboardCopy } from '../../../features/dashboard/dashboardCopy';
-import { formatReminderRowMetaLine } from '../../../features/dashboard/reminderDisplay';
 import { dashboardTheme } from '../../../styles/dashboardTheme';
 import { DashboardListRow } from '../../ui/DashboardListRow';
 

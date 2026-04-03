@@ -1,5 +1,5 @@
 import { Center, Spinner, Text } from '@chakra-ui/react';
-import { Navigate, Outlet, useLocation } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router';
 
 import { useAuth } from '@/features/auth/useAuth';
 import { AppPath } from '@/lib/appPaths';
@@ -9,7 +9,7 @@ function pathEquals(pathname: string, appPath: AppPath): boolean {
   return pathname === String(appPath);
 }
 
-export function AppLayoutRoute(): React.ReactElement {
+export default function AppLayoutRoute(): React.ReactElement {
   const { authenticatedComrade, isLoading } = useAuth();
   const loc = useLocation();
 

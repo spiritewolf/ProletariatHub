@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import type { DashboardShoppingItemWidget } from '@proletariat-hub/contracts';
 
-import { formatShoppingWidgetRowMeta } from '../../../features/dashboard/shoppingDisplay';
+import { formatShoppingWidgetRowMeta } from '../../../features/shopping/shoppingDisplay';
 import { dashboardTheme } from '../../../styles/dashboardTheme';
 import { DashboardPriorityBadge } from '../../ui/DashboardPriorityBadge';
 import { ListItemRow } from '../shared/ListItemRow';

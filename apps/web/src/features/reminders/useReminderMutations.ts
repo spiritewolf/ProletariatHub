@@ -5,10 +5,7 @@ import {
 import { useState } from 'react';
 
 import { apiJsonValidated } from '../../lib/api';
-import {
-  dashboardApiReminderCompletePath,
-  DashboardApiResource,
-} from '../dashboard/dashboardApiPaths';
+import { REMINDER_API_PATH, reminderCompletePath } from '../calendar/reminderApiPaths';
 
 export type CreateReminderInput = {
   title: string;
@@ -47,7 +44,7 @@ export function useReminderMutations({
       if (input.eventTime.trim().length > 0) {
         payload.eventTime = input.eventTime.trim();
       }
-      await apiJsonValidated(DashboardApiResource.Reminders, createReminderResponseSchema, {
+      await apiJsonValidated(REMINDER_API_PATH, createReminderResponseSchema, {
         method: 'POST',
         json: payload,
       });
@@ -60,11 +57,10 @@ export function useReminderMutations({
   async function completeReminder(reminderId: string): Promise<void> {
     setCompletingId(reminderId);
     try {
-      await apiJsonValidated(
-        dashboardApiReminderCompletePath(reminderId),
-        completeReminderResponseSchema,
-        { method: 'POST', json: {} },
-      );
+      await apiJsonValidated(reminderCompletePath(reminderId), completeReminderResponseSchema, {
+        method: 'POST',
+        json: {},
+      });
       await onRefresh();
     } finally {
       setCompletingId(null);

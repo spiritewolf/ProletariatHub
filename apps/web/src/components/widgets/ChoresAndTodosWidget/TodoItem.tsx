@@ -3,7 +3,7 @@ import type { TodoListItem } from '@proletariat-hub/contracts';
 
 import { DashboardCopy } from '../../../features/dashboard/dashboardCopy';
 import { DASHBOARD_ANNOYING_MODE_HINT_COLOR } from '../../../features/dashboard/dashboardUiTokens';
-import { formatDashboardTodoMetaLine } from '../../../features/dashboard/todoDisplay';
+import { formatDashboardTodoMetaLine } from '../../../features/todos/todoDisplay';
 import { dashboardTheme } from '../../../styles/dashboardTheme';
 import { DashboardListRow } from '../../ui/DashboardListRow';
 

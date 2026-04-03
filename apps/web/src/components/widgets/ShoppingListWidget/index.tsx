@@ -2,7 +2,7 @@ import { Box } from '@chakra-ui/react';
 
 import { MutedCaption } from '../../../components/ui/MutedCaption';
 import { DashboardCopy } from '../../../features/dashboard/dashboardCopy';
-import { groupDashboardShoppingItemsByCategory } from '../../../features/dashboard/shoppingDisplay';
+import { groupDashboardShoppingItemsByCategory } from '../../../features/shopping/shoppingDisplay';
 import { dashboardTheme } from '../../../styles/dashboardTheme';
 import { ShoppingCategoryGroup } from './ShoppingCategoryGroup';
 import { ShoppingListItem } from './ShoppingListItem';

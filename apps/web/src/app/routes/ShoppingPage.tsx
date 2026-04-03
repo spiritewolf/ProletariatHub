@@ -7,7 +7,7 @@ import {
   shoppingPrioritySchema,
 } from '@proletariat-hub/contracts';
 import { type FormEvent, useCallback, useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { PageChromeTopBar } from '@/components/layout/PageChromeTopBar';
@@ -16,11 +16,10 @@ import { DashboardPriorityBadge } from '@/components/ui/DashboardPriorityBadge';
 import { DashboardWidget } from '@/components/ui/DashboardWidget';
 import { TabRow } from '@/components/ui/TabRow';
 import { useAuth } from '@/features/auth/useAuth';
-import { getShoppingPurchaseChannelLabel } from '@/features/dashboard/shoppingDisplay';
+import { getShoppingPurchaseChannelLabel } from '@/features/shopping/shoppingDisplay';
+import { useShopping } from '@/features/shopping/useShopping';
 import { AppPath } from '@/lib/appPaths';
 import { dashboardTheme } from '@/styles/dashboardTheme';
-
-import { useShopping } from './useShopping';
 
 function parseShoppingPriority(value: string): 'urgent' | 'medium' | 'low' | null {
   const parsed = shoppingPrioritySchema.safeParse(value);
@@ -62,7 +61,7 @@ const inputStyles = {
   _focusVisible: { borderColor: dashboardTheme.title },
 };
 
-export function ShoppingPage(): React.ReactElement {
+export default function ShoppingPage(): React.ReactElement {
   const { authenticatedComrade } = useAuth();
   const { fetchLists, fetchItems, createItem, markOrdered, markReopened } = useShopping();
   const [lists, setLists] = useState<ShoppingListRow[]>([]);

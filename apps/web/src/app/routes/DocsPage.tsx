@@ -1,21 +1,20 @@
 import { Box, Text } from '@chakra-ui/react';
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router';
 
 import { DashboardShell } from '@/components/layout/DashboardShell';
 import { PageChromeTopBar } from '@/components/layout/PageChromeTopBar';
 import { TabRow } from '@/components/ui/TabRow';
 import { useAuth } from '@/features/auth/useAuth';
+import { DocsContactsTab } from '@/features/docs/DocsContactsTab';
+import { DocsPageCopy } from '@/features/docs/docsCopy';
+import { DocsCredentialsTab } from '@/features/docs/DocsCredentialsTab';
+import { DocsNotesTab } from '@/features/docs/DocsNotesTab';
+import { DocsServicesTab } from '@/features/docs/DocsServicesTab';
+import { DocsTab } from '@/features/docs/docsTab';
 import { AppPath } from '@/lib/appPaths';
 
-import { DocsContactsTab } from './DocsContactsTab';
-import { DocsPageCopy } from './docsCopy';
-import { DocsCredentialsTab } from './DocsCredentialsTab';
-import { DocsNotesTab } from './DocsNotesTab';
-import { DocsServicesTab } from './DocsServicesTab';
-import { DocsTab } from './docsTab';
-
-export function DocsPage(): React.ReactElement {
+export default function DocsPage(): React.ReactElement {
   const { authenticatedComrade } = useAuth();
   const [tab, setTab] = useState<DocsTab>(DocsTab.NOTES);
   const [banner, setBanner] = useState<string | null>(null);

@@ -3,7 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginBodySchema, LoginFormState } from '@proletariat-hub/contracts';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router';
 
 import { AuthenticationWizard } from '@/features/auth/flow/AuthenticationWizard';
 import { FlowCard } from '@/features/auth/flow/FlowCard';
@@ -11,7 +11,7 @@ import { useAuth } from '@/features/auth/useAuth';
 import { AppPath } from '@/lib/appPaths';
 import { flowPalette } from '@/styles/flow-theme';
 
-export function LoginPage(): React.ReactElement {
+export default function LoginPage(): React.ReactElement {
   const { login, authenticatedComrade, isLoading } = useAuth();
   const navigate = useNavigate();
 

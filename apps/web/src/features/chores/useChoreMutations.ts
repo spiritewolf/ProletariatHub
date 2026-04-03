@@ -6,10 +6,7 @@ import {
 import { useState } from 'react';
 
 import { apiJsonValidated } from '../../lib/api';
-import {
-  dashboardApiChoreCompletePath,
-  DashboardApiResource,
-} from '../dashboard/dashboardApiPaths';
+import { CHORE_API_PATH, choreCompletePath } from './choreApiPaths';
 
 export type CreateChoreInput = {
   title: string;
@@ -37,7 +34,7 @@ export function useChoreMutations({ onRefresh }: UseChoreMutationsArgs): UseChor
   async function addChore(input: CreateChoreInput): Promise<void> {
     setIsAdding(true);
     try {
-      await apiJsonValidated(DashboardApiResource.Chores, createChoreResponseSchema, {
+      await apiJsonValidated(CHORE_API_PATH, createChoreResponseSchema, {
         method: 'POST',
         json: {
           title: input.title.trim(),
@@ -56,7 +53,7 @@ export function useChoreMutations({ onRefresh }: UseChoreMutationsArgs): UseChor
   async function completeChore(choreId: string): Promise<void> {
     setCompletingChoreId(choreId);
     try {
-      await apiJsonValidated(dashboardApiChoreCompletePath(choreId), completeChoreResponseSchema, {
+      await apiJsonValidated(choreCompletePath(choreId), completeChoreResponseSchema, {
         method: 'POST',
         json: {},
       });

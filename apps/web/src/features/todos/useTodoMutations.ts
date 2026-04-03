@@ -2,8 +2,8 @@ import { completeTodoResponseSchema, createTodoResponseSchema } from '@proletari
 import { useState } from 'react';
 
 import { apiJsonValidated } from '../../lib/api';
-import { DashboardApiResource, dashboardApiTodoCompletePath } from '../dashboard/dashboardApiPaths';
-import { buildCreateTodoRequestBody, type TodoVisibilityScope } from '../dashboard/todoDisplay';
+import { TODO_API_PATH, todoCompletePath } from './todoApiPaths';
+import { buildCreateTodoRequestBody, type TodoVisibilityScope } from './todoDisplay';
 
 export type CreateTodoInput = {
   title: string;
@@ -34,7 +34,7 @@ export function useTodoMutations({ onRefresh }: UseTodoMutationsArgs): UseTodoMu
         visibility: input.visibility,
         assigneeComradeId: input.assigneeComradeId,
       });
-      await apiJsonValidated(DashboardApiResource.Todos, createTodoResponseSchema, {
+      await apiJsonValidated(TODO_API_PATH, createTodoResponseSchema, {
         method: 'POST',
         json: requestBody,
       });
@@ -47,7 +47,7 @@ export function useTodoMutations({ onRefresh }: UseTodoMutationsArgs): UseTodoMu
   async function completeTodo(todoId: string): Promise<void> {
     setCompletingTodoId(todoId);
     try {
-      await apiJsonValidated(dashboardApiTodoCompletePath(todoId), completeTodoResponseSchema, {
+      await apiJsonValidated(todoCompletePath(todoId), completeTodoResponseSchema, {
         method: 'POST',
         json: {},
       });

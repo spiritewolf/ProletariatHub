@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import { dashboardTheme } from '../../styles/dashboardTheme';
 import { DashboardCopy } from '../dashboard/dashboardCopy';
-import { TODO_VISIBILITY_FORM_OPTIONS, TodoVisibilityScope } from '../dashboard/todoDisplay';
+import { TODO_VISIBILITY_FORM_OPTIONS, TodoVisibilityScope } from './todoDisplay';
 import type { CreateTodoInput } from './useTodoMutations';
 
 type DashboardTodoQuickAddFormProps = {
