@@ -16,7 +16,14 @@ export function ChoresAndTodosWidget({
   todos,
   comrades,
   authenticatedComrade,
-  onRefresh,
+  isAddingChore,
+  completingChoreId,
+  onAddChore,
+  onCompleteChore,
+  isAddingTodo,
+  completingTodoId,
+  onAddTodo,
+  onCompleteTodo,
 }: ChoresAndTodosWidgetProps): React.ReactElement {
   const [workTab, setWorkTab] = useState(DashboardWorkTab.Chores);
 
@@ -33,7 +40,14 @@ export function ChoresAndTodosWidget({
       <WorkTabButtons activeTab={workTab} onTabChange={setWorkTab} />
       {workTab === DashboardWorkTab.Chores ? (
         chores !== undefined ? (
-          <ChoresTab chores={chores} comrades={comrades} onRefresh={onRefresh} />
+          <ChoresTab
+            chores={chores}
+            comrades={comrades}
+            isAdding={isAddingChore}
+            completingChoreId={completingChoreId}
+            onAddChore={onAddChore}
+            onCompleteChore={onCompleteChore}
+          />
         ) : (
           <MutedCaption text={DashboardCopy.loading} mutedColor={dashboardTheme.meta} />
         )
@@ -42,7 +56,10 @@ export function ChoresAndTodosWidget({
           todos={todos}
           comrades={comrades}
           currentComradeId={authenticatedComrade.id}
-          onRefresh={onRefresh}
+          isAdding={isAddingTodo}
+          completingTodoId={completingTodoId}
+          onAddTodo={onAddTodo}
+          onCompleteTodo={onCompleteTodo}
         />
       ) : (
         <MutedCaption text={DashboardCopy.loading} mutedColor={dashboardTheme.meta} />

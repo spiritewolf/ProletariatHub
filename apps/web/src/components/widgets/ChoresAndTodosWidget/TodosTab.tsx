@@ -3,7 +3,7 @@ import type { DashboardComradeRow, TodoListItem } from '@proletariat-hub/contrac
 
 import { DashboardCopy } from '../../../features/dashboard/dashboardCopy';
 import { DashboardTodoQuickAddForm } from '../../../features/todos/DashboardTodoQuickAddForm';
-import { useTodoMutations } from '../../../features/todos/useTodoMutations';
+import type { CreateTodoInput } from '../../../features/todos/useTodoMutations';
 import { dashboardTheme } from '../../../styles/dashboardTheme';
 import { MutedCaption } from '../../ui/MutedCaption';
 import { TodoItem } from './TodoItem';
@@ -12,20 +12,24 @@ type TodosTabProps = {
   todos: TodoListItem[];
   comrades: DashboardComradeRow[];
   currentComradeId: string;
-  onRefresh: () => Promise<void>;
+  isAdding: boolean;
+  completingTodoId: string | null;
+  onAddTodo: (input: CreateTodoInput) => Promise<void>;
+  onCompleteTodo: (todoId: string) => Promise<void>;
 };
 
 export function TodosTab({
   todos,
   comrades,
   currentComradeId,
-  onRefresh,
+  isAdding,
+  completingTodoId,
+  onAddTodo,
+  onCompleteTodo,
 }: TodosTabProps): React.ReactElement {
-  const { isAdding, completingTodoId, addTodo, completeTodo } = useTodoMutations({ onRefresh });
-
   return (
     <Flex direction="column" gap={2}>
-      <DashboardTodoQuickAddForm comrades={comrades} isAdding={isAdding} onSubmit={addTodo} />
+      <DashboardTodoQuickAddForm comrades={comrades} isAdding={isAdding} onSubmit={onAddTodo} />
       <Box>
         {todos.length === 0 ? (
           <MutedCaption text={DashboardCopy.todosEmpty} mutedColor={dashboardTheme.meta} />
@@ -37,7 +41,7 @@ export function TodosTab({
               currentComradeId={currentComradeId}
               isCompleting={completingTodoId === todo.id}
               disableComplete={completingTodoId !== null}
-              onComplete={completeTodo}
+              onComplete={onCompleteTodo}
             />
           ))
         )}

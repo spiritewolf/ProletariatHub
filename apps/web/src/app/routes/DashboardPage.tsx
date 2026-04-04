@@ -15,13 +15,17 @@ import { RemindersWidget } from '@/components/widgets/RemindersWidget';
 import { ShoppingListWidget } from '@/components/widgets/ShoppingListWidget';
 import { UrgentItemsWidget } from '@/components/widgets/UrgentItemsWidget';
 import { useAuth } from '@/features/auth/useAuth';
+import { useReminderMutations } from '@/features/calendar/useReminderMutations';
+import { useChoreMutations } from '@/features/chores/useChoreMutations';
 import { DashboardCopy } from '@/features/dashboard/dashboardCopy';
 import {
   formatHubHouseholdWidgetTitle,
   formatPersonalShoppingWidgetTitle,
 } from '@/features/dashboard/dashboardTitles';
 import { useDashboardSummary } from '@/features/dashboard/useDashboard';
+import { useServiceTiles } from '@/features/media/useServiceTiles';
 import { filterUrgentShoppingItems } from '@/features/shopping/shoppingDisplay';
+import { useTodoMutations } from '@/features/todos/useTodoMutations';
 import { AppPath } from '@/lib/appPaths';
 import { dashboardTheme } from '@/styles/dashboardTheme';
 
@@ -46,6 +50,26 @@ export default function DashboardPage(): React.ReactElement {
   const loadSummary = useCallback(async () => {
     await summaryQuery.refetch();
   }, [summaryQuery]);
+  const { isAdding, completingId, addReminder, completeReminder } = useReminderMutations({
+    onRefresh: loadSummary,
+  });
+  const {
+    isAdding: isAddingChore,
+    completingChoreId,
+    addChore,
+    completeChore,
+  } = useChoreMutations({
+    onRefresh: loadSummary,
+  });
+  const {
+    isAdding: isAddingTodo,
+    completingTodoId,
+    addTodo,
+    completeTodo,
+  } = useTodoMutations({
+    onRefresh: loadSummary,
+  });
+  const mediaTilesQuery = useServiceTiles();
 
   const urgentShoppingItems = useMemo(() => {
     if (!summary) {
@@ -123,7 +147,14 @@ export default function DashboardPage(): React.ReactElement {
               todos={summary?.todosAssigned}
               comrades={summary?.comrades ?? []}
               authenticatedComrade={authenticatedComrade}
-              onRefresh={loadSummary}
+              isAddingChore={isAddingChore}
+              completingChoreId={completingChoreId}
+              onAddChore={addChore}
+              onCompleteChore={completeChore}
+              isAddingTodo={isAddingTodo}
+              completingTodoId={completingTodoId}
+              onAddTodo={addTodo}
+              onCompleteTodo={completeTodo}
             />
             <DashboardWidget
               title={formatPersonalShoppingWidgetTitle(authenticatedComrade.username)}
@@ -151,7 +182,10 @@ export default function DashboardPage(): React.ReactElement {
               <RemindersWidget
                 reminders={summary?.calendarPreview}
                 comrades={summary?.comrades ?? []}
-                onRefresh={loadSummary}
+                isAdding={isAdding}
+                completingId={completingId}
+                onAddReminder={addReminder}
+                onCompleteReminder={completeReminder}
               />
             </DashboardWidget>
             <DashboardWidget
@@ -163,7 +197,7 @@ export default function DashboardPage(): React.ReactElement {
               }
               flex="1"
             >
-              <MediaWidget />
+              <MediaWidget tiles={mediaTilesQuery.data} isLoading={mediaTilesQuery.isLoading} />
             </DashboardWidget>
             <DashboardWidget
               title={DashboardCopy.docsWidgetTitle}

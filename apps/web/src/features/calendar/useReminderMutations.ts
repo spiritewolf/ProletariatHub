@@ -5,7 +5,7 @@ import {
 import { useState } from 'react';
 
 import { apiJsonValidated } from '../../lib/api';
-import { REMINDER_API_PATH, reminderCompletePath } from '../calendar/reminderApiPaths';
+import { REMINDER_API_PATH, reminderCompletePath } from './reminderApiPaths';
 
 export type CreateReminderInput = {
   title: string;

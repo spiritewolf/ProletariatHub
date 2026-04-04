@@ -5,3 +5,8 @@ export type MediaTile = {
   category: string;
   description: string | null;
 };
+
+export type MediaWidgetProps = {
+  tiles: MediaTile[] | undefined;
+  isLoading: boolean;
+};

@@ -3,8 +3,8 @@ import type { DashboardComradeRow, DashboardReminderRow } from '@proletariat-hub
 import { useState } from 'react';
 
 import { dashboardTheme } from '../../styles/dashboardTheme';
-import { REMINDER_CATEGORY_SELECT_OPTIONS } from '../calendar/reminderDisplay';
 import { DashboardCopy } from '../dashboard/dashboardCopy';
+import { REMINDER_CATEGORY_SELECT_OPTIONS } from './reminderDisplay';
 import type { CreateReminderInput } from './useReminderMutations';
 
 type DashboardReminderQuickAddFormProps = {
