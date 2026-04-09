@@ -260,6 +260,9 @@ export const cardSlotRecipe = defineSlotRecipe({
           _light: {
             shadow: 'card',
           },
+          _dark: {
+            shadow: 'cardHalo',
+          },
         },
       },
       subtle: {

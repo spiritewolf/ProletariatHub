@@ -217,5 +217,8 @@ export const semanticTokens = defineSemanticTokens({
     glow: {
       value: { _light: '{shadows.glowRestLight}', _dark: '{shadows.radicalGlowStrong}' },
     },
+    cardHalo: {
+      value: { _light: '{shadows.cardRestLight}', _dark: '{shadows.radicalGlowNeon}' },
+    },
   },
 });

@@ -73,6 +73,10 @@ export const tokens = defineTokens({
     radicalGlowStrong: {
       value: '0 0 20px rgba(255, 66, 142, 0.25)',
     },
+    radicalGlowNeon: {
+      value:
+        '0 0 6px rgba(255, 66, 142, 0.62), 0 0 12px rgba(255, 66, 142, 0.32), 0 0 14px rgba(248, 52, 187, 0.09)',
+    },
     glowRestLight: {
       value: '0 4px 16px rgba(194, 24, 91, 0.1), 0 0 0 1px rgba(194, 24, 91, 0.12)',
     },
