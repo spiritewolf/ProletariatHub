@@ -1,0 +1,37 @@
+{
+  "name": "@proletariat-hub/api",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./router": "./src/router/index.ts",
+    "./trpc": "./src/trpc.ts"
+  },
+  "scripts": {
+    "dev": "node --env-file=../../.env --watch --import tsx src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tools.json",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.2",
+    "@fastify/cors": "^11.1.0",
+    "@fastify/session": "^11.1.1",
+    "@proletariat-hub/config": "workspace:*",
+    "@proletariat-hub/db": "workspace:*",
+    "@trpc/server": "^11.8.1",
+    "fastify": "^5.6.2",
+    "ioredis": "^5.9.1",
+    "superjson": "^2.2.6",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.0",
+    "vitest": "^4.0.16"
+  }
+}

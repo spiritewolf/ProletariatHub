@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.react.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@proletariat-hub/web/*": ["./src/*"]
+    }
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts", "eslint.config.ts"]
+}

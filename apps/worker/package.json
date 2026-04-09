@@ -1,0 +1,25 @@
+{
+  "name": "@proletariat-hub/worker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=../../.env --watch --import tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tools.json"
+  },
+  "dependencies": {
+    "@proletariat-hub/config": "workspace:*",
+    "@proletariat-hub/db": "workspace:*",
+    "bullmq": "^5.66.4",
+    "ioredis": "^5.9.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.0"
+  }
+}

@@ -1,0 +1,31 @@
+FROM node:20-alpine AS base
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+WORKDIR /app
+
+FROM base AS pruner
+COPY . .
+RUN pnpm dlx turbo@2.7.3 prune @proletariat-hub/api --docker
+
+FROM base AS installer
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
+
+COPY --from=pruner /app/out/full/ .
+RUN pnpm turbo run build --filter=@proletariat-hub/api
+
+FROM base AS production
+ENV NODE_ENV=production
+COPY --from=installer /app .
+WORKDIR /app
+EXPOSE 3000
+CMD ["pnpm", "--filter", "@proletariat-hub/api", "start"]
+
+FROM base AS development
+WORKDIR /app
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml turbo.json tsconfig.base.json tsconfig.node.json ./
+COPY packages ./packages
+COPY apps ./apps
+RUN pnpm install --frozen-lockfile || pnpm install
+EXPOSE 3000
+CMD ["pnpm", "--filter", "@proletariat-hub/api", "dev"]
