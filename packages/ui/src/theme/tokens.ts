@@ -53,7 +53,8 @@ export const tokens = defineTokens({
       light: { value: '#F8ECF0' },
     },
     radical: {
-      pink: { value: '#FF428E' },
+      pink: { value: '#F52277' },
+      pinkBright: { value: '#FF428E' },
       pinkHover: { value: '#FF5C9E' },
       mint: { value: '#A8FFEF' },
       yellow: { value: '#DFF959' },

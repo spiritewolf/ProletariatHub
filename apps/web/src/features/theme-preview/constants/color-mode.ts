@@ -1,4 +1,3 @@
-/** Palette for theme toggle controls (matches design-system `brand`) */
 export const ColorModeToggleColorPalette = {
   BRAND: 'brand',
 } as const;

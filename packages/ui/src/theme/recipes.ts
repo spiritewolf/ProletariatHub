@@ -48,7 +48,7 @@ export const buttonRecipe = defineRecipe({
     lineHeight: '1.2',
     isolation: 'isolate',
     fontWeight: 'semibold',
-    transitionProperty: 'common',
+    transitionProperty: 'common, box-shadow',
     transitionDuration: 'moderate',
     focusVisibleRing: 'outside',
     focusRingColor: 'accent.primary',
@@ -58,18 +58,11 @@ export const buttonRecipe = defineRecipe({
     _icon: {
       flexShrink: '0',
     },
-    _light: {
-      transitionProperty: 'common, box-shadow',
-      _hover: {
-        shadow: 'glow',
-      },
+    _hover: {
+      shadow: 'glow',
     },
     _dark: {
       focusVisibleRing: 'none',
-      transitionProperty: 'common, box-shadow',
-      _hover: {
-        shadow: 'glow',
-      },
       _focusVisible: {
         shadow: 'glow',
       },
@@ -257,12 +250,8 @@ export const cardSlotRecipe = defineSlotRecipe({
         root: {
           bg: 'bg.primary',
           borderWidth: '1px',
-          borderColor: 'accent.primary',
-          _light: {
-            shadow: 'card',
-            bg: 'bg.primary',
-            borderColor: 'border.primary',
-          },
+          borderColor: 'border.primary',
+          shadow: 'card',
           _dark: {
             borderColor: 'border.primary',
             bg: 'navy.600',
@@ -274,9 +263,7 @@ export const cardSlotRecipe = defineSlotRecipe({
       subtle: {
         root: {
           bg: 'bg.secondary',
-          _light: {
-            shadow: 'none',
-          },
+          shadow: 'none',
         },
       },
     },
@@ -352,7 +339,7 @@ export const inputRecipe = defineRecipe({
     },
     variant: {
       outline: {
-        bg: 'bg.light',
+        bg: 'bg.input',
         borderWidth: '1px',
         borderColor: 'border.primary',
         focusVisibleRing: 'inside',

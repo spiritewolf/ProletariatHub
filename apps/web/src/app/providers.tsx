@@ -17,12 +17,12 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [trpcClient] = useState(() => createTRPCClient());
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange>
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          <ChakraProvider value={system}>{children}</ChakraProvider>
-        </QueryClientProvider>
-      </trpc.Provider>
-    </ThemeProvider>
+    <ChakraProvider value={system}>
+      <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        </trpc.Provider>
+      </ThemeProvider>
+    </ChakraProvider>
   );
 }

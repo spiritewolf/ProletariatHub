@@ -1,5 +1,4 @@
-import { ThemePreviewPage } from '@proletariat-hub/web/app/ThemePreviewPage';
-import { DashboardPage } from '@proletariat-hub/web/features/dashboard/DashboardPage';
+import { Dashboard, Login, ThemePreview } from '@proletariat-hub/web/features';
 import { AppShell } from '@proletariat-hub/web/shared/ui/layout/AppShell';
 import type { ReactElement } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -8,8 +7,9 @@ const router = createBrowserRouter([
   {
     element: <AppShell />,
     children: [
-      { index: true, element: <DashboardPage /> },
-      { path: 'theme-preview', element: <ThemePreviewPage /> },
+      { index: true, element: <Dashboard /> },
+      { path: 'theme-preview', element: <ThemePreview /> },
+      { path: 'login', element: <Login /> },
     ],
   },
 ]);

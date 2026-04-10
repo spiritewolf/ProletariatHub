@@ -1,14 +1,15 @@
 import { Button, HStack, Text } from '@chakra-ui/react';
+import { useTheme } from 'next-themes';
+import type { ReactElement } from 'react';
+
 import {
-  type ColorMode,
+  ColorMode,
   ColorModeToggleButtonSize,
   colorModeToggleButtonVariant,
   ColorModeToggleColorPalette,
   THEME_DISPLAY_PENDING,
   THEME_TOGGLE_ENTRIES,
-} from '@proletariat-hub/web/shared/constants/color-mode';
-import { useTheme } from 'next-themes';
-import type { ReactElement } from 'react';
+} from './constants/color-mode';
 
 export function ColorModeToggle(): ReactElement {
   const { resolvedTheme, setTheme, theme } = useTheme();

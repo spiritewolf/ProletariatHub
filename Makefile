@@ -39,6 +39,12 @@ changeset:
 version:
 	$(COMPOSE) run --rm --no-deps api pnpm changeset version
 
+build_ui:
+	$(COMPOSE) pnpm --filter @proletariat-hub/ui run build
+
+generate_ui_types:
+	$(COMPOSE) pnpm --filter @proletariat-hub/ui run typegen
+
 clean:
 	find . -name "node_modules" -type d -prune -exec rm -rf {} +
 	find . -name "dist" -type d -prune -exec rm -rf {} +

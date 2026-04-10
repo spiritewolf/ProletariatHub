@@ -1,5 +1,7 @@
-import { Flex, Text } from '@chakra-ui/react';
+import { Flex, HStack, Link, Text } from '@chakra-ui/react';
 import type { ReactElement } from 'react';
+
+import { ThemeToggleButton } from './ThemeToggleButton';
 
 export const TOPBAR_HEIGHT = '16';
 export const TOPBAR_BLOCK_SIZE = '4rem';
@@ -27,10 +29,15 @@ export function Topbar(): ReactElement {
       bg="topbar.primary"
       color="text.tertiary"
     >
-      <Text fontWeight="semibold">Hey comrade, the hub awaits.</Text>
-      <Text fontSize="sm" opacity={0.9}>
-        {dateLabel}
-      </Text>
+      <Link href="/" color="text.tertiary">
+        Proletariat Hub
+      </Link>
+      <HStack>
+        <ThemeToggleButton />
+        <Text fontSize="sm" opacity={0.9}>
+          {dateLabel}
+        </Text>
+      </HStack>
     </Flex>
   );
 }

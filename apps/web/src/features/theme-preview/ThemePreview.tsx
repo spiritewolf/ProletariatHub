@@ -1,11 +1,12 @@
 import { Box, Grid, Heading, Stack, Text } from '@chakra-ui/react';
-import { ColorModeToggle } from '@proletariat-hub/web/shared/ui/ColorModeToggle';
 import type { ReactElement, ReactNode } from 'react';
 
-const PALETTE_SWATCHES: ReadonlyArray<{
+import { ColorModeToggle } from './ColorModeToggle';
+
+const PALETTE_SWATCHES: {
   label: string;
   token: string;
-}> = [
+}[] = [
   { label: 'bg.primary', token: 'bg.primary' },
   { label: 'bg.secondary', token: 'bg.secondary' },
   { label: 'bg.dark', token: 'bg.dark' },
@@ -42,7 +43,7 @@ function SectionLabel(props: { children: ReactNode }): ReactElement {
   );
 }
 
-export function ThemePreviewPage(): ReactElement {
+export function ThemePreview(): ReactElement {
   return (
     <Box minH="100dvh" bg="bg.dark" color="text.primary" pb="24">
       <ColorModeToggle />
@@ -193,9 +194,9 @@ export function ThemePreviewPage(): ReactElement {
             <Heading as="h3" size="lg">
               Heading lg
             </Heading>
-            <Text color="text.primary">Body text uses text.primary for primary content.</Text>
+            <Text color="text.primary">Body text for primary content.</Text>
             <Text color="text.secondary" fontSize="sm">
-              Secondary copy uses text.secondary for captions and hints.
+              For captions and hints.
             </Text>
           </Stack>
         </Box>

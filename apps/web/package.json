@@ -13,6 +13,7 @@
   "dependencies": {
     "@chakra-ui/react": "^3.34.0",
     "@emotion/react": "^11.14.0",
+    "@hookform/resolvers": "^5.2.2",
     "@proletariat-hub/ui": "workspace:^",
     "@tanstack/react-query": "^5.90.16",
     "@trpc/client": "^11.8.1",
@@ -23,7 +24,8 @@
     "react-dom": "^19.2.3",
     "react-hook-form": "^7.70.0",
     "react-router-dom": "^7.12.0",
-    "superjson": "^2.2.6"
+    "superjson": "^2.2.6",
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@proletariat-hub/api": "workspace:*",
