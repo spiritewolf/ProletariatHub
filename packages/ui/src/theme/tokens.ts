@@ -28,6 +28,26 @@ export const tokens = defineTokens({
       900: { value: '#1A1640' },
       950: { value: '#141228' },
     },
+    gray: {
+      200: { value: '#8A8A9E' },
+      500: { value: '#E4E4E4' },
+      700: { value: '#6B5B6E' },
+    },
+    purple: {
+      50: { value: '#B267E6' },
+      100: { value: '#B180D7' },
+      200: { value: '#9D88FA' },
+      300: { value: '#7D77FF' },
+      400: { value: '#874DF8' },
+      500: { value: '#864DF8' },
+      600: { value: '#6E45C7' },
+      700: { value: '#9736C0' },
+      800: { value: '#913EB4' },
+      900: { value: '#602976' },
+    },
+    maroon: {
+      800: { value: '#2D1B30' },
+    },
     headerInk: { value: '#0F0D20' },
     canvas: {
       light: { value: '#F8ECF0' },
@@ -42,6 +62,7 @@ export const tokens = defineTokens({
       cyan: { value: '#2BF5E9' },
       purple: { value: '#D831D7' },
       coral: { value: '#FF594C' },
+      lightCyan: { value: '#A8FFDB' },
     },
     priority: {
       rose: { value: '#F48FB1' },

@@ -1,6 +1,6 @@
 import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
 
-import { recipes, slotRecipes } from './recipes';
+import { slotRecipes } from './recipes';
 import { semanticTokens } from './semantic-tokens';
 import { tokens } from './tokens';
 
@@ -8,7 +8,7 @@ const proletariatTheme = defineConfig({
   theme: {
     tokens,
     semanticTokens,
-    recipes,
+    // recipes,
     slotRecipes,
   },
 });

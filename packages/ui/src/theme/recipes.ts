@@ -74,6 +74,7 @@ export const buttonRecipe = defineRecipe({
         shadow: 'glow',
       },
     },
+    colorPalette: 'brandPalette',
   },
   variants: {
     size: {
@@ -248,26 +249,31 @@ export const cardSlotRecipe = defineSlotRecipe({
     variant: {
       elevated: {
         root: {
-          bg: 'bg.surface',
+          bg: 'bg.secondary',
           shadow: 'card',
         },
       },
       outline: {
         root: {
-          bg: 'bg.surface',
+          bg: 'bg.primary',
           borderWidth: '1px',
-          borderColor: 'border.default',
+          borderColor: 'accent.primary',
           _light: {
             shadow: 'card',
+            bg: 'bg.primary',
+            borderColor: 'border.primary',
           },
           _dark: {
-            shadow: 'cardHalo',
+            borderColor: 'border.primary',
+            bg: 'navy.600',
+            // borderColor: '#2C3258',
+            // shadow: 'cardHalo',
           },
         },
       },
       subtle: {
         root: {
-          bg: 'bg.surface.muted',
+          bg: 'bg.secondary',
           _light: {
             shadow: 'none',
           },
@@ -298,7 +304,7 @@ export const inputRecipe = defineRecipe({
     height: 'var(--input-height)',
     minW: 'var(--input-height)',
     '--focus-color': 'colors.accent.primary',
-    '--error-color': 'colors.border.error',
+    '--error-color': 'colors.status.error',
     transitionProperty: 'common, box-shadow',
     transitionDuration: 'moderate',
     _invalid: {
@@ -346,9 +352,9 @@ export const inputRecipe = defineRecipe({
     },
     variant: {
       outline: {
-        bg: 'bg.callout',
+        bg: 'bg.light',
         borderWidth: '1px',
-        borderColor: 'border.default',
+        borderColor: 'border.primary',
         focusVisibleRing: 'inside',
         focusRingColor: 'var(--focus-color)',
         _dark: {
@@ -362,7 +368,7 @@ export const inputRecipe = defineRecipe({
       subtle: {
         borderWidth: '1px',
         borderColor: 'transparent',
-        bg: 'bg.surface.muted',
+        bg: 'bg.secondary',
         focusVisibleRing: 'inside',
         focusRingColor: 'var(--focus-color)',
         _dark: {
@@ -376,7 +382,7 @@ export const inputRecipe = defineRecipe({
       flushed: {
         bg: 'transparent',
         borderBottomWidth: '1px',
-        borderBottomColor: 'border.default',
+        borderBottomColor: 'border.primary',
         borderRadius: '0',
         px: '0',
         _focusVisible: {
@@ -421,6 +427,7 @@ export const badgeRecipe = defineRecipe({
     userSelect: 'none',
     minH: { base: '8', md: '7' },
     px: '2.5',
+    colorPalette: 'neutral',
   },
   variants: {
     variant: {

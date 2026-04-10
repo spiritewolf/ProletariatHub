@@ -24,8 +24,8 @@ export function Topbar(): ReactElement {
       px={{ base: '4', md: '6' }}
       align="center"
       justify="space-between"
-      bg="bg.header"
-      color="text.onHeader"
+      bg="topbar.primary"
+      color="text.tertiary"
     >
       <Text fontWeight="semibold">Hey comrade, the hub awaits.</Text>
       <Text fontSize="sm" opacity={0.9}>
