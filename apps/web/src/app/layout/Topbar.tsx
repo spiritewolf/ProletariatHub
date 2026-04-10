@@ -1,18 +1,31 @@
-import { Flex, HStack, Link, Text } from '@chakra-ui/react';
+import { Flex, HStack, IconButton, Link, Text } from '@chakra-ui/react';
+import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
+import { ThemeToggleButton } from '@proletariat-hub/web/shared/ui';
+import { LogOut } from 'lucide-react';
 import type { ReactElement } from 'react';
-
-import { ThemeToggleButton } from './ThemeToggleButton';
+import { useNavigate } from 'react-router-dom';
 
 export const TOPBAR_HEIGHT = '16';
 export const TOPBAR_BLOCK_SIZE = '4rem';
 
 export function Topbar(): ReactElement {
+  const navigate = useNavigate();
+  const { logoutMutation } = useAuth();
+
   const dateLabel: string = new Date().toLocaleDateString(undefined, {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+
+  const onLogout = (): void => {
+    logoutMutation.mutate(undefined, {
+      onSuccess: () => {
+        Promise.resolve(navigate('/login')).catch(() => undefined);
+      },
+    });
+  };
 
   return (
     <Flex
@@ -32,7 +45,17 @@ export function Topbar(): ReactElement {
       <Link href="/" color="text.tertiary">
         Proletariat Hub
       </Link>
-      <HStack>
+      <HStack gap="3">
+        <IconButton
+          type="button"
+          aria-label="Log out"
+          variant="ghost"
+          size="sm"
+          color="text.tertiary"
+          onClick={onLogout}
+        >
+          <LogOut size={18} />
+        </IconButton>
         <ThemeToggleButton />
         <Text fontSize="sm" opacity={0.9}>
           {dateLabel}

@@ -1,25 +1,36 @@
 import { Button, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
 import { AuthFlowCard } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowCard';
 import { AuthFlowWrapper } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowWrapper';
 import { ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
-import { loginFormSchema, LoginFormState } from './types';
+import { loginFormSchema, type LoginFormState } from './types';
 
 export function Login(): React.ReactElement {
-  const {
-    handleSubmit,
-    register,
-    formState: { isSubmitting, errors },
-    setError,
-  } = useForm<LoginFormState>({
+  const navigate = useNavigate();
+  const { loginMutation } = useAuth();
+
+  const { handleSubmit, register } = useForm<LoginFormState>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: { username: '', password: '' },
   });
 
-  const onSubmit = handleSubmit(async (data) => {
-    console.log('submit');
+  const loginErrorMessage =
+    loginMutation.error instanceof Error ? loginMutation.error.message : null;
+
+  const onSubmit = handleSubmit(async (formValues) => {
+    try {
+      await loginMutation.mutateAsync({
+        username: formValues.username,
+        password: formValues.password,
+      });
+      await navigate('/', { replace: true });
+    } catch {
+      return;
+    }
   });
 
   return (
@@ -56,19 +67,13 @@ export function Login(): React.ReactElement {
                 {...register('password')}
               />
             </Field.Root>
-            {errors.root?.message ? (
+            {loginErrorMessage ? (
               <Text color="status.error" fontSize="sm">
-                {errors.root.message}
+                {loginErrorMessage}
               </Text>
             ) : null}
-            <Button
-              type="submit"
-              //   loading={isSubmitting || isPending}
-              size="lg"
-              width="full"
-              variant="solid"
-            >
-              {isSubmitting ? (
+            <Button type="submit" size="lg" width="full" variant="solid">
+              {loginMutation.isPending ? (
                 'Opening the gates…'
               ) : (
                 <>

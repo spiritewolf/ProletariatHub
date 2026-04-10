@@ -16,7 +16,6 @@ export const semanticTokens = defineSemanticTokens({
       light: {
         value: { base: '{colors.rose.50}', _dark: '{colors.navy.600}' },
       },
-      /** Filled controls on tinted cards: white vs card `bg.secondary` in light; step above card in dark */
       input: {
         value: { base: '{colors.white}', _dark: '{colors.navy.600}' },
       },

@@ -1,6 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { system } from '@proletariat-hub/ui';
-import { createTRPCClient, trpc } from '@proletariat-hub/web/shared/lib/trpc';
+import { createTRPCClient, trpc } from '@proletariat-hub/web/app/trpc';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
 import { useState } from 'react';

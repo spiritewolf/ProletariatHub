@@ -45,6 +45,12 @@ build_ui:
 generate_ui_types:
 	$(COMPOSE) pnpm --filter @proletariat-hub/ui run typegen
 
+all_up:
+	$(COMPOSE) up -d
+
+all_down:
+	$(COMPOSE) down
+
 clean:
 	find . -name "node_modules" -type d -prune -exec rm -rf {} +
 	find . -name "dist" -type d -prune -exec rm -rf {} +

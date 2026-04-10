@@ -1,5 +1,6 @@
+import { AppShell } from '@proletariat-hub/web/app/layout/AppShell';
+import { requireAuthLoader } from '@proletariat-hub/web/app/requireAuthLoader';
 import { Dashboard, Login, ThemePreview } from '@proletariat-hub/web/features';
-import { AppShell } from '@proletariat-hub/web/shared/ui/layout/AppShell';
 import type { ReactElement } from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
@@ -7,9 +8,9 @@ const router = createBrowserRouter([
   {
     element: <AppShell />,
     children: [
-      { index: true, element: <Dashboard /> },
-      { path: 'theme-preview', element: <ThemePreview /> },
+      { index: true, element: <Dashboard />, loader: requireAuthLoader },
       { path: 'login', element: <Login /> },
+      { path: 'theme-preview', element: <ThemePreview /> },
     ],
   },
 ]);

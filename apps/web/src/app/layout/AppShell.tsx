@@ -1,7 +1,8 @@
 import { Box } from '@chakra-ui/react';
-import { Topbar, TOPBAR_HEIGHT } from '@proletariat-hub/web/shared/ui/layout/Topbar';
 import type { ReactElement } from 'react';
 import { Outlet } from 'react-router-dom';
+
+import { Topbar, TOPBAR_HEIGHT } from './Topbar';
 
 export function AppShell(): ReactElement {
   return (
