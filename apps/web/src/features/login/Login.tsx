@@ -1,16 +1,16 @@
 import { Button, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
+import { OnboardStatus } from '@proletariat-hub/web/shared/types/comrade';
 import { AuthFlowCard } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowCard';
 import { AuthFlowWrapper } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowWrapper';
 import { ArrowRight } from 'lucide-react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { loginFormSchema, type LoginFormState } from './types';
 
 export function Login(): React.ReactElement {
-  const navigate = useNavigate();
   const { loginMutation } = useAuth();
 
   const { handleSubmit, register } = useForm<LoginFormState>({
@@ -21,17 +21,23 @@ export function Login(): React.ReactElement {
   const loginErrorMessage =
     loginMutation.error instanceof Error ? loginMutation.error.message : null;
 
-  const onSubmit = handleSubmit(async (formValues) => {
-    try {
-      await loginMutation.mutateAsync({
-        username: formValues.username,
-        password: formValues.password,
-      });
-      await navigate('/', { replace: true });
-    } catch {
-      return;
-    }
+  const onSubmit = handleSubmit((formValues) => {
+    loginMutation.mutate({
+      username: formValues.username,
+      password: formValues.password,
+    });
   });
+
+  const loginRedirectPath =
+    loginMutation.isSuccess && loginMutation.data
+      ? loginMutation.data.onboardStatus === OnboardStatus.COMPLETE
+        ? '/'
+        : '/setup'
+      : null;
+
+  if (loginRedirectPath !== null) {
+    return <Navigate to={loginRedirectPath} replace />;
+  }
 
   return (
     <AuthFlowWrapper>

@@ -22,7 +22,7 @@ export function Topbar(): ReactElement {
   const onLogout = (): void => {
     logoutMutation.mutate(undefined, {
       onSuccess: () => {
-        Promise.resolve(navigate('/login')).catch(() => undefined);
+        void navigate('/login');
       },
     });
   };

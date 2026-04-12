@@ -1,16 +1,22 @@
 import { Box, Flex, Heading, HStack, Text } from '@chakra-ui/react';
 import type { ReactElement } from 'react';
 
-import { AuthFlowProgressSegment } from './AuthFlowProgressSegment';
-import { AUTH_FLOW_STEP_NUMBERS, AUTH_FLOW_TOTAL_STEPS } from './constants';
+import { AUTH_FLOW_TOTAL_STEPS } from './constants';
 
 type AuthFlowHeaderProps = {
   subtitle: string;
   progressFill: number;
+  progressTotal?: number;
 };
 
-export function AuthFlowHeader({ subtitle, progressFill }: AuthFlowHeaderProps): ReactElement {
+export function AuthFlowHeader({
+  subtitle,
+  progressFill,
+  progressTotal,
+}: AuthFlowHeaderProps): ReactElement {
   const showProgress = progressFill > 0;
+  const total = progressTotal ?? AUTH_FLOW_TOTAL_STEPS;
+  const stepNumbers: readonly number[] = Array.from({ length: total }, (_, index) => index + 1);
 
   return (
     <Box as="header" mb={8}>
@@ -30,11 +36,17 @@ export function AuthFlowHeader({ subtitle, progressFill }: AuthFlowHeaderProps):
           role="progressbar"
           aria-valuenow={progressFill}
           aria-valuemin={1}
-          aria-valuemax={AUTH_FLOW_TOTAL_STEPS}
-          aria-label={`Step ${progressFill} of ${AUTH_FLOW_TOTAL_STEPS}`}
+          aria-valuemax={total}
+          aria-label={`Step ${progressFill} of ${total}`}
         >
-          {AUTH_FLOW_STEP_NUMBERS.map((stepNumber) => (
-            <AuthFlowProgressSegment key={stepNumber} filled={stepNumber <= progressFill} />
+          {stepNumbers.map((stepNumber) => (
+            <Box
+              key={stepNumber}
+              flex={1}
+              h="6px"
+              borderRadius="full"
+              bg={stepNumber <= progressFill ? 'brand.primary' : 'brand.secondary'}
+            />
           ))}
         </HStack>
       ) : null}
