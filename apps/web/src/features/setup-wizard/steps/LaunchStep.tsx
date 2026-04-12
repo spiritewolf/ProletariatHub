@@ -1,11 +1,13 @@
-import { Box, Button, Field, Stack, Text } from '@chakra-ui/react';
-import type { SetupWizardFormValues } from '@proletariat-hub/web/shared/setup-wizard/schema';
-import { ArrowRight } from 'lucide-react';
+import { Box, Button, Field, HStack, Stack, Text } from '@chakra-ui/react';
+import { ComradeIconType } from '@proletariat-hub/web/shared';
+import { Sparkle } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { useSetupWizard } from '../hooks/useSetupWizard';
+import { type SetupWizardFormValues } from '../schema';
 import { SetupStepCard } from '../SetupStepCard';
+import { RecruitAvatarGlyph } from './components/RecruitAvatarGlyph';
 
 export function LaunchStep(): ReactElement {
   const { control } = useFormContext<SetupWizardFormValues>();
@@ -13,12 +15,12 @@ export function LaunchStep(): ReactElement {
   const recruits = useWatch({ control, name: 'recruits' }) ?? [];
   const { goToPrevWizardStep, submitWizard, submitMutation } = useSetupWizard();
 
-  const onBegin = async (): Promise<void> => {
+  const onSubmitSetup = async (): Promise<void> => {
     await submitWizard();
   };
 
   return (
-    <SetupStepCard title="You're ready">
+    <SetupStepCard title="Comrades of the Hub, unite!">
       <Stack gap={5}>
         <Text color="text.secondary" fontSize="sm" lineHeight="tall">
           Here&apos;s what we&apos;ll start with. You can always adjust people and the Hub name in
@@ -38,9 +40,12 @@ export function LaunchStep(): ReactElement {
             <Text color="text.secondary">None added — it&apos;s just you for now.</Text>
           ) : (
             <Stack as="ul" gap={2} pl={0} listStyleType="none">
-              {recruits.map((r) => (
-                <Box as="li" key={`${r.username}-${r.email ?? ''}`} color="text.secondary">
-                  {r.username}
+              {recruits.map((r, index) => (
+                <Box as="li" key={`${r.username}-${String(index)}`} color="text.secondary">
+                  <HStack gap={3} align="center">
+                    <RecruitAvatarGlyph iconType={r.icon ?? ComradeIconType.USER} size={20} />
+                    <Text>{r.username}</Text>
+                  </HStack>
                 </Box>
               ))}
             </Stack>
@@ -55,27 +60,16 @@ export function LaunchStep(): ReactElement {
             </Field.ErrorText>
           </Field.Root>
         ) : null}
-        <Stack gap={3} w="full" align="stretch">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            alignSelf="flex-start"
-            onClick={goToPrevWizardStep}
-          >
+        <HStack w="full" justifyContent="flex-end">
+          <Button type="button" variant="outline" size="sm" onClick={goToPrevWizardStep}>
             Back
           </Button>
-          <Button
-            type="button"
-            size="lg"
-            variant="outline"
-            width="full"
-            loading={submitMutation.isPending}
-            onClick={onBegin}
-          >
-            Begin the revolution <ArrowRight size={18} aria-hidden style={{ display: 'inline' }} />
+
+          <Button type="button" size="sm" variant="solid" onClick={onSubmitSetup}>
+            Finish
+            <Sparkle size={18} aria-hidden style={{ display: 'inline' }} />
           </Button>
-        </Stack>
+        </HStack>
       </Stack>
     </SetupStepCard>
   );

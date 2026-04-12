@@ -1,12 +1,15 @@
-import type { SetupWizardFormValues } from '@proletariat-hub/web/shared/setup-wizard/schema';
+// eslint-disable-next-line no-restricted-imports
+import { SetupWizardFormValues } from '@proletariat-hub/web/features/setup-wizard/schema';
 import {
   type Comrade,
+  ComradeOnboardStatus,
   ComradeRole,
-  OnboardStatus,
 } from '@proletariat-hub/web/shared/types/comrade';
 import { z } from 'zod';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+
+import { ComradeIconType } from '../../types';
 
 const MOCK_COMRADE_ID = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
 
@@ -17,17 +20,33 @@ const persistedComradeSchema = z.object({
   username: z.string(),
   password: z.string(),
   role: z.enum([ComradeRole.ADMIN, ComradeRole.MEMBER]),
-  onboardStatus: z.enum([OnboardStatus.PENDING, OnboardStatus.IN_PROGRESS, OnboardStatus.COMPLETE]),
+  onboardStatus: z.enum([
+    ComradeOnboardStatus.PENDING,
+    ComradeOnboardStatus.IN_PROGRESS,
+    ComradeOnboardStatus.COMPLETE,
+  ]),
   phoneNumber: z.string().optional(),
   email: z.string().optional(),
   signalUsername: z.string().optional(),
   telegramUsername: z.string().optional(),
 });
 
+const recruitAvatarIconPersistSchema = z.enum([
+  ComradeIconType.ATOM,
+  ComradeIconType.CROWN,
+  ComradeIconType.EGG_FRIED,
+  ComradeIconType.HAND_FIST,
+  ComradeIconType.MENU,
+  ComradeIconType.PALETTE,
+  ComradeIconType.SNAIL,
+  ComradeIconType.USER,
+]);
+
 const mockHubRecruitSchema = z.object({
   id: z.string(),
   username: z.string(),
   password: z.string(),
+  avatarIcon: recruitAvatarIconPersistSchema.optional(),
   phoneNumber: z.string().optional(),
   email: z.string().optional(),
   signalUsername: z.string().optional(),
@@ -75,7 +94,7 @@ export const useAuthStoreMock = create<AuthStoreMockState>()(
           username: trimmedUsername,
           password: trimmedPassword,
           role: resolveRoleForMockLogin(trimmedUsername),
-          onboardStatus: OnboardStatus.PENDING,
+          onboardStatus: ComradeOnboardStatus.PENDING,
         };
         set({ comrade, hubName: null, mockRecruits: [] });
         return comrade;
@@ -90,26 +109,29 @@ export const useAuthStoreMock = create<AuthStoreMockState>()(
             throw new Error('Cannot complete setup without a logged-in comrade.');
           }
           const now = new Date();
-          const mockRecruits: MockHubRecruit[] = data.recruits.map((r) => {
-            const pwd = r.password?.trim() ?? '';
-            return {
-              id: crypto.randomUUID(),
-              username: r.username.trim(),
-              password: pwd === '' ? 'password' : pwd,
-              phoneNumber: r.phoneNumber?.trim() || undefined,
-              email: r.email === '' || r.email === undefined ? undefined : r.email.trim(),
-              signalUsername: r.signalUsername?.trim() || undefined,
-              telegramUsername: r.telegramUsername?.trim() || undefined,
-              role: ComradeRole.MEMBER,
-            };
-          });
+          const trimOptional = (value: string | undefined): string | undefined => {
+            const t = (value ?? '').trim();
+            return t === '' ? undefined : t;
+          };
+          const emailTrimmed = (data.email ?? '').trim();
+          const mockRecruits: MockHubRecruit[] = data.recruits.map((r) => ({
+            id: crypto.randomUUID(),
+            username: r.username.trim(),
+            password: 'password',
+            avatarIcon: r.icon,
+            role: ComradeRole.MEMBER,
+          }));
           return {
             comrade: {
               ...prev,
               username: data.username.trim(),
               password: data.newPassword,
               updatedAt: now,
-              onboardStatus: OnboardStatus.COMPLETE,
+              onboardStatus: ComradeOnboardStatus.COMPLETE,
+              phoneNumber: trimOptional(data.phoneNumber),
+              email: emailTrimmed === '' ? undefined : emailTrimmed,
+              signalUsername: trimOptional(data.signalUsername),
+              telegramUsername: trimOptional(data.telegramUsername),
             },
             hubName: data.hubName.trim(),
             mockRecruits,

@@ -1,10 +1,10 @@
-import { Button, Field, Input, Stack, Text } from '@chakra-ui/react';
-import type { SetupWizardFormValues } from '@proletariat-hub/web/shared/setup-wizard/schema';
+import { Button, Field, HStack, Input, Stack } from '@chakra-ui/react';
 import { ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useSetupWizard } from '../hooks/useSetupWizard';
+import { SetupWizardFormValues } from '../schema';
 import { SetupStepCard } from '../SetupStepCard';
 
 export function HubStep(): ReactElement {
@@ -15,7 +15,7 @@ export function HubStep(): ReactElement {
   const { goToNextWizardStep, goToPrevWizardStep } = useSetupWizard();
 
   return (
-    <SetupStepCard title="Name Your Hub">
+    <SetupStepCard title="Name Your Hub" description="Pick something your Comrades will recognize!">
       <Stack gap={5}>
         <Field.Root invalid={errors.hubName !== undefined}>
           <Field.Label color="text.primary">Hub name</Field.Label>
@@ -25,29 +25,15 @@ export function HubStep(): ReactElement {
           </Field.HelperText>
           <Field.ErrorText>{errors.hubName?.message}</Field.ErrorText>
         </Field.Root>
-        <Text fontSize="sm" color="text.secondary" lineHeight="tall">
-          Pick something your Comrades will recognize — it appears across lists and reminders.
-        </Text>
-        <Stack gap={3} w="full" align="stretch">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            alignSelf="flex-start"
-            onClick={goToPrevWizardStep}
-          >
+        <HStack w="full" justifyContent="flex-end">
+          <Button type="button" variant="outline" size="sm" onClick={goToPrevWizardStep}>
             Back
           </Button>
-          <Button
-            type="button"
-            size="lg"
-            variant="outline"
-            width="full"
-            onClick={goToNextWizardStep}
-          >
-            Continue the march <ArrowRight size={18} aria-hidden style={{ display: 'inline' }} />
+
+          <Button type="button" size="sm" variant="solid" onClick={goToNextWizardStep}>
+            Continue <ArrowRight size={18} aria-hidden style={{ display: 'inline' }} />
           </Button>
-        </Stack>
+        </HStack>
       </Stack>
     </SetupStepCard>
   );

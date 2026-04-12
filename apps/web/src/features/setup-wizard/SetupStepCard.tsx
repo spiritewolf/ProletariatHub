@@ -14,7 +14,7 @@ export function SetupStepCard({ title, description, children }: SetupStepCardPro
         {title}
       </Heading>
       {description ? (
-        <Text color="text.secondary" mb={6} fontSize="sm" lineHeight="tall">
+        <Text color="text.secondary" mb={3} fontSize="sm" lineHeight="tall">
           {description}
         </Text>
       ) : null}

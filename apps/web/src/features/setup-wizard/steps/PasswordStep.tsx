@@ -1,41 +1,27 @@
 import { Button, Field, Input, Stack } from '@chakra-ui/react';
-import type { SetupWizardFormValues } from '@proletariat-hub/web/shared/setup-wizard/schema';
 import { ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useSetupWizard } from '../hooks/useSetupWizard';
+import { SetupWizardFormValues } from '../schema';
 import { SetupStepCard } from '../SetupStepCard';
 
-export function AccountStep(): ReactElement {
+export function PasswordStep(): ReactElement {
   const {
     register,
     formState: { errors },
   } = useFormContext<SetupWizardFormValues>();
-  const {
-    goToNextWizardStep,
-    goToPrevWizardStep,
-    submitWizard,
-    setupSteps,
-    stepper,
-    submitMutation,
-  } = useSetupWizard();
+  const { goToNextWizardStep } = useSetupWizard();
 
-  const isMemberOnlyFlow = setupSteps.length === 1;
-  const isFirstStep = stepper.value === 0;
-
-  const onAccountStepNext = async (): Promise<void> => {
-    if (isMemberOnlyFlow) {
-      await submitWizard();
-      return;
-    }
+  const onContinueAfterPassword = async (): Promise<void> => {
     await goToNextWizardStep();
   };
 
   return (
     <SetupStepCard
-      title="Welcome & account setup"
-      description="Update the username you were given if you like, and set a new password for this Hub."
+      title="Username & Password"
+      description="Update your username and set a new password."
     >
       <Stack gap={5}>
         <Field.Root invalid={errors.username !== undefined}>
@@ -70,43 +56,15 @@ export function AccountStep(): ReactElement {
           />
           <Field.ErrorText>{errors.confirmPassword?.message}</Field.ErrorText>
         </Field.Root>
-        {submitMutation.error !== null ? (
-          <Field.Root invalid>
-            <Field.ErrorText>
-              {submitMutation.error instanceof Error
-                ? submitMutation.error.message
-                : 'Something went wrong.'}
-            </Field.ErrorText>
-          </Field.Root>
-        ) : null}
         <Stack gap={3} w="full" align="stretch">
-          {!isFirstStep ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              alignSelf="flex-start"
-              onClick={goToPrevWizardStep}
-            >
-              Back
-            </Button>
-          ) : null}
           <Button
             type="button"
             size="lg"
             variant="outline"
             width="full"
-            loading={submitMutation.isPending}
-            onClick={onAccountStepNext}
+            onClick={onContinueAfterPassword}
           >
-            {isMemberOnlyFlow ? (
-              'Save and enter the Hub'
-            ) : (
-              <>
-                Continue the march{' '}
-                <ArrowRight size={18} aria-hidden style={{ display: 'inline' }} />
-              </>
-            )}
+            Continue <ArrowRight size={18} aria-hidden style={{ display: 'inline' }} />
           </Button>
         </Stack>
       </Stack>

@@ -6,3 +6,113 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Hub {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  name String
+
+  settingsId String      @unique @db.Uuid
+  settings   HubSettings @relation(fields: [settingsId], references: [id])
+
+  createdById String  @db.Uuid
+  createdBy   Comrade @relation("HubCreator", fields: [createdById], references: [id])
+
+  comrades Comrade[] @relation("HubMembers")
+
+  @@index([createdById])
+  @@index([archivedAt])
+}
+
+model HubSettings {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  dashboardTheme String @default("SYSTEM") // enum DashboardTheme
+
+  updatedById String  @db.Uuid
+  updatedBy   Comrade @relation("HubSettingsUpdater", fields: [updatedById], references: [id])
+
+  hub Hub?
+
+  @@index([updatedById])
+  @@index([archivedAt])
+}
+
+model Comrade {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  username      String @unique
+  password      String
+  onboardStatus String @default("PENDING") // enum ComradeOnboardStatus
+
+  settingsId String          @unique @db.Uuid
+  settings   ComradeSettings @relation(fields: [settingsId], references: [id])
+
+  hubId String @db.Uuid
+  hub   Hub    @relation("HubMembers", fields: [hubId], references: [id])
+
+  roleId String @db.Uuid
+  role   Role   @relation(fields: [roleId], references: [id])
+
+  createdHubs        Hub[]         @relation("HubCreator")
+  updatedHubSettings HubSettings[] @relation("HubSettingsUpdater")
+  sessions           Session[]
+
+  @@index([hubId])
+  @@index([roleId])
+  @@index([archivedAt])
+}
+
+model ComradeSettings {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  avatarIcon       String? // enum ComradeIconType
+  avatarColor      String?
+  phoneNumber      String?
+  email            String?
+  signalUsername   String?
+  telegramUsername String?
+
+  comrade Comrade?
+}
+
+model Role {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  roleType    String  @unique // enum ComradeRole
+  description String?
+
+  // permissions RolePermission[] // planned enhancement
+
+  comrades Comrade[]
+
+  @@index([archivedAt])
+}
+
+model Session {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime
+
+  comradeId String  @db.Uuid
+  comrade   Comrade @relation(fields: [comradeId], references: [id], onDelete: Cascade)
+
+  @@index([comradeId])
+  @@index([expiresAt])
+}

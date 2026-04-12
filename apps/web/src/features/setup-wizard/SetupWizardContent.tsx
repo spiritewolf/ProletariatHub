@@ -1,16 +1,18 @@
 import { Box, Flex, Heading, HStack, Text } from '@chakra-ui/react';
-import { SetupSteps } from '@proletariat-hub/web/shared';
 import type { ReactElement } from 'react';
 import { Navigate } from 'react-router-dom';
 
+import { SetupSteps } from './constants';
 import { useSetupWizard } from './hooks/useSetupWizard';
-import { AccountStep } from './steps/AccountStep';
 import { ComradesStep } from './steps/ComradesStep';
+import { ContactStep } from './steps/ContactStep';
 import { HubStep } from './steps/HubStep';
 import { LaunchStep } from './steps/LaunchStep';
+import { PasswordStep } from './steps/PasswordStep';
 
 const SetupStepComponentMap: Record<SetupSteps, React.ReactElement> = {
-  [SetupSteps.ACCOUNT]: <AccountStep />,
+  [SetupSteps.PASSWORD]: <PasswordStep />,
+  [SetupSteps.CONTACT]: <ContactStep />,
   [SetupSteps.HUB]: <HubStep />,
   [SetupSteps.COMRADES]: <ComradesStep />,
   [SetupSteps.LAUNCH]: <LaunchStep />,
@@ -25,12 +27,12 @@ export function SetupWizardContent(): ReactElement {
 
   const progressFill = stepper.value + 1;
   const progressTotal = setupSteps.length;
-  const activeStepKey = setupSteps[stepIndex];
+  const activeStepKey: SetupSteps | undefined = setupSteps[stepIndex];
   const stepNumbers = Array.from({ length: progressTotal }, (_, index) => index + 1);
 
   return (
     <Box minH="100vh" bg="bg.light" py={{ base: 8, md: 12 }} px={4}>
-      <Box maxW="28rem" mx="auto" w="100%">
+      <Box maxW="35rem" mx="auto" w="100%">
         <Box
           borderRadius="xl"
           borderWidth="1px"
@@ -46,10 +48,10 @@ export function SetupWizardContent(): ReactElement {
             pt={6}
             pb={5}
           >
-            <Heading as="h1" size="lg" letterSpacing="-0.02em">
+            <Heading as="h1" size="lg" letterSpacing="-0.02em" color="text.light">
               ProletariatHub
             </Heading>
-            <Text mt={2} fontSize="sm" opacity={0.92}>
+            <Text mt={2} fontSize="sm" color="text.light" opacity={0.92}>
               the household collective
             </Text>
             <HStack
@@ -65,9 +67,13 @@ export function SetupWizardContent(): ReactElement {
                 <Box
                   key={stepNumber}
                   flex={1}
-                  h="1.5"
+                  h="2.5"
                   borderRadius="full"
-                  bg={stepNumber <= progressFill ? 'bg.primary' : 'border.secondary'}
+                  bg={
+                    stepNumber <= progressFill
+                      ? { base: 'bg.primary', _dark: 'text.light' }
+                      : { base: 'accent.primary', _dark: 'border.primary' }
+                  }
                 />
               ))}
             </HStack>

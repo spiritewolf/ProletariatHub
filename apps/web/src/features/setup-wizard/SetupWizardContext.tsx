@@ -1,8 +1,9 @@
 import type { UseStepsReturn } from '@chakra-ui/react';
-import { SetupSteps } from '@proletariat-hub/web/shared';
-import type { SetupWizardFormValues } from '@proletariat-hub/web/shared/setup-wizard/schema';
 import type { UseMutationResult } from '@tanstack/react-query';
 import { createContext } from 'react';
+
+import type { SetupSteps } from './constants';
+import type { SetupWizardFormValues } from './schema';
 
 export type SetupWizardContextValue = {
   stepper: UseStepsReturn;

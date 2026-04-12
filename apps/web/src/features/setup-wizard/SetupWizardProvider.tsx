@@ -1,16 +1,13 @@
 import { Steps, useSteps } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SETUP_STEPS_ADMIN, SETUP_STEPS_MEMBER } from '@proletariat-hub/web/shared';
 import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
-import {
-  type SetupWizardFormValues,
-  setupWizardSchema,
-} from '@proletariat-hub/web/shared/setup-wizard/schema';
 import { ComradeRole } from '@proletariat-hub/web/shared/types/comrade';
 import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import { SETUP_STEPS_ADMIN, SETUP_STEPS_MEMBER } from './constants';
 import { useSubmitSetupWizard } from './hooks/useSubmitSetupWizard';
+import { SetupWizardFormValues, setupWizardSchema } from './schema';
 import { SetupWizardContext } from './SetupWizardContext';
 
 type SetupWizardProviderProps = {
@@ -29,6 +26,10 @@ export function SetupWizardProvider({ children }: SetupWizardProviderProps): Rea
       username: comrade?.username ?? '',
       newPassword: '',
       confirmPassword: '',
+      phoneNumber: '',
+      email: '',
+      signalUsername: '',
+      telegramUsername: '',
       hubName: 'My Hub',
       recruits: [],
     },

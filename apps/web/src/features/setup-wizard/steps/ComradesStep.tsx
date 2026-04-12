@@ -1,57 +1,50 @@
 import { Box, Button, Field, HStack, Input, Stack, Text } from '@chakra-ui/react';
-import {
-  type RecruitLineEditorState,
-  recruitSchema,
-  type SetupWizardFormValues,
-} from '@proletariat-hub/web/shared/setup-wizard/schema';
-import { ArrowRight } from 'lucide-react';
+import { ComradeIconType } from '@proletariat-hub/web/shared';
+import { ArrowRight, Plus } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 
 import { useSetupWizard } from '../hooks/useSetupWizard';
+import { recruitSchema, type SetupWizardFormValues } from '../schema';
 import { SetupStepCard } from '../SetupStepCard';
-
-const initialRecruitLine: RecruitLineEditorState = {
-  username: '',
-  password: '',
-  phoneNumber: '',
-  email: '',
-  signalUsername: '',
-  telegramUsername: '',
-};
+import { RecruitAvatarGlyph } from './components/RecruitAvatarGlyph';
+import { RecruitAvatarPicker } from './components/RecruitAvatarPicker';
 
 export function ComradesStep(): ReactElement {
   const { control } = useFormContext<SetupWizardFormValues>();
   const { fields, append, remove } = useFieldArray({ control, name: 'recruits' });
   const { goToNextWizardStep, goToPrevWizardStep } = useSetupWizard();
 
-  const [recruitLine, setRecruitLine] = useState<RecruitLineEditorState>(initialRecruitLine);
+  const [recruitUsername, setRecruitUsername] = useState<string>('');
+  const [selectedIcon, setSelectedIcon] = useState<ComradeIconType>(ComradeIconType.USER);
   const [recruitLineError, setRecruitLineError] = useState<string | null>(null);
 
   const onSaveRecruit = (): void => {
-    const parsed = recruitSchema.safeParse(recruitLine);
+    console.log('selectedIcon', selectedIcon);
+    const parsed = recruitSchema.safeParse({ username: recruitUsername, icon: selectedIcon });
     if (!parsed.success) {
-      const first = parsed.error.flatten().fieldErrors;
-      const msg =
-        first.username?.[0] ??
-        first.email?.[0] ??
-        first.password?.[0] ??
-        'Check the recruit fields and try again.';
-      setRecruitLineError(msg);
+      const errorMessage =
+        parsed.error.flatten().fieldErrors.username?.[0] ?? 'Username is required.';
+      setRecruitLineError(errorMessage);
       return;
     }
     setRecruitLineError(null);
     append(parsed.data);
-    setRecruitLine(initialRecruitLine);
+    setRecruitUsername('');
+    setSelectedIcon(ComradeIconType.USER);
   };
 
   return (
     <SetupStepCard title="Recruit your Comrades">
       <Stack gap={5}>
         <Text color="text.secondary" fontSize="sm" lineHeight="tall">
-          Add household Comrades now, or skip and invite them later. Optional password defaults to
-          &quot;password&quot; when left blank.
+          Recruit your Comrades by adding them to your hub with their username only, they can change
+          this later. Each new Comrade&apos;s default password is{' '}
+          <Text as="span" fontWeight="semibold" color="text.primary">
+            password
+          </Text>{' '}
+          until they log in and change it.
         </Text>
         {fields.length > 0 ? (
           <Stack as="ul" gap={3} listStyleType="none" pl={0}>
@@ -64,16 +57,13 @@ export function ComradesStep(): ReactElement {
                 borderRadius="md"
                 p={3}
               >
-                <HStack justify="space-between" align="flex-start" gap={3} flexWrap="wrap">
-                  <Stack gap={1}>
-                    <Text fontWeight="semibold" color="text.primary">
+                <HStack justify="space-between" align="center" gap={3}>
+                  <HStack gap={3} align="center" flex={1} minW={0}>
+                    <RecruitAvatarGlyph iconType={field.icon ?? 'USER'} size={22} />
+                    <Text fontWeight="semibold" color="text.primary" truncate>
                       {field.username}
                     </Text>
-                    <Text fontSize="sm" color="text.secondary">
-                      {[field.phoneNumber, field.email].filter(Boolean).join(' · ') ||
-                        'No contact yet'}
-                    </Text>
-                  </Stack>
+                  </HStack>
                   <Button type="button" size="sm" variant="outline" onClick={() => remove(index)}>
                     Remove
                   </Button>
@@ -90,96 +80,48 @@ export function ComradesStep(): ReactElement {
           <Text fontWeight="semibold" color="text.primary">
             Add Comrade
           </Text>
+          <RecruitAvatarPicker selectedIconType={selectedIcon} onChange={setSelectedIcon} />
           <Field.Root invalid={recruitLineError !== null}>
             <Field.Label color="text.primary">Username</Field.Label>
-            <Input
-              value={recruitLine.username}
-              onChange={(e) => setRecruitLine((line) => ({ ...line, username: e.target.value }))}
-              autoComplete="off"
-              variant="outline"
-              borderRadius="full"
-            />
-            <Field.Label color="text.primary" mt={2}>
-              Password (optional)
-            </Field.Label>
-            <Input
-              type="password"
-              value={recruitLine.password ?? ''}
-              onChange={(e) => setRecruitLine((line) => ({ ...line, password: e.target.value }))}
-              autoComplete="new-password"
-              variant="outline"
-              borderRadius="full"
-            />
-            <Field.Label color="text.primary" mt={2}>
-              SMS number (optional)
-            </Field.Label>
-            <Input
-              value={recruitLine.phoneNumber ?? ''}
-              onChange={(e) => setRecruitLine((line) => ({ ...line, phoneNumber: e.target.value }))}
-              autoComplete="tel"
-              variant="outline"
-              borderRadius="full"
-            />
-            <Field.Label color="text.primary" mt={2}>
-              Email (optional)
-            </Field.Label>
-            <Input
-              type="email"
-              value={recruitLine.email ?? ''}
-              onChange={(e) => setRecruitLine((line) => ({ ...line, email: e.target.value }))}
-              autoComplete="email"
-              variant="outline"
-              borderRadius="full"
-            />
-            <Field.Label color="text.primary" mt={2}>
-              Signal (optional)
-            </Field.Label>
-            <Input
-              value={recruitLine.signalUsername ?? ''}
-              onChange={(e) =>
-                setRecruitLine((line) => ({ ...line, signalUsername: e.target.value }))
-              }
-              variant="outline"
-              borderRadius="full"
-            />
-            <Field.Label color="text.primary" mt={2}>
-              Telegram (optional)
-            </Field.Label>
-            <Input
-              value={recruitLine.telegramUsername ?? ''}
-              onChange={(e) =>
-                setRecruitLine((line) => ({ ...line, telegramUsername: e.target.value }))
-              }
-              variant="outline"
-              borderRadius="full"
-            />
+            <HStack gap={3} align="flex-end" w="100%">
+              <Box flex={1} minW={0}>
+                <Input
+                  value={recruitUsername}
+                  onChange={(e) => setRecruitUsername(e.target.value)}
+                  autoComplete="off"
+                  variant="outline"
+                  borderRadius="full"
+                />
+              </Box>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                flexShrink={0}
+                onClick={onSaveRecruit}
+              >
+                Recruit <Plus size={18} aria-hidden style={{ display: 'inline' }} />
+              </Button>
+            </HStack>
             {recruitLineError !== null ? (
               <Field.ErrorText>{recruitLineError}</Field.ErrorText>
             ) : null}
           </Field.Root>
-          <Button type="button" variant="outline" onClick={onSaveRecruit}>
-            Save
-          </Button>
         </Stack>
-        <Stack gap={3} w="full" align="stretch">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            alignSelf="flex-start"
-            onClick={goToPrevWizardStep}
-          >
+        <HStack justifyContent="space-between">
+          <Button type="button" variant="outline" size="sm" onClick={goToPrevWizardStep}>
             Back
           </Button>
-          <Stack direction={{ base: 'column', sm: 'row' }} gap={3}>
-            <Button type="button" variant="outline" flex={1} onClick={goToNextWizardStep}>
-              Skip
+          <HStack w="full" justifyContent="flex-end">
+            <Button type="button" variant="ghost" size="sm" onClick={goToNextWizardStep}>
+              Skip for now
             </Button>
-            <Button type="button" size="lg" variant="outline" flex={1} onClick={goToNextWizardStep}>
-              Next <ArrowRight size={18} aria-hidden style={{ display: 'inline' }} />
+
+            <Button type="button" size="sm" variant="solid" onClick={goToNextWizardStep}>
+              Continue <ArrowRight size={18} aria-hidden style={{ display: 'inline' }} />
             </Button>
-          </Stack>
-        </Stack>
+          </HStack>
+        </HStack>
       </Stack>
     </SetupStepCard>
   );

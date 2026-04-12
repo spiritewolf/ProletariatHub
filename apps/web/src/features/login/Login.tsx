@@ -1,7 +1,7 @@
 import { Button, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
-import { OnboardStatus } from '@proletariat-hub/web/shared/types/comrade';
+import { ComradeOnboardStatus } from '@proletariat-hub/web/shared/types/comrade';
 import { AuthFlowCard } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowCard';
 import { AuthFlowWrapper } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowWrapper';
 import { ArrowRight } from 'lucide-react';
@@ -30,7 +30,7 @@ export function Login(): React.ReactElement {
 
   const loginRedirectPath =
     loginMutation.isSuccess && loginMutation.data
-      ? loginMutation.data.onboardStatus === OnboardStatus.COMPLETE
+      ? loginMutation.data.onboardStatus === ComradeOnboardStatus.COMPLETE
         ? '/'
         : '/setup'
       : null;

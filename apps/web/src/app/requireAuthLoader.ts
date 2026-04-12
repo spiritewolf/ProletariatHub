@@ -1,5 +1,5 @@
 import { useAuthStoreMock } from '@proletariat-hub/web/shared/hooks/auth/authStoreMock';
-import { type Comrade, OnboardStatus } from '@proletariat-hub/web/shared/types/comrade';
+import { type Comrade, ComradeOnboardStatus } from '@proletariat-hub/web/shared/types/comrade';
 import { redirect } from 'react-router-dom';
 
 export type RequireAuthLoaderOptions = {
@@ -13,10 +13,10 @@ export function requireAuthLoader(options?: RequireAuthLoaderOptions) {
       return redirect('/login');
     }
     const setupOnly = options?.onboardingIncompleteOnly === true;
-    if (setupOnly && comrade.onboardStatus === OnboardStatus.COMPLETE) {
+    if (setupOnly && comrade.onboardStatus === ComradeOnboardStatus.COMPLETE) {
       return redirect('/');
     }
-    if (!setupOnly && comrade.onboardStatus !== OnboardStatus.COMPLETE) {
+    if (!setupOnly && comrade.onboardStatus !== ComradeOnboardStatus.COMPLETE) {
       return redirect('/setup');
     }
     return { comrade };
