@@ -1,0 +1,30 @@
+{
+  "name": "@proletariat-hub/database",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "postinstall": "prisma generate --no-hints",
+    "db:generate": "prisma generate --no-hints",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "build": "prisma generate --no-hints && tsc && node ./scripts/sync-prisma-generated.mjs",
+    "lint": "eslint .",
+    "typecheck": "prisma generate --no-hints && tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.0",
+    "@proletariat-hub/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "bcrypt": "^5.1.1",
+    "eslint": "^9.39.1",
+    "prisma": "^6.19.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.0"
+  }
+}
