@@ -2,14 +2,13 @@
 import { SetupWizardFormValues } from '@proletariat-hub/web/features/setup-wizard/schema';
 import {
   type Comrade,
+  ComradeAvatarIconType,
   ComradeOnboardStatus,
   ComradeRole,
-} from '@proletariat-hub/web/shared/types/comrade';
+} from '@proletariat-hub/web/shared';
 import { z } from 'zod';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-
-import { ComradeIconType } from '../../types';
 
 const MOCK_COMRADE_ID = '7c9e6679-7425-40de-944b-e07fc1f90ae7';
 
@@ -18,7 +17,6 @@ const persistedComradeSchema = z.object({
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
   username: z.string(),
-  password: z.string(),
   role: z.enum([ComradeRole.ADMIN, ComradeRole.MEMBER]),
   onboardStatus: z.enum([
     ComradeOnboardStatus.PENDING,
@@ -32,14 +30,14 @@ const persistedComradeSchema = z.object({
 });
 
 const recruitAvatarIconPersistSchema = z.enum([
-  ComradeIconType.ATOM,
-  ComradeIconType.CROWN,
-  ComradeIconType.EGG_FRIED,
-  ComradeIconType.HAND_FIST,
-  ComradeIconType.MENU,
-  ComradeIconType.PALETTE,
-  ComradeIconType.SNAIL,
-  ComradeIconType.USER,
+  ComradeAvatarIconType.ATOM,
+  ComradeAvatarIconType.CROWN,
+  ComradeAvatarIconType.EGG_FRIED,
+  ComradeAvatarIconType.HAND_FIST,
+  ComradeAvatarIconType.MENU,
+  ComradeAvatarIconType.PALETTE,
+  ComradeAvatarIconType.SNAIL,
+  ComradeAvatarIconType.USER,
 ]);
 
 const mockHubRecruitSchema = z.object({
@@ -92,7 +90,6 @@ export const useAuthStoreMock = create<AuthStoreMockState>()(
           createdAt: now,
           updatedAt: now,
           username: trimmedUsername,
-          password: trimmedPassword,
           role: resolveRoleForMockLogin(trimmedUsername),
           onboardStatus: ComradeOnboardStatus.PENDING,
         };
@@ -125,7 +122,6 @@ export const useAuthStoreMock = create<AuthStoreMockState>()(
             comrade: {
               ...prev,
               username: data.username.trim(),
-              password: data.newPassword,
               updatedAt: now,
               onboardStatus: ComradeOnboardStatus.COMPLETE,
               phoneNumber: trimOptional(data.phoneNumber),

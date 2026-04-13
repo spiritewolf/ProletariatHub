@@ -1,10 +1,11 @@
 import eslintConfigPrettier from 'eslint-config-prettier';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import unusedImports from 'eslint-plugin-unused-imports';
+import { defineConfig } from 'eslint/config';
 import tseslint from 'typescript-eslint';
 
-export default tseslint.config(
-  { ignores: ['**/dist/**', '**/node_modules/**', '**/.turbo/**'] },
+export default defineConfig([
+  { ignores: ['**/dist/**', '**/node_modules/**', '**/.turbo/**', '**/src/generated/**'] },
   ...tseslint.configs.recommendedTypeChecked,
   eslintConfigPrettier,
   {
@@ -54,4 +55,4 @@ export default tseslint.config(
       'unused-imports/no-unused-vars': 'off',
     },
   },
-);
+]);

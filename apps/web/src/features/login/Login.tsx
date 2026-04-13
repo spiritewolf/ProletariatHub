@@ -1,7 +1,7 @@
 import { Button, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ComradeOnboardStatus } from '@proletariat-hub/web/shared';
 import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
-import { ComradeOnboardStatus } from '@proletariat-hub/web/shared/types/comrade';
 import { AuthFlowCard } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowCard';
 import { AuthFlowWrapper } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowWrapper';
 import { ArrowRight } from 'lucide-react';

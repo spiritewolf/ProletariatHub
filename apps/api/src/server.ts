@@ -6,7 +6,7 @@ import { type AppRouter, appRouter } from '@proletariat-hub/api/router';
 import { registerHealthRoutes } from '@proletariat-hub/api/routes/health';
 import { getRedis, initRedis } from '@proletariat-hub/api/shared/lib/redis';
 import { validateEnv } from '@proletariat-hub/config';
-import { prisma } from '@proletariat-hub/db';
+import { prisma } from '@proletariat-hub/database';
 import { fastifyTRPCPlugin, type FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 import fastify from 'fastify';
 

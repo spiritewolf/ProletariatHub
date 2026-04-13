@@ -1,14 +1,17 @@
-import tseslint from 'typescript-eslint';
+import { defineConfig } from 'eslint/config';
 
 import rootConfig from '../../eslint.config';
 
-export default tseslint.config(...rootConfig, {
-  languageOptions: {
-    parserOptions: {
-      projectService: {
-        allowDefaultProject: ['eslint.config.ts'],
+export default defineConfig([
+  ...rootConfig,
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: {
+          allowDefaultProject: ['eslint.config.ts'],
+        },
+        tsconfigRootDir: import.meta.dirname,
       },
-      tsconfigRootDir: import.meta.dirname,
     },
   },
-});
+]);

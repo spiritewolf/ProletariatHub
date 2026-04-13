@@ -1,21 +1,21 @@
-import { ComradeIconType } from '@proletariat-hub/web/shared';
+import { ComradeAvatarIconType } from '@proletariat-hub/web/shared';
 import { z } from 'zod';
 
 const recruitAvatarIconSchema = z.enum([
-  ComradeIconType.ATOM,
-  ComradeIconType.CROWN,
-  ComradeIconType.EGG_FRIED,
-  ComradeIconType.HAND_FIST,
-  ComradeIconType.MENU,
-  ComradeIconType.PALETTE,
-  ComradeIconType.SNAIL,
-  ComradeIconType.USER,
+  ComradeAvatarIconType.ATOM,
+  ComradeAvatarIconType.CROWN,
+  ComradeAvatarIconType.EGG_FRIED,
+  ComradeAvatarIconType.HAND_FIST,
+  ComradeAvatarIconType.MENU,
+  ComradeAvatarIconType.PALETTE,
+  ComradeAvatarIconType.SNAIL,
+  ComradeAvatarIconType.USER,
 ]);
 
 export const recruitSchema = z
   .object({
     username: z.string(),
-    icon: recruitAvatarIconSchema.default(ComradeIconType.USER),
+    icon: recruitAvatarIconSchema.default(ComradeAvatarIconType.USER),
   })
   .transform((raw) => ({
     username: raw.username.trim(),

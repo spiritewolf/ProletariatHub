@@ -1,5 +1,5 @@
 import { Box, Button, Field, HStack, Input, Stack, Text } from '@chakra-ui/react';
-import { ComradeIconType } from '@proletariat-hub/web/shared';
+import { ComradeAvatarIconType } from '@proletariat-hub/web/shared';
 import { ArrowRight, Plus } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
@@ -17,11 +17,12 @@ export function ComradesStep(): ReactElement {
   const { goToNextWizardStep, goToPrevWizardStep } = useSetupWizard();
 
   const [recruitUsername, setRecruitUsername] = useState<string>('');
-  const [selectedIcon, setSelectedIcon] = useState<ComradeIconType>(ComradeIconType.USER);
+  const [selectedIcon, setSelectedIcon] = useState<ComradeAvatarIconType>(
+    ComradeAvatarIconType.USER,
+  );
   const [recruitLineError, setRecruitLineError] = useState<string | null>(null);
 
   const onSaveRecruit = (): void => {
-    console.log('selectedIcon', selectedIcon);
     const parsed = recruitSchema.safeParse({ username: recruitUsername, icon: selectedIcon });
     if (!parsed.success) {
       const errorMessage =
@@ -32,7 +33,7 @@ export function ComradesStep(): ReactElement {
     setRecruitLineError(null);
     append(parsed.data);
     setRecruitUsername('');
-    setSelectedIcon(ComradeIconType.USER);
+    setSelectedIcon(ComradeAvatarIconType.USER);
   };
 
   return (

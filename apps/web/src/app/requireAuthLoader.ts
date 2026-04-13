@@ -1,5 +1,5 @@
+import { type Comrade, ComradeOnboardStatus } from '@proletariat-hub/web/shared';
 import { useAuthStoreMock } from '@proletariat-hub/web/shared/hooks/auth/authStoreMock';
-import { type Comrade, ComradeOnboardStatus } from '@proletariat-hub/web/shared/types/comrade';
 import { redirect } from 'react-router-dom';
 
 export type RequireAuthLoaderOptions = {

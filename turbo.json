@@ -5,7 +5,7 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
-    "@proletariat-hub/db#build": {
+    "@proletariat-hub/database#build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**"],
       "cache": false

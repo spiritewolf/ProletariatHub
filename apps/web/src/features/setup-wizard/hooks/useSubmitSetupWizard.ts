@@ -1,5 +1,6 @@
 import { useAuthStoreMock } from '@proletariat-hub/web/shared/hooks/auth/authStoreMock';
 import { useMutation, type UseMutationResult } from '@tanstack/react-query';
+
 import type { SetupWizardFormValues } from '../schema';
 
 export function useSubmitSetupWizard(): UseMutationResult<void, Error, SetupWizardFormValues> {

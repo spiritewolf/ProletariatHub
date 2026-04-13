@@ -1,7 +1,7 @@
 import { Steps, useSteps } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ComradeRole } from '@proletariat-hub/web/shared';
 import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
-import { ComradeRole } from '@proletariat-hub/web/shared/types/comrade';
 import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 

@@ -1,26 +1,38 @@
 import { Box, IconButton } from '@chakra-ui/react';
-import { ComradeIconType } from '@proletariat-hub/web/shared';
+import type { ComradeAvatarIconType } from '@proletariat-hub/web/shared';
 import type { ReactElement } from 'react';
 
-import { RECRUIT_AVATAR_MAP } from './constants';
+import { RECRUIT_AVATAR_MAP, type RecruitAvatarPickerItem } from './constants';
 
 type RecruitAvatarPickerProps = {
-  selectedIconType: ComradeIconType;
-  onChange: (iconType: ComradeIconType) => void;
+  selectedIconType: ComradeAvatarIconType;
+  onChange: (iconType: ComradeAvatarIconType) => void;
 };
+
+function isComradeAvatarIconMapKey(
+  key: string,
+  map: Record<ComradeAvatarIconType, RecruitAvatarPickerItem>,
+): key is ComradeAvatarIconType {
+  return Object.hasOwn(map, key);
+}
 
 export function RecruitAvatarPicker({
   selectedIconType,
   onChange,
 }: RecruitAvatarPickerProps): ReactElement {
+  const orderedKeys = Object.keys(RECRUIT_AVATAR_MAP).filter((key) =>
+    isComradeAvatarIconMapKey(key, RECRUIT_AVATAR_MAP),
+  );
+
   return (
     <Box role="radiogroup" aria-label="Comrade icon">
       <Box display="flex" flexWrap="wrap" gap={2}>
-        {Object.entries(RECRUIT_AVATAR_MAP).map(([key, value]) => {
-          const isSelected = key === selectedIconType;
+        {orderedKeys.map((iconType) => {
+          const value = RECRUIT_AVATAR_MAP[iconType];
+          const isSelected = iconType === selectedIconType;
           return (
             <IconButton
-              key={key}
+              key={iconType}
               type="button"
               size="sm"
               variant="outline"
@@ -31,8 +43,7 @@ export function RecruitAvatarPicker({
               aria-checked={isSelected}
               role="radio"
               onClick={() => {
-                // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-                onChange(key as ComradeIconType);
+                onChange(iconType);
               }}
             >
               <Box color={value.color}>

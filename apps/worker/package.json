@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@proletariat-hub/config": "workspace:*",
-    "@proletariat-hub/db": "workspace:*",
+    "@proletariat-hub/database": "workspace:*",
     "bullmq": "^5.66.4",
     "ioredis": "^5.9.1"
   },

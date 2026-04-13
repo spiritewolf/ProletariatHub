@@ -1,4 +1,4 @@
-import type { Comrade } from '@proletariat-hub/web/shared/types/comrade';
+import type { Comrade } from '@proletariat-hub/web/shared';
 import { useMutation, type UseMutationResult, useQueryClient } from '@tanstack/react-query';
 
 import { useAuthStoreMock } from './authStoreMock';

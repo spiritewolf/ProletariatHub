@@ -1,5 +1,5 @@
 import { Box, Button, Field, HStack, Stack, Text } from '@chakra-ui/react';
-import { ComradeIconType } from '@proletariat-hub/web/shared';
+import { ComradeAvatarIconType } from '@proletariat-hub/web/shared';
 import { Sparkle } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -43,7 +43,7 @@ export function LaunchStep(): ReactElement {
               {recruits.map((r, index) => (
                 <Box as="li" key={`${r.username}-${String(index)}`} color="text.secondary">
                   <HStack gap={3} align="center">
-                    <RecruitAvatarGlyph iconType={r.icon ?? ComradeIconType.USER} size={20} />
+                    <RecruitAvatarGlyph iconType={r.icon ?? ComradeAvatarIconType.USER} size={20} />
                     <Text>{r.username}</Text>
                   </HStack>
                 </Box>
