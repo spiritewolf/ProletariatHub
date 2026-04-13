@@ -1,12 +1,19 @@
-import { useAuthStoreMock } from '@proletariat-hub/web/shared/hooks/auth/authStoreMock';
-import { useMutation, type UseMutationResult } from '@tanstack/react-query';
+import { ComradeRole } from '@proletariat-hub/web/shared';
+import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
+import { trpc } from '@proletariat-hub/web/shared/lib/trpc';
+import { useMemo } from 'react';
 
-import type { SetupWizardFormValues } from '../schema';
-
-export function useSubmitSetupWizard(): UseMutationResult<void, Error, SetupWizardFormValues> {
-  return useMutation<void, Error, SetupWizardFormValues>({
-    mutationFn: async (data: SetupWizardFormValues): Promise<void> => {
-      useAuthStoreMock.getState().completeSetup(data);
-    },
-  });
+export function useSubmitSetupWizard() {
+  const { comrade } = useAuth();
+  const utils = trpc.useUtils();
+  const onSuccess = async (): Promise<void> => {
+    await utils.auth.findUniqueComradeFromSession.invalidate();
+  };
+  const adminMutation = trpc.comrade.completeAdminSetup.useMutation({ onSuccess });
+  const memberMutation = trpc.comrade.completeMemberSetup.useMutation({ onSuccess });
+  const isAdmin = comrade?.role === ComradeRole.ADMIN;
+  return useMemo(
+    () => (isAdmin ? adminMutation : memberMutation),
+    [isAdmin, adminMutation, memberMutation],
+  );
 }

@@ -1,9 +1,10 @@
 import { protectedProcedure, publicProcedure, router } from '../../trpc';
-import { comradeOutputSchema, loginInputSchema } from './schemas';
+import { comradeOutputSchema } from '../comrade';
+import { loginInputSchema } from './schemas';
 import {
   createOneLoginSession,
   deleteOneLoginSession,
-  findFirstComradeFromSession,
+  findUniqueComradeFromSession,
 } from './session';
 
 export const authRouter = router({
@@ -11,12 +12,19 @@ export const authRouter = router({
     .input(loginInputSchema)
     .output(comradeOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      return createOneLoginSession({ db: ctx.db, req: ctx.req, input });
+      return createOneLoginSession({
+        comradeAccessLayer: ctx.comradeAccessLayer,
+        req: ctx.req,
+        input,
+      });
     }),
-  findFirstComradeFromSession: publicProcedure
+  findUniqueComradeFromSession: publicProcedure
     .output(comradeOutputSchema.nullable())
     .query(async ({ ctx }) => {
-      return findFirstComradeFromSession({ db: ctx.db, req: ctx.req });
+      return findUniqueComradeFromSession({
+        comradeAccessLayer: ctx.comradeAccessLayer,
+        req: ctx.req,
+      });
     }),
   deleteOneLoginSession: protectedProcedure.mutation(async ({ ctx }): Promise<void> => {
     await deleteOneLoginSession({ req: ctx.req });

@@ -24,6 +24,18 @@ export const ComradeAvatarIconType = {
 export type ComradeAvatarIconType =
   (typeof ComradeAvatarIconType)[keyof typeof ComradeAvatarIconType];
 
+export type ComradeSettings = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  avatarIcon: ComradeAvatarIconType | null;
+  avatarColor: string | null;
+  phoneNumber: string | null;
+  email: string | null;
+  signalUsername: string | null;
+  telegramUsername: string | null;
+};
+
 export type Comrade = {
   id: string;
   createdAt: Date;
@@ -31,6 +43,8 @@ export type Comrade = {
   username: string;
   role: ComradeRole;
   onboardStatus: ComradeOnboardStatus;
+  hubId?: string | null;
+  settings: ComradeSettings;
   phoneNumber?: string;
   email?: string;
   signalUsername?: string;

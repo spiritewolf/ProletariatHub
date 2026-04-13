@@ -9,7 +9,7 @@ import {
   ColorModeToggleColorPalette,
   THEME_DISPLAY_PENDING,
   THEME_TOGGLE_ENTRIES,
-} from './constants/color-mode';
+} from './constants/colorMode';
 
 export function ColorModeToggle(): ReactElement {
   const { resolvedTheme, setTheme, theme } = useTheme();

@@ -7,5 +7,5 @@
     "types": ["node"],
     "lib": ["ES2022"]
   },
-  "include": ["eslint.config.ts", "vitest.config.ts", "test/login-session.test.ts"]
+  "include": ["eslint.config.ts", "vitest.config.ts", "test/loginSession.test.ts"]
 }

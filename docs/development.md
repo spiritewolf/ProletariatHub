@@ -4,6 +4,10 @@
 
 Copy `.env.example` to `.env`. Match **`VITE_API_URL`** to the API origin (e.g. `http://localhost:3000` when **`PORT`** is `3000`). Run `make db_generate` and `docker compose up`. Prisma schema and migrations live under **`packages/database`**.
 
+## API domain pattern
+
+Entity domains (models backed by Prisma, e.g. comrade, hub) expose an **access layer** class instantiated in `apps/api/src/createContext.ts` and attached to tRPC context. Routers and auth session code use `ctx.comradeAccessLayer` (and peer layers) instead of importing a domain’s internal `queries.ts` or `mutations.ts`. Setup wizard completion is implemented as **`comrade.completeAdminSetup`** / **`comrade.completeMemberSetup`** on the comrade router, not a separate `setup` domain.
+
 ## Docker (repo root)
 
 | Command                    | Stack                     |

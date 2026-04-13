@@ -2,7 +2,7 @@ import { validateEnv } from '@proletariat-hub/config';
 import { prisma } from '@proletariat-hub/database';
 import fastify from 'fastify';
 
-import { createContext } from './create-context';
+import { createContext } from './createContext';
 import { registerHealth } from './routes/health';
 import { registerCors } from './services/cors';
 import { registerSession } from './services/session';

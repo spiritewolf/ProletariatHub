@@ -10,7 +10,7 @@ export const TOPBAR_BLOCK_SIZE = '4rem';
 
 export function Topbar(): ReactElement {
   const navigate = useNavigate();
-  const { logoutMutation } = useAuth();
+  const { deleteOneLoginSessionMutation } = useAuth();
 
   const dateLabel: string = new Date().toLocaleDateString(undefined, {
     weekday: 'long',
@@ -20,7 +20,7 @@ export function Topbar(): ReactElement {
   });
 
   const onLogout = (): void => {
-    logoutMutation.mutate(undefined, {
+    deleteOneLoginSessionMutation.mutate(undefined, {
       onSuccess: () => {
         void navigate('/login');
       },

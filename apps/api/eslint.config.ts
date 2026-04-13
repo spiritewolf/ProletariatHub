@@ -12,7 +12,7 @@ export default defineConfig([
           allowDefaultProject: [
             'eslint.config.ts',
             'vitest.config.ts',
-            'test/login-session.test.ts',
+            'test/loginSession.test.ts',
           ],
         },
         tsconfigRootDir: import.meta.dirname,

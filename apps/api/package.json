@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
+    "./domains/comrade": "./src/domains/comrade/index.ts",
     "./domains/comrade/mapper": "./src/domains/comrade/mapper.ts",
-    "./domains/comrade/queries": "./src/domains/comrade/queries.ts",
+    "./domains/comrade/schemas": "./src/domains/comrade/index.ts",
     "./domains/comrade/types": "./src/domains/comrade/types.ts",
-    "./router": "./src/app-router.ts",
+    "./router": "./src/appRouter.ts",
     "./trpc": "./src/trpc.ts"
   },
   "scripts": {

@@ -1,47 +1,55 @@
 import type { Comrade } from '@proletariat-hub/web/shared';
-import { useMutation, type UseMutationResult, useQueryClient } from '@tanstack/react-query';
-
-import { useAuthStoreMock } from './authStoreMock';
+import { trpc } from '@proletariat-hub/web/shared/lib/trpc';
 
 export type AuthLoginVariables = {
   username: string;
   password: string;
 };
 
+type CreateOneLoginSessionMutation = ReturnType<typeof trpc.auth.createOneLoginSession.useMutation>;
+type DeleteOneLoginSessionMutation = ReturnType<typeof trpc.auth.deleteOneLoginSession.useMutation>;
+type FindUniqueComradeFromSessionQuery = ReturnType<
+  typeof trpc.auth.findUniqueComradeFromSession.useQuery
+>;
+
 export type UseAuthResult = {
   comrade: Comrade | null;
   isAuthenticated: boolean;
-  loginMutation: UseMutationResult<Comrade, Error, AuthLoginVariables>;
-  logoutMutation: UseMutationResult<void, Error, void>;
+  findUniqueComradeFromSessionQuery: FindUniqueComradeFromSessionQuery;
+  createOneLoginSessionMutation: CreateOneLoginSessionMutation;
+  deleteOneLoginSessionMutation: DeleteOneLoginSessionMutation;
 };
 
 export function useAuth(): UseAuthResult {
-  const queryClient = useQueryClient();
-  const comrade = useAuthStoreMock((state) => state.comrade);
+  const utils = trpc.useUtils();
+  const findUniqueComradeFromSessionQuery = trpc.auth.findUniqueComradeFromSession.useQuery(
+    undefined,
+    {
+      staleTime: Infinity,
+      retry: false,
+    },
+  );
+
+  const comrade: Comrade | null = findUniqueComradeFromSessionQuery.data ?? null;
   const isAuthenticated = Boolean(comrade);
 
-  const loginMutation = useMutation<Comrade, Error, AuthLoginVariables>({
-    mutationFn: async ({ username, password }: AuthLoginVariables): Promise<Comrade> => {
-      return useAuthStoreMock.getState().createLoginSession(username, password);
-    },
-    onSuccess: () => {
-      // TODO: invalidate tRPC / server-backed queries when real auth replaces the mock store.
+  const createOneLoginSessionMutation = trpc.auth.createOneLoginSession.useMutation({
+    onSuccess: async () => {
+      await utils.auth.findUniqueComradeFromSession.invalidate();
     },
   });
 
-  const logoutMutation = useMutation<void, Error, void>({
-    mutationFn: async (): Promise<void> => {
-      useAuthStoreMock.getState().endLoginSession();
-    },
-    onSuccess: () => {
-      queryClient.clear();
+  const deleteOneLoginSessionMutation = trpc.auth.deleteOneLoginSession.useMutation({
+    onSuccess: async () => {
+      await utils.auth.findUniqueComradeFromSession.invalidate();
     },
   });
 
   return {
     comrade,
     isAuthenticated,
-    loginMutation,
-    logoutMutation,
+    findUniqueComradeFromSessionQuery,
+    createOneLoginSessionMutation,
+    deleteOneLoginSessionMutation,
   };
 }

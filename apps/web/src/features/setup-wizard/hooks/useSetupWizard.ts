@@ -1,8 +1,9 @@
 import type { UseStepsReturn } from '@chakra-ui/react';
-import type { UseMutationResult } from '@tanstack/react-query';
+import { ComradeAvatarIconType } from '@proletariat-hub/web/shared';
 import { useCallback, useContext } from 'react';
 import { useFormContext } from 'react-hook-form';
 
+import type { CompleteWizardMutation } from '../completeWizardMutation';
 import { SetupSteps, STEP_FORM_FIELDS } from '../constants';
 import type { SetupWizardFormValues } from '../schema';
 import { assertSetupWizardContext, SetupWizardContext } from '../SetupWizardContext';
@@ -13,7 +14,7 @@ export type SetupWizardHookProps = {
   skipToNextWizardStep: () => void;
   goToPrevWizardStep: () => void;
   submitWizard: () => Promise<void>;
-  submitMutation: UseMutationResult<void, Error, SetupWizardFormValues>;
+  submitMutation: CompleteWizardMutation;
   setupSteps: SetupSteps[];
   isAdmin: boolean;
   stepIndex: number;
@@ -55,7 +56,13 @@ export function useSetupWizard(): SetupWizardHookProps {
 
   const submitWizard = useCallback(async (): Promise<void> => {
     await formMethods.handleSubmit((data) => {
-      submitMutation.mutate(data);
+      submitMutation.mutate({
+        ...data,
+        recruits: data.recruits.map((recruit) => ({
+          username: recruit.username,
+          icon: recruit.icon ?? ComradeAvatarIconType.USER,
+        })),
+      });
     })();
   }, [formMethods, submitMutation]);
 

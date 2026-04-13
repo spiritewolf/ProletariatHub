@@ -1,52 +1,64 @@
-import { parseComrade } from '@proletariat-hub/api/domains/comrade/mapper';
-import {
-  findFirstComrade,
-  findFirstComradeRecord,
-} from '@proletariat-hub/api/domains/comrade/queries';
-import type { PrismaClient } from '@proletariat-hub/database';
 import { type Comrade } from '@proletariat-hub/shared';
 import { TRPCError } from '@trpc/server';
 
 import type { ApiRequest } from '../../context';
-import { verifyPassword } from './password-hash';
+import type { ComradeAccessLayer } from '../comrade/accessLayer';
+import { parseComrade } from '../comrade/mapper';
+import { verifyPassword } from './passwordHash';
 
-export async function findFirstComradeFromSession(params: {
-  db: PrismaClient;
+export async function findUniqueComradeFromSession(params: {
+  comradeAccessLayer: ComradeAccessLayer;
   req: ApiRequest;
 }): Promise<Comrade | null> {
   const comradeId = params.req.session.get('comradeId');
   if (comradeId === undefined) {
     return null;
   }
-  return findFirstComrade({ db: params.db, where: { id: comradeId } });
+  try {
+    return await params.comradeAccessLayer.findUnique({ where: { id: comradeId } });
+  } catch (error: unknown) {
+    if (error instanceof TRPCError && error.code === 'NOT_FOUND') {
+      return null;
+    }
+    throw error;
+  }
 }
 
 export async function createOneLoginSession(params: {
-  db: PrismaClient;
+  comradeAccessLayer: ComradeAccessLayer;
   req: ApiRequest;
   input: { username: string; password: string };
 }): Promise<Comrade> {
-  const comradeDbRecord = await findFirstComradeRecord({
-    db: params.db,
-    where: { username: params.input.username },
-  });
-  if (comradeDbRecord === null) {
-    throw new TRPCError({
-      code: 'UNAUTHORIZED',
-      message: 'Invalid username or password',
+  try {
+    const comradeDbRecord = await params.comradeAccessLayer.findUniqueComradeUnsafeRaw({
+      username: params.input.username,
     });
+    const passwordOk = await verifyPassword(params.input.password, comradeDbRecord.password);
+    if (!passwordOk) {
+      throw new TRPCError({
+        code: 'UNAUTHORIZED',
+        message: 'Invalid username or password',
+      });
+    }
+    await params.req.session.regenerate();
+    params.req.session.set('comradeId', comradeDbRecord.id);
+    await params.req.session.save();
+    return parseComrade(comradeDbRecord);
+  } catch (error: unknown) {
+    if (error instanceof TRPCError) {
+      if (error.code === 'UNAUTHORIZED') {
+        throw error;
+      }
+      if (error.code === 'NOT_FOUND') {
+        throw new TRPCError({
+          code: 'UNAUTHORIZED',
+          message: 'Invalid username or password',
+        });
+      }
+      throw error;
+    }
+    throw error;
   }
-  const passwordOk = await verifyPassword(params.input.password, comradeDbRecord.password);
-  if (!passwordOk) {
-    throw new TRPCError({
-      code: 'UNAUTHORIZED',
-      message: 'Invalid username or password',
-    });
-  }
-  await params.req.session.regenerate();
-  params.req.session.set('comradeId', comradeDbRecord.id);
-  await params.req.session.save();
-  return parseComrade(comradeDbRecord);
 }
 
 export async function deleteOneLoginSession(params: { req: ApiRequest }): Promise<void> {

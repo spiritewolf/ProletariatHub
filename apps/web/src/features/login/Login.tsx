@@ -4,33 +4,61 @@ import { ComradeOnboardStatus } from '@proletariat-hub/web/shared';
 import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
 import { AuthFlowCard } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowCard';
 import { AuthFlowWrapper } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowWrapper';
+import { TRPCClientError } from '@trpc/client';
 import { ArrowRight } from 'lucide-react';
+import type { ReactElement } from 'react';
 import { useForm } from 'react-hook-form';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useSearchParams } from 'react-router-dom';
 
 import { loginFormSchema, type LoginFormState } from './types';
 
-export function Login(): React.ReactElement {
-  const { loginMutation } = useAuth();
+function formatLoginMutationError(error: unknown): string | null {
+  if (error instanceof TRPCClientError) {
+    // TRPCClientError.data is untyped at the client boundary; only `code` is read here.
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access -- intentional read of tRPC error payload
+    if (error.data?.code === 'UNAUTHORIZED') {
+      return 'Invalid username or password';
+    }
+    return 'Cannot reach the hub server. Start the API or check your connection, then try again.';
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return null;
+}
+
+export function Login(): ReactElement {
+  const { createOneLoginSessionMutation, findUniqueComradeFromSessionQuery } = useAuth();
+  const [searchParams] = useSearchParams();
 
   const { handleSubmit, register } = useForm<LoginFormState>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: { username: '', password: '' },
   });
 
-  const loginErrorMessage =
-    loginMutation.error instanceof Error ? loginMutation.error.message : null;
+  const loginErrorMessage = formatLoginMutationError(createOneLoginSessionMutation.error);
+
+  const loaderUnreachable =
+    searchParams.get('reason') === 'api_unreachable'
+      ? 'Cannot reach the hub server. Start the API or check your connection, then try again.'
+      : null;
+
+  const sessionProbeUnreachable = findUniqueComradeFromSessionQuery.isError
+    ? 'Cannot reach the hub server. Start the API or check your connection, then try again.'
+    : null;
+
+  const unreachableBanner = loaderUnreachable ?? sessionProbeUnreachable;
 
   const onSubmit = handleSubmit((formValues) => {
-    loginMutation.mutate({
+    createOneLoginSessionMutation.mutate({
       username: formValues.username,
       password: formValues.password,
     });
   });
 
   const loginRedirectPath =
-    loginMutation.isSuccess && loginMutation.data
-      ? loginMutation.data.onboardStatus === ComradeOnboardStatus.COMPLETE
+    createOneLoginSessionMutation.isSuccess && createOneLoginSessionMutation.data
+      ? createOneLoginSessionMutation.data.onboardStatus === ComradeOnboardStatus.COMPLETE
         ? '/'
         : '/setup'
       : null;
@@ -60,6 +88,11 @@ export function Login(): React.ReactElement {
         </Text>
         <form onSubmit={onSubmit}>
           <Stack gap={5}>
+            {unreachableBanner ? (
+              <Text color="status.error" fontSize="sm" role="alert">
+                {unreachableBanner}
+              </Text>
+            ) : null}
             <Field.Root>
               <Field.Label color="text.primary">Username</Field.Label>
               <Input autoComplete="username" required {...register('username')} />
@@ -74,12 +107,12 @@ export function Login(): React.ReactElement {
               />
             </Field.Root>
             {loginErrorMessage ? (
-              <Text color="status.error" fontSize="sm">
+              <Text color="status.error" fontSize="sm" role="alert">
                 {loginErrorMessage}
               </Text>
             ) : null}
             <Button type="submit" size="lg" width="full" variant="solid">
-              {loginMutation.isPending ? (
+              {createOneLoginSessionMutation.isPending ? (
                 'Opening the gates…'
               ) : (
                 <>

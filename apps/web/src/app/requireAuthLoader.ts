@@ -1,5 +1,6 @@
 import { type Comrade, ComradeOnboardStatus } from '@proletariat-hub/web/shared';
-import { useAuthStoreMock } from '@proletariat-hub/web/shared/hooks/auth/authStoreMock';
+import { trpcQueryUtils } from '@proletariat-hub/web/shared/lib/trpc';
+import { TRPCClientError } from '@trpc/client';
 import { redirect } from 'react-router-dom';
 
 export type RequireAuthLoaderOptions = {
@@ -7,8 +8,20 @@ export type RequireAuthLoaderOptions = {
 };
 
 export function requireAuthLoader(options?: RequireAuthLoaderOptions) {
-  return (): { comrade: Comrade } | ReturnType<typeof redirect> => {
-    const comrade = useAuthStoreMock.getState().comrade;
+  return async (): Promise<{ comrade: Comrade } | ReturnType<typeof redirect>> => {
+    try {
+      await trpcQueryUtils.auth.findUniqueComradeFromSession.ensureData(undefined, {
+        staleTime: Infinity,
+        retry: false,
+      });
+    } catch (error: unknown) {
+      if (error instanceof TRPCClientError) {
+        return redirect('/login');
+      }
+      return redirect('/login?reason=api_unreachable');
+    }
+
+    const comrade = trpcQueryUtils.auth.findUniqueComradeFromSession.getData(undefined) ?? null;
     if (comrade === null) {
       return redirect('/login');
     }

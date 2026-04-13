@@ -2,7 +2,7 @@ import { initTRPC } from '@trpc/server';
 import superjson from 'superjson';
 
 import type { Context } from './context';
-import { requireSessionComrade } from './middleware/session-comrade';
+import { requireSessionComrade } from './middleware/requireSessionComrade';
 
 const t = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -11,8 +11,11 @@ const t = initTRPC.context<Context>().create({
 export const router = t.router;
 export const publicProcedure = t.procedure;
 
-const sessionToComrade = t.middleware(async ({ ctx, next }) => {
-  const comrade = await requireSessionComrade({ req: ctx.req, db: ctx.db });
+const enforceAuthentication = t.middleware(async ({ ctx, next }) => {
+  const comrade = await requireSessionComrade({
+    req: ctx.req,
+    comradeAccessLayer: ctx.comradeAccessLayer,
+  });
   return next({
     ctx: {
       ...ctx,
@@ -21,4 +24,4 @@ const sessionToComrade = t.middleware(async ({ ctx, next }) => {
   });
 });
 
-export const protectedProcedure = t.procedure.use(sessionToComrade);
+export const protectedProcedure = t.procedure.use(enforceAuthentication);

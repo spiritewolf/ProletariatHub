@@ -81,3 +81,5 @@ docker-compose.override.yml
 .claude/
 .aider*
 .continue/
+
+docs/setup-guide.md

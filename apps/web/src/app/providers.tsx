@@ -1,26 +1,15 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { system } from '@proletariat-hub/ui';
-import { createTRPCClient, trpc } from '@proletariat-hub/web/app/trpc';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { appQueryClient, appTrpcClient, trpc } from '@proletariat-hub/web/shared/lib/trpc';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
-import { useState } from 'react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: { staleTime: 1000 * 60, refetchOnWindowFocus: true },
-        },
-      }),
-  );
-  const [trpcClient] = useState(() => createTRPCClient());
-
   return (
     <ChakraProvider value={system}>
       <ThemeProvider attribute="class" defaultTheme="system" disableTransitionOnChange>
-        <trpc.Provider client={trpcClient} queryClient={queryClient}>
-          <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+        <trpc.Provider client={appTrpcClient} queryClient={appQueryClient}>
+          <QueryClientProvider client={appQueryClient}>{children}</QueryClientProvider>
         </trpc.Provider>
       </ThemeProvider>
     </ChakraProvider>

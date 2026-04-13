@@ -5,7 +5,7 @@ import {
 } from '@trpc/server/adapters/fastify';
 import type { FastifyInstance } from 'fastify';
 
-import { type AppRouter, appRouter } from '../app-router';
+import { type AppRouter, appRouter } from '../appRouter';
 import type { Context } from '../context';
 
 export type CreateContextFn = (opts: CreateFastifyContextOptions) => Promise<Context>;

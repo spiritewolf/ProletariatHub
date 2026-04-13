@@ -1,11 +1,12 @@
-import type { PrismaClient } from '@proletariat-hub/database';
 import { ComradeOnboardStatus, ComradeRole } from '@proletariat-hub/shared';
+import { TRPCError } from '@trpc/server';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
 
 import type { ApiRequest } from '../src/context';
-import { hashPassword } from '../src/domains/auth/password-hash';
+import { hashPassword } from '../src/domains/auth/passwordHash';
 import { createOneLoginSession } from '../src/domains/auth/session';
+import type { ComradeAccessLayer } from '../src/domains/comrade/accessLayer';
 import type { ComradeDbRecord } from '../src/domains/comrade/types';
 
 const COMRADE_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
@@ -75,12 +76,14 @@ describe('createOneLoginSession', () => {
   });
 
   it('sets session comrade id and returns the comrade when credentials match', async (): Promise<void> => {
-    const db = mockDeep<PrismaClient>();
-    db.comrade.findFirst.mockResolvedValue(mockComradeRecord(passwordHash));
+    const comradeAccessLayer = mockDeep<ComradeAccessLayer>();
+    comradeAccessLayer.findUniqueComradeUnsafeRaw.mockResolvedValue(
+      mockComradeRecord(passwordHash),
+    );
     const { req, getComradeId, regenerate, save } = createSessionMock();
 
     const comrade = await createOneLoginSession({
-      db,
+      comradeAccessLayer,
       req,
       input: { username: 'alice', password: 'secret-pass' },
     });
@@ -93,13 +96,15 @@ describe('createOneLoginSession', () => {
   });
 
   it('rejects when the password does not match', async (): Promise<void> => {
-    const db = mockDeep<PrismaClient>();
-    db.comrade.findFirst.mockResolvedValue(mockComradeRecord(passwordHash));
+    const comradeAccessLayer = mockDeep<ComradeAccessLayer>();
+    comradeAccessLayer.findUniqueComradeUnsafeRaw.mockResolvedValue(
+      mockComradeRecord(passwordHash),
+    );
     const { req } = createSessionMock();
 
     await expect(
       createOneLoginSession({
-        db,
+        comradeAccessLayer,
         req,
         input: { username: 'alice', password: 'wrong-pass' },
       }),
@@ -107,13 +112,15 @@ describe('createOneLoginSession', () => {
   });
 
   it('rejects when no comrade exists for the username', async (): Promise<void> => {
-    const db = mockDeep<PrismaClient>();
-    db.comrade.findFirst.mockResolvedValue(null);
+    const comradeAccessLayer = mockDeep<ComradeAccessLayer>();
+    comradeAccessLayer.findUniqueComradeUnsafeRaw.mockRejectedValue(
+      new TRPCError({ code: 'NOT_FOUND', message: 'Record not found' }),
+    );
     const { req } = createSessionMock();
 
     await expect(
       createOneLoginSession({
-        db,
+        comradeAccessLayer,
         req,
         input: { username: 'nobody', password: 'secret-pass' },
       }),
