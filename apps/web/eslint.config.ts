@@ -1,4 +1,3 @@
-import { defineConfig } from 'eslint/config';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
@@ -56,15 +55,13 @@ const sharedNoFeatureOrAppImports = {
   ],
 };
 
-export default defineConfig([
+export default [
   ...rootConfig,
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
-        projectService: {
-          allowDefaultProject: ['eslint.config.ts'],
-        },
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
@@ -103,4 +100,4 @@ export default defineConfig([
       'no-restricted-imports': ['error', sharedNoFeatureOrAppImports],
     },
   },
-]);
+];

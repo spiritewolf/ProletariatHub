@@ -105,6 +105,7 @@ model Role {
   @@index([archivedAt])
 }
 
+// TODO: Reserved for future session audit / multi-device tracking — not used by @fastify/session + Redis in Step 2.
 model Session {
   id        String   @id @default(uuid()) @db.Uuid
   createdAt DateTime @default(now())

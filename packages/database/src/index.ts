@@ -1,2 +1,2 @@
 export { prisma } from './client';
-export type { PrismaClient } from './generated/prisma';
+export type { Prisma, PrismaClient } from './generated/prisma';

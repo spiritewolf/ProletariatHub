@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "exports": {
-    "./router": "./src/router/index.ts",
+    "./domains/comrade/mapper": "./src/domains/comrade/mapper.ts",
+    "./domains/comrade/queries": "./src/domains/comrade/queries.ts",
+    "./domains/comrade/types": "./src/domains/comrade/types.ts",
+    "./router": "./src/app-router.ts",
     "./trpc": "./src/trpc.ts"
   },
   "scripts": {
@@ -13,7 +16,8 @@
     "start": "node dist/server.js",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit && tsc --noEmit -p tsconfig.tools.json",
-    "test": "vitest"
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
@@ -23,16 +27,20 @@
     "@proletariat-hub/database": "workspace:*",
     "@proletariat-hub/shared": "workspace:*",
     "@trpc/server": "^11.8.1",
+    "bcrypt": "^5.1.1",
+    "connect-redis": "^7.1.1",
     "fastify": "^5.6.2",
     "ioredis": "^5.9.1",
     "superjson": "^2.2.6",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "eslint": "^9.39.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.0",
-    "vitest": "^4.0.16"
+    "vitest": "^4.0.16",
+    "vitest-mock-extended": "^4.0.0"
   }
 }

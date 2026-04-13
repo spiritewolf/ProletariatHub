@@ -1,85 +1,44 @@
-import cookie from '@fastify/cookie';
-import cors from '@fastify/cors';
-import session from '@fastify/session';
-import { createContext } from '@proletariat-hub/api/context';
-import { type AppRouter, appRouter } from '@proletariat-hub/api/router';
-import { registerHealthRoutes } from '@proletariat-hub/api/routes/health';
-import { getRedis, initRedis } from '@proletariat-hub/api/shared/lib/redis';
 import { validateEnv } from '@proletariat-hub/config';
 import { prisma } from '@proletariat-hub/database';
-import { fastifyTRPCPlugin, type FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 import fastify from 'fastify';
 
-const env = validateEnv();
-initRedis(env.REDIS_URL);
+import { createContext } from './create-context';
+import { registerHealth } from './routes/health';
+import { registerCors } from './services/cors';
+import { registerSession } from './services/session';
+import { registerTrpc } from './services/trpc';
+import { getRedis, initRedis } from './shared/lib/redis';
+import { registerShutdown } from './shared/lib/shutdown';
 
-const server = fastify({
-  logger: true,
-  routerOptions: {
-    maxParamLength: 5000,
-  },
-});
+async function start(): Promise<void> {
+  const env = validateEnv();
+  initRedis(env.REDIS_URL);
 
-let isShuttingDown = false;
-
-async function shutdown(signal: NodeJS.Signals) {
-  if (isShuttingDown) {
-    process.exit(1);
-  }
-  isShuttingDown = true;
-  server.log.info({ signal }, 'Shutting down');
-  try {
-    await server.close();
-    await prisma.$disconnect();
-    await getRedis().quit();
-  } catch (err: unknown) {
-    server.log.error(err);
-  }
-  process.exit(0);
-}
-
-process.on('SIGINT', () => {
-  void shutdown('SIGINT');
-});
-process.on('SIGTERM', () => {
-  void shutdown('SIGTERM');
-});
-
-async function start() {
-  const corsOrigin = env.NODE_ENV === 'production' ? false : env.WEB_ORIGIN;
-
-  await server.register(cors, {
-    origin: corsOrigin,
-    credentials: true,
-  });
-
-  await server.register(cookie);
-
-  await server.register(session, {
-    secret: env.SESSION_SECRET,
-    cookieName: 'sessionId',
-    cookie: {
-      path: '/',
-      httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 7,
+  const server = fastify({
+    logger: true,
+    routerOptions: {
+      maxParamLength: 5000,
     },
   });
 
-  await server.register(fastifyTRPCPlugin, {
-    prefix: '/trpc',
-    trpcOptions: {
-      router: appRouter,
-      createContext,
-    } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
-  });
+  const redis = getRedis();
 
-  await registerHealthRoutes(server);
+  await registerCors(server, env);
+  await registerSession(server, redis, env);
+  await registerTrpc(server, { createContext });
+  await registerHealth(server);
+
+  registerShutdown(server, [
+    () => prisma.$disconnect(),
+    async () => {
+      await redis.quit();
+    },
+  ]);
+
   await server.listen({ port: env.PORT, host: '0.0.0.0' });
 }
 
 start().catch((err: unknown) => {
-  server.log.error(err);
+  console.error(err);
   process.exit(1);
 });

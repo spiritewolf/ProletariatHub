@@ -7,6 +7,7 @@
     "build": "node ./scripts/turbo-with-env.mjs build",
     "lint": "node ./scripts/turbo-with-env.mjs lint",
     "typecheck": "node ./scripts/turbo-with-env.mjs typecheck",
+    "test": "node ./scripts/turbo-with-env.mjs test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "db:generate": "node ./scripts/turbo-with-env.mjs db:generate",

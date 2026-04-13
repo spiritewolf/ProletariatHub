@@ -9,7 +9,11 @@ export default defineConfig([
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['eslint.config.ts', 'vitest.config.ts'],
+          allowDefaultProject: [
+            'eslint.config.ts',
+            'vitest.config.ts',
+            'test/login-session.test.ts',
+          ],
         },
         tsconfigRootDir: import.meta.dirname,
       },

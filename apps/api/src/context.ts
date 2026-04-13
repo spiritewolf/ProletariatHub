@@ -1,9 +1,20 @@
-import { getRedis } from '@proletariat-hub/api/shared/lib/redis';
-import { prisma } from '@proletariat-hub/database';
-import type { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
+import type { PrismaClient } from '@proletariat-hub/database';
 
-export async function createContext({ req, res }: CreateFastifyContextOptions) {
-  return { req, res, db: prisma, redis: getRedis() };
-}
+export type SessionApi = {
+  regenerate(): Promise<void>;
+  set(key: 'comradeId', value: string): void;
+  get(key: 'comradeId'): string | undefined;
+  save(): Promise<void>;
+  destroy(): Promise<void>;
+};
 
-export type Context = Awaited<ReturnType<typeof createContext>>;
+export type ApiRequest = {
+  session: SessionApi;
+};
+
+export type Context = {
+  req: ApiRequest;
+  res: unknown;
+  db: PrismaClient;
+  redis: unknown;
+};
