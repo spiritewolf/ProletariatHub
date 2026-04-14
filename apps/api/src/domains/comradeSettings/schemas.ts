@@ -33,9 +33,9 @@ export const updateComradeSettingsInputSchema = z
 
 export const comradeSettingsConfigOutputSchema: z.ZodType<ComradeSettingsConfig> = z.object({
   id: z.string().uuid(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-  birthDate: z.coerce.date().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  birthDate: z.date().nullable(),
   avatarIcon: z.nativeEnum(ComradeAvatarIconType).nullable(),
   avatarColor: z.string().nullable(),
   phoneNumber: z.string().nullable(),

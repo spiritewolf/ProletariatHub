@@ -1,5 +1,5 @@
 .PHONY: lint typecheck format format_check check \
-        db_generate db_migrate db_seed db_reset db_studio clean
+        db_generate db_migrate db_migrate_deploy db_seed db_reset db_studio clean
 
 COMPOSE := docker compose
 
@@ -22,6 +22,9 @@ db_generate:
 
 db_migrate:
 	$(COMPOSE) run --rm -T api pnpm run db:migrate
+
+db_migrate_deploy:
+	$(COMPOSE) run --rm -T api pnpm run db:migrate:deploy
 
 db_seed:
 	$(COMPOSE) run --rm -T api pnpm run db:seed

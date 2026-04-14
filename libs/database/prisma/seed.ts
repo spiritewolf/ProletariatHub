@@ -1,5 +1,5 @@
 import { ComradeOnboardStatus, ComradeRole } from '@proletariat-hub/types';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 import { prisma } from '../src/client';
 
@@ -17,7 +17,7 @@ async function main(): Promise<void> {
     return;
   }
 
-  const adminPasswordHash: string = await bcrypt.hash(SEED_ADMIN_PASSWORD, 12);
+  const adminPasswordHash: string = bcrypt.hashSync(SEED_ADMIN_PASSWORD, 12);
 
   await prisma.role.createMany({
     data: [

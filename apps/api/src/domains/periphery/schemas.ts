@@ -50,9 +50,9 @@ export const updateOnePeripheryInputSchema = z.object({
 
 const peripherySettingsOutputSchema = z.object({
   id: z.string().uuid(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
-  birthDate: z.coerce.date().nullable(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  birthDate: z.date().nullable(),
   avatarIcon: peripheryAvatarIconSchema.nullable(),
   avatarColor: z.string().nullable(),
   phoneNumber: z.string().nullable(),
@@ -61,8 +61,8 @@ const peripherySettingsOutputSchema = z.object({
 
 export const peripheryOutputSchema: z.ZodType<Periphery> = z.object({
   id: z.string().uuid(),
-  createdAt: z.coerce.date(),
-  updatedAt: z.coerce.date(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
   name: z.string(),
   peripheryCategory: peripheryCategorySchema,
   notes: z.string().nullable(),

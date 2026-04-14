@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Exit 0: esbuild and rollup native optional deps match this OS.
+ * Exit 0: native deps match this OS (esbuild, rollup).
  * Exit 2: wrong/missing optional platform packages — heal by reinstalling node_modules.
  * Exit 1: any other failure (do not delete node_modules).
  *
@@ -18,7 +18,10 @@ function shouldHealNodeModules(message) {
     /package is present but this platform needs/i.test(message) ||
     /You installed esbuild for another platform/i.test(message) ||
     /Cannot find module '@rollup\/rollup-/i.test(message) ||
-    /Cannot find module '@esbuild\//i.test(message)
+    /Cannot find module '@esbuild\//i.test(message) ||
+    /Exec format error/i.test(message) ||
+    /ERR_DLOPEN_FAILED/i.test(message) ||
+    /wrong ELF class/i.test(message)
   );
 }
 

@@ -9,10 +9,11 @@ const repoRoot = path.resolve(packageDir, '../..');
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, repoRoot, '');
-  const apiProxyTarget = process.env.VITE_API_URL ?? env.VITE_API_URL;
+  const apiProxyTarget =
+    process.env.VITE_PROXY_TARGET ?? process.env.VITE_API_URL ?? env.VITE_API_URL;
   if (!apiProxyTarget) {
     throw new Error(
-      'Set VITE_API_URL (environment variable or repo root .env; see .env.example). It must match the API origin (scheme, host, port) for the dev proxy and tRPC client.',
+      'Set VITE_API_URL (and in Docker web, VITE_PROXY_TARGET=http://api:3000) — see .env.example and docker-compose.yml.',
     );
   }
 

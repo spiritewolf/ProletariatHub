@@ -1,13 +1,10 @@
-import type { PrismaClient } from '@proletariat-hub/database';
-
 import type {
   CreateOnePeripheryMutationData,
+  HubPeripheryDb,
   PeripheryDbRecord,
   UpdateOnePeripheryData,
 } from './types';
 import { PERIPHERY_DEFAULT_INCLUDE } from './types';
-
-type HubPeripheryDb = Pick<PrismaClient, 'hubPeriphery'>;
 
 export async function createOnePeriphery(params: {
   db: HubPeripheryDb;

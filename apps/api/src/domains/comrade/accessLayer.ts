@@ -81,9 +81,6 @@ export class ComradeAccessLayer {
   async createMany(params: { data: CreateOneComradeInput[] }): Promise<Comrade[]> {
     return this.domainError.returnOrThrowTRPCError(async () => {
       const ids = await createManyComrades({ db: this.db, data: params.data });
-      if (ids.length === 0) {
-        return [];
-      }
       return this.findMany({ where: { ids } });
     });
   }

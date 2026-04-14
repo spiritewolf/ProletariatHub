@@ -13,7 +13,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Comrade } from '@proletariat-hub/types';
 import { trpc } from '@proletariat-hub/web/shared/trpc';
-import { TRPCClientError } from '@trpc/client';
 import { Settings, Sparkle, X } from 'lucide-react';
 import { type ReactElement, useEffect, useRef } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -21,10 +20,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { comradeSettingsFormSchema } from './schema';
 import type { ComradeSettingsFormValues, ComradeSettingsParsedValues } from './types';
 
-function formatComradeSettingsSaveError(error: unknown): string | null {
-  if (error instanceof TRPCClientError) {
-    return error.message;
-  }
+function formatComradeSettingsSaveError(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
   }
@@ -35,7 +31,7 @@ function buildDefaultValues(comrade: Comrade): ComradeSettingsFormValues {
   return {
     username: comrade.username,
     birthDate:
-      comrade.settings.birthDate == null
+      comrade.settings.birthDate === null
         ? ''
         : comrade.settings.birthDate.toISOString().slice(0, 10),
     phoneNumber: comrade.settings.phoneNumber ?? '',
@@ -50,13 +46,13 @@ function buildDefaultValues(comrade: Comrade): ComradeSettingsFormValues {
 type ComradeSettingsDrawerProps = {
   comrade: Comrade;
   isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
+  onClose: () => void;
 };
 
 export function ComradeSettingsDrawer({
   comrade,
   isOpen,
-  onOpenChange,
+  onClose,
 }: ComradeSettingsDrawerProps): ReactElement {
   const utils = trpc.useUtils();
   const updateOneMutation = trpc.comrade.updateOne.useMutation();
@@ -78,34 +74,23 @@ export function ComradeSettingsDrawer({
   }, [isOpen, comrade, reset]);
 
   const onSubmitForm = (values: ComradeSettingsParsedValues): void => {
-    const phone = values.phoneNumber ?? '';
-    const signal = values.signalUsername ?? '';
-    const telegram = values.telegramUsername ?? '';
-    const birth = values.birthDate ?? '';
-
     updateOneMutation.mutate(
       {
-        email: values.email ?? null,
-        phoneNumber: phone === '' ? null : phone,
-        signalUsername: signal === '' ? null : signal,
-        telegramUsername: telegram === '' ? null : telegram,
-        birthDate: birth === '' ? null : birth,
-        newPassword: values.newPassword ?? '',
-        confirmPassword: values.confirmPassword ?? '',
+        email: values.email || null,
+        phoneNumber: values.phoneNumber || null,
+        signalUsername: values.signalUsername || null,
+        telegramUsername: values.telegramUsername || null,
+        birthDate: values.birthDate || null,
+        newPassword: values.newPassword || undefined,
+        confirmPassword: values.confirmPassword || undefined,
       },
       {
-        onSuccess: (settings) => {
-          void utils.auth.findUniqueComradeFromSession.invalidate().then(() => {
-            reset({
-              username: getValues('username'),
-              birthDate: settings.birthDate ? settings.birthDate.toISOString().slice(0, 10) : '',
-              phoneNumber: settings.phoneNumber ?? '',
-              email: settings.email ?? '',
-              signalUsername: settings.signalUsername ?? '',
-              telegramUsername: settings.telegramUsername ?? '',
-              newPassword: '',
-              confirmPassword: '',
-            });
+        onSuccess: () => {
+          void utils.auth.findUniqueComradeFromSession.invalidate();
+          reset({
+            ...getValues(),
+            newPassword: '',
+            confirmPassword: '',
           });
         },
       },
@@ -115,8 +100,8 @@ export function ComradeSettingsDrawer({
   const onDrawerOpenChange = (details: { open: boolean }): void => {
     if (!details.open) {
       updateOneMutation.reset();
+      onClose();
     }
-    onOpenChange(details.open);
   };
 
   const saveErrorMessage = updateOneMutation.isError
@@ -133,7 +118,7 @@ export function ComradeSettingsDrawer({
       size={{ base: 'full', md: 'lg' }}
     >
       <Drawer.Backdrop bg="blackAlpha.600" />
-      <Drawer.Positioner w={{ base: '100%', md: 'auto' }} padding={0}>
+      <Drawer.Positioner padding={0}>
         <Drawer.Content
           w={{ base: '100%', md: '31vw' }}
           minW={{ base: '100%', md: 'auto' }}

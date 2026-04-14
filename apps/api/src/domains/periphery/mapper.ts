@@ -6,11 +6,9 @@ import {
 } from '@proletariat-hub/types';
 
 import { validateConstEnumType } from '../../shared/util/helpers';
-import type { PeripheryDbRecord } from './types';
+import type { PeripheryDbRecord, PeripherySettingsDbRecord } from './types';
 
-function parsePeripherySettings(
-  settings: PeripheryDbRecord['settings'],
-): HubPeripherySettingsConfig {
+function parsePeripherySettings(settings: PeripherySettingsDbRecord): HubPeripherySettingsConfig {
   return {
     id: settings.id,
     createdAt: settings.createdAt,

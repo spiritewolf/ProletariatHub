@@ -7,10 +7,21 @@ import { appQueryClient } from './queryClient';
 
 export const trpc = createTRPCReact<AppRouter>();
 
+function trpcHttpUrl(): string {
+  if (import.meta.env.DEV) {
+    return '/trpc';
+  }
+  const base = import.meta.env.VITE_API_URL;
+  if (typeof base !== 'string' || base.length === 0) {
+    throw new Error('VITE_API_URL is required for production builds');
+  }
+  return `${base.replace(/\/$/, '')}/trpc`;
+}
+
 function createLinks() {
   return [
     httpBatchLink({
-      url: `${import.meta.env.VITE_API_URL}/trpc`,
+      url: trpcHttpUrl(),
       fetch(url, options) {
         return fetch(url, { ...options, credentials: 'include' });
       },

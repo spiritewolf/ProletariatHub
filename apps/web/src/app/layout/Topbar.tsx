@@ -62,13 +62,7 @@ export function Topbar(): ReactElement {
               <ComradeSettingsDrawer
                 comrade={comrade}
                 isOpen={settingsDrawer.open}
-                onOpenChange={(nextOpen) => {
-                  if (nextOpen) {
-                    settingsDrawer.onOpen();
-                  } else {
-                    settingsDrawer.onClose();
-                  }
-                }}
+                onClose={settingsDrawer.onClose}
               />
             </>
           ) : null}

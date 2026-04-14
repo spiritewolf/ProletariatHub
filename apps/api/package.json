@@ -28,7 +28,7 @@
     "@proletariat-hub/database": "workspace:*",
     "@proletariat-hub/types": "workspace:*",
     "@trpc/server": "^11.8.1",
-    "bcrypt": "^5.1.1",
+    "bcryptjs": "^3.0.2",
     "connect-redis": "^7.1.1",
     "fastify": "^5.6.2",
     "ioredis": "^5.9.1",
@@ -36,7 +36,6 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
     "eslint": "^9.39.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",

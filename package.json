@@ -12,6 +12,7 @@
     "format:check": "prettier --check .",
     "db:generate": "node ./scripts/turbo-with-env.mjs db:generate",
     "db:migrate": "node ./scripts/turbo-with-env.mjs db:migrate",
+    "db:migrate:deploy": "node ./scripts/turbo-with-env.mjs db:migrate:deploy",
     "db:seed": "node ./scripts/turbo-with-env.mjs db:seed"
   },
   "packageManager": "pnpm@9.15.0",
