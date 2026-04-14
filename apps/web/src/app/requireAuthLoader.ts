@@ -1,5 +1,5 @@
-import { type Comrade, ComradeOnboardStatus } from '@proletariat-hub/web/shared';
-import { trpcQueryUtils } from '@proletariat-hub/web/shared/lib/trpc';
+import { type Comrade, ComradeOnboardStatus } from '@proletariat-hub/types';
+import { trpcQueryUtils } from '@proletariat-hub/web/shared/trpc';
 import { TRPCClientError } from '@trpc/client';
 import { redirect } from 'react-router-dom';
 

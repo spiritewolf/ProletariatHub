@@ -1,5 +1,5 @@
-import { authRouter } from './domains/auth/router';
-import { comradeRouter } from './domains/comrade/router';
+import { authRouter } from './domains/auth';
+import { comradeRouter } from './domains/comrade';
 import { router } from './trpc';
 
 export const appRouter = router({

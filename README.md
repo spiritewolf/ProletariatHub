@@ -1,6 +1,6 @@
 # ProletariatHub
 
-Monorepo for the ProletariatHub apps (web, API, worker) and shared packages.
+Monorepo for the ProletariatHub apps (web, API, worker) and `libs/` (config, database, types).
 
 ## Local development
 

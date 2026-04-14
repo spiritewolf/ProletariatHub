@@ -1,4 +1,4 @@
 export * from './dashboard';
 export * from './login';
-export * from './setup-wizard';
-export * from './theme-preview';
+export * from './setupWizard';
+export * from './themePreview';

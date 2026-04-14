@@ -1,6 +1,2 @@
-export type { CompleteAdminSetupInput, CompleteMemberSetupInput } from './schemas';
-export {
-  completeAdminSetupInputSchema,
-  completeMemberSetupInputSchema,
-  comradeOutputSchema,
-} from './schemas';
+export { ComradeAccessLayer } from './accessLayer';
+export { comradeRouter } from './router';

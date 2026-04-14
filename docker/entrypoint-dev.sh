@@ -40,8 +40,7 @@ trap 'rmdir "$BUILD_LOCK" 2>/dev/null || true' EXIT
 pnpm exec turbo run build \
   --filter=@proletariat-hub/config \
   --filter=@proletariat-hub/database \
-  --filter=@proletariat-hub/shared \
-  --filter=@proletariat-hub/ui
+  --filter=@proletariat-hub/types
 
 rmdir "$BUILD_LOCK" 2>/dev/null || true
 trap - EXIT

@@ -1,5 +1,5 @@
 import { Flex, HStack, IconButton, Link, Text } from '@chakra-ui/react';
-import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
+import { useAuth } from '@proletariat-hub/web/shared/hooks';
 import { ThemeToggleButton } from '@proletariat-hub/web/shared/ui';
 import { LogOut } from 'lucide-react';
 import type { ReactElement } from 'react';

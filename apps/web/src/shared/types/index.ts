@@ -1,7 +1,7 @@
-export type { Comrade, Session } from '@proletariat-hub/shared';
+export type { Comrade, Session } from '@proletariat-hub/types';
 export {
   ComradeAvatarIconType,
   ComradeOnboardStatus,
   ComradeRole,
   DashboardTheme,
-} from '@proletariat-hub/shared';
+} from '@proletariat-hub/types';

@@ -1,5 +1,5 @@
 import type { PrismaClient } from '@proletariat-hub/database';
-import { ComradeOnboardStatus } from '@proletariat-hub/shared';
+import { ComradeOnboardStatus } from '@proletariat-hub/types';
 
 import { hashPassword } from '../auth/passwordHash';
 import { resolveComradeUniqueWhere } from './queries';

@@ -3,7 +3,7 @@ import {
   ComradeAvatarIconType,
   ComradeOnboardStatus,
   ComradeRole,
-} from '@proletariat-hub/shared';
+} from '@proletariat-hub/types';
 import { z } from 'zod';
 
 const comradeSettingsOutputSchema = z.object({

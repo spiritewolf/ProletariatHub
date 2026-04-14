@@ -1,8 +1,8 @@
-import type { Comrade } from '@proletariat-hub/shared';
+import type { Comrade } from '@proletariat-hub/types';
 import { TRPCError } from '@trpc/server';
 
-import type { ApiRequest } from '../context';
-import type { ComradeAccessLayer } from '../domains/comrade/accessLayer';
+import type { ComradeAccessLayer } from '../domains/comrade';
+import type { ApiRequest } from '../types/context';
 
 export async function requireSessionComrade(params: {
   req: ApiRequest;

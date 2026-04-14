@@ -3,9 +3,9 @@ import {
   ComradeAvatarIconType,
   ComradeOnboardStatus,
   ComradeRole,
-} from '@proletariat-hub/shared';
+} from '@proletariat-hub/types';
 
-import { validateConstEnumType } from '../../shared/lib/helpers';
+import { validateConstEnumType } from '../../shared/util/helpers';
 import type { ComradeDbRecord } from './types';
 
 export function parseComrade(comradeDbRecord: ComradeDbRecord): Comrade {

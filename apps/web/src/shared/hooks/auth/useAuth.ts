@@ -1,5 +1,5 @@
-import type { Comrade } from '@proletariat-hub/web/shared';
-import { trpc } from '@proletariat-hub/web/shared/lib/trpc';
+import type { Comrade } from '@proletariat-hub/types';
+import { trpc } from '@proletariat-hub/web/shared/trpc';
 
 export type AuthLoginVariables = {
   username: string;

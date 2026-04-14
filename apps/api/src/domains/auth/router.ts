@@ -1,5 +1,5 @@
 import { protectedProcedure, publicProcedure, router } from '../../trpc';
-import { comradeOutputSchema } from '../comrade';
+import { comradeOutputSchema } from '../comrade/schemas';
 import { loginInputSchema } from './schemas';
 import {
   createOneLoginSession,

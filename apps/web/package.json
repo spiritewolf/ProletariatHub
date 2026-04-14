@@ -8,14 +8,14 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typegen": "chakra typegen ./src/shared/ui/theme/index.ts --tsconfig ./tsconfig.json"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.34.0",
     "@emotion/react": "^11.14.0",
     "@hookform/resolvers": "^5.2.2",
-    "@proletariat-hub/shared": "workspace:*",
-    "@proletariat-hub/ui": "workspace:^",
+    "@proletariat-hub/types": "workspace:*",
     "@tanstack/react-query": "^5.90.16",
     "@trpc/client": "^11.8.1",
     "@trpc/react-query": "^11.8.1",
@@ -29,6 +29,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@chakra-ui/cli": "3.34.0",
     "@proletariat-hub/api": "workspace:*",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",

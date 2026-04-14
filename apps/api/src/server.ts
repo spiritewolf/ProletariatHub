@@ -3,12 +3,12 @@ import { prisma } from '@proletariat-hub/database';
 import fastify from 'fastify';
 
 import { createContext } from './createContext';
+import { registerCors } from './plugins/cors';
+import { registerSession } from './plugins/session';
+import { registerTrpc } from './plugins/trpc';
 import { registerHealth } from './routes/health';
-import { registerCors } from './services/cors';
-import { registerSession } from './services/session';
-import { registerTrpc } from './services/trpc';
-import { getRedis, initRedis } from './shared/lib/redis';
-import { registerShutdown } from './shared/lib/shutdown';
+import { getRedis, initRedis } from './shared/redis';
+import { registerShutdown } from './shared/shutdown';
 
 async function start(): Promise<void> {
   const env = validateEnv();

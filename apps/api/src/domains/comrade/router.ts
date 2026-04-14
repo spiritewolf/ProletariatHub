@@ -1,9 +1,12 @@
-import { ComradeOnboardStatus, ComradeRole } from '@proletariat-hub/shared';
+import { ComradeOnboardStatus, ComradeRole } from '@proletariat-hub/types';
 import { TRPCError } from '@trpc/server';
 
 import { protectedProcedure, router } from '../../trpc';
-import { comradeOutputSchema } from './index';
-import { completeAdminSetupInputSchema, completeMemberSetupInputSchema } from './schemas';
+import {
+  completeAdminSetupInputSchema,
+  completeMemberSetupInputSchema,
+  comradeOutputSchema,
+} from './schemas';
 
 export const comradeRouter = router({
   completeAdminSetup: protectedProcedure

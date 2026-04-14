@@ -1,9 +1,8 @@
 import { Button, Field, Heading, Input, Stack, Text } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ComradeOnboardStatus } from '@proletariat-hub/web/shared';
-import { useAuth } from '@proletariat-hub/web/shared/hooks/auth/useAuth';
-import { AuthFlowCard } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowCard';
-import { AuthFlowWrapper } from '@proletariat-hub/web/shared/ui/auth-flow/AuthFlowWrapper';
+import { ComradeOnboardStatus } from '@proletariat-hub/types';
+import { useAuth } from '@proletariat-hub/web/shared/hooks';
+import { AuthFlowCard, AuthFlowWrapper } from '@proletariat-hub/web/shared/ui';
 import { TRPCClientError } from '@trpc/client';
 import { ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';

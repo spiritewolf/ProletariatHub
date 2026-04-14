@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "postinstall": "pnpm --filter @proletariat-hub/ui run typegen",
+    "postinstall": "pnpm --filter @proletariat-hub/web run typegen",
     "build": "node ./scripts/turbo-with-env.mjs build",
     "lint": "node ./scripts/turbo-with-env.mjs lint",
     "typecheck": "node ./scripts/turbo-with-env.mjs typecheck",

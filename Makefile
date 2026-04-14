@@ -28,10 +28,10 @@ db_seed:
 	$(COMPOSE) run --rm -T api pnpm run db:seed
 
 db_reset:
-	$(COMPOSE) run --rm -T api sh -c 'cd packages/database && pnpm exec prisma migrate reset --force'
+	$(COMPOSE) run --rm -T api sh -c 'cd libs/database && pnpm exec prisma migrate reset --force'
 
 db_studio:
-	$(COMPOSE) run --rm -T -p 5555:5555 api sh -c 'cd packages/database && pnpm exec prisma studio --hostname 0.0.0.0 --port 5555'
+	$(COMPOSE) run --rm -T -p 5555:5555 api sh -c 'cd libs/database && pnpm exec prisma studio --hostname 0.0.0.0 --port 5555'
 
 changeset:
 	$(COMPOSE) run --rm --no-deps api pnpm changeset
@@ -40,10 +40,10 @@ version:
 	$(COMPOSE) run --rm --no-deps api pnpm changeset version
 
 build_ui:
-	$(COMPOSE) pnpm --filter @proletariat-hub/ui run build
+	$(COMPOSE) pnpm --filter @proletariat-hub/web run build
 
 generate_ui_types:
-	$(COMPOSE) pnpm --filter @proletariat-hub/ui run typegen
+	$(COMPOSE) pnpm --filter @proletariat-hub/web run typegen
 
 all_up:
 	$(COMPOSE) up -d

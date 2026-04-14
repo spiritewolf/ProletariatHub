@@ -1,7 +1,7 @@
-import { type Comrade } from '@proletariat-hub/shared';
+import { type Comrade } from '@proletariat-hub/types';
 import { TRPCError } from '@trpc/server';
 
-import type { ApiRequest } from '../../context';
+import type { ApiRequest } from '../../types/context';
 import type { ComradeAccessLayer } from '../comrade/accessLayer';
 import { parseComrade } from '../comrade/mapper';
 import { verifyPassword } from './passwordHash';

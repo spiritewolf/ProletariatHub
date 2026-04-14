@@ -7,15 +7,15 @@ Fastify server. **tRPC** is the main API surface (`/trpc`). **Prisma** is the DB
 | Path                   | Role                                                                                                                                                                            |
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/server.ts`        | Boot: env, Redis, Fastify plugins, listen                                                                                                                                       |
-| `src/services/`        | Fastify registration (CORS, session, tRPC adapter)                                                                                                                              |
+| `src/plugins/`         | Fastify registration (CORS, session, tRPC adapter)                                                                                                                              |
 | `src/routes/`          | Non-tRPC HTTP only (e.g. health)                                                                                                                                                |
 | `src/appRouter.ts`     | Root tRPC router: composes domain routers                                                                                                                                       |
 | `src/trpc.ts`          | tRPC init, `publicProcedure`, `protectedProcedure`                                                                                                                              |
-| `src/context.ts`       | Portable `Context` type (Prisma, Redis, `req`/`res`, entity access layers)                                                                                                      |
+| `src/types/context.ts` | Portable `Context` type (Prisma, Redis, `req`/`res`, entity access layers)                                                                                                      |
 | `src/createContext.ts` | Per-request `createContext`: builds access layers and returns `Context`                                                                                                         |
 | `src/middleware/`      | tRPC middleware (e.g. session to comrade via `comradeAccessLayer`)                                                                                                              |
 | `src/domains/<name>/`  | Entity domain: `accessLayer.ts`, internal `queries.ts` / `mutations.ts`, `mapper.ts`, `types.ts`, optional `router.ts` / `schemas.ts`; auth is infrastructure (no access layer) |
-| `src/shared/lib/`      | Cross-cutting helpers (Redis client, shutdown, small utilities)                                                                                                                 |
+| `src/shared/`          | Cross-cutting helpers (`util/`, Redis client, shutdown)                                                                                                                         |
 
 **Why domains:** Keeps DB and business rules next to the procedures that expose them. **Why `appRouter.ts`:** Single place to mount new domain routers so the client gets one `AppRouter` type.
 
@@ -37,7 +37,7 @@ Add **explicit Zod `.input()` / `.output()`** on procedures that cross the wire 
 Assume the UI already exists; you need a tRPC mutation that updates persisted settings for the **current** comrade.
 
 1. **Schema (Prisma)**  
-   In `packages/database`, change `schema.prisma` if columns or models are missing, then migrate. The API only talks to the DB through Prisma.
+   In `libs/database`, change `schema.prisma` if columns or models are missing, then migrate. The API only talks to the DB through Prisma.
 
 2. **Domain logic**  
    In `src/domains/comrade/`, implement Prisma writes in internal **`mutations.ts`** and expose orchestration through **`ComradeAccessLayer`** methods. Routers call `ctx.comradeAccessLayer`, not `mutations.ts` directly.
@@ -70,3 +70,4 @@ Assume the UI already exists; you need a tRPC mutation that updates persisted se
 
 - **`@proletariat-hub/database`:** Prisma schema, client, migrations.
 - **`@proletariat-hub/config`:** `validateEnv()` and env shape used by `server.ts`.
+- **`@proletariat-hub/types`:** Shared DTO types and const enums (e.g. `Comrade`, `ComradeRole`).

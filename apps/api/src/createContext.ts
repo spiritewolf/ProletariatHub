@@ -3,11 +3,11 @@ import './types/fastifyAugmentation.js';
 import { prisma } from '@proletariat-hub/database';
 import type { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
 
-import type { Context } from './context';
-import { ComradeAccessLayer } from './domains/comrade/accessLayer';
-import { HubAccessLayer } from './domains/hub/accessLayer';
-import { RoleAccessLayer } from './domains/role/accessLayer';
-import { getRedis } from './shared/lib/redis';
+import { ComradeAccessLayer } from './domains/comrade';
+import { HubAccessLayer } from './domains/hub';
+import { RoleAccessLayer } from './domains/role';
+import { getRedis } from './shared/redis';
+import type { Context } from './types/context';
 
 export async function createContext({ req, res }: CreateFastifyContextOptions): Promise<Context> {
   const roleAccessLayer = new RoleAccessLayer(prisma);

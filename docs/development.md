@@ -2,7 +2,7 @@
 
 ## Environment
 
-Copy `.env.example` to `.env`. Match **`VITE_API_URL`** to the API origin (e.g. `http://localhost:3000` when **`PORT`** is `3000`). Run `make db_generate` and `docker compose up`. Prisma schema and migrations live under **`packages/database`**.
+Copy `.env.example` to `.env`. Match **`VITE_API_URL`** to the API origin (e.g. `http://localhost:3000` when **`PORT`** is `3000`). Run `make db_generate` and `docker compose up`. Prisma schema and migrations live under **`libs/database`**.
 
 ## API domain pattern
 

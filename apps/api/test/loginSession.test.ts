@@ -1,13 +1,13 @@
-import { ComradeOnboardStatus, ComradeRole } from '@proletariat-hub/shared';
+import { ComradeOnboardStatus, ComradeRole } from '@proletariat-hub/types';
 import { TRPCError } from '@trpc/server';
 import { beforeAll, describe, expect, it, vi } from 'vitest';
 import { mockDeep } from 'vitest-mock-extended';
 
-import type { ApiRequest } from '../src/context';
 import { hashPassword } from '../src/domains/auth/passwordHash';
 import { createOneLoginSession } from '../src/domains/auth/session';
-import type { ComradeAccessLayer } from '../src/domains/comrade/accessLayer';
+import type { ComradeAccessLayer } from '../src/domains/comrade';
 import type { ComradeDbRecord } from '../src/domains/comrade/types';
+import type { ApiRequest } from '../src/types/context';
 
 const COMRADE_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const SETTINGS_ID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';

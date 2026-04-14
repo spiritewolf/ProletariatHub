@@ -6,7 +6,7 @@
   "exports": {
     "./domains/comrade": "./src/domains/comrade/index.ts",
     "./domains/comrade/mapper": "./src/domains/comrade/mapper.ts",
-    "./domains/comrade/schemas": "./src/domains/comrade/index.ts",
+    "./domains/comrade/schemas": "./src/domains/comrade/schemas.ts",
     "./domains/comrade/types": "./src/domains/comrade/types.ts",
     "./router": "./src/appRouter.ts",
     "./trpc": "./src/trpc.ts"
@@ -26,7 +26,7 @@
     "@fastify/session": "^11.1.1",
     "@proletariat-hub/config": "workspace:*",
     "@proletariat-hub/database": "workspace:*",
-    "@proletariat-hub/shared": "workspace:*",
+    "@proletariat-hub/types": "workspace:*",
     "@trpc/server": "^11.8.1",
     "bcrypt": "^5.1.1",
     "connect-redis": "^7.1.1",

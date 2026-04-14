@@ -1,3 +1,4 @@
-export * from './auth-flow';
+export * from './authFlow';
 export * from './common';
+export * from './theme';
 export * from './widgets';

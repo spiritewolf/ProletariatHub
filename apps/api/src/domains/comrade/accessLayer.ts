@@ -1,7 +1,7 @@
 import type { PrismaClient } from '@proletariat-hub/database';
 import { Prisma } from '@proletariat-hub/database';
-import type { Comrade } from '@proletariat-hub/shared';
-import { ComradeOnboardStatus, ComradeRole } from '@proletariat-hub/shared';
+import type { Comrade } from '@proletariat-hub/types';
+import { ComradeOnboardStatus, ComradeRole } from '@proletariat-hub/types';
 import { TRPCError } from '@trpc/server';
 
 import type { HubAccessLayer } from '../hub/accessLayer';
