@@ -33,6 +33,4 @@ Entity domains (models backed by Prisma, e.g. comrade, hub) expose an **access l
 | `make db_seed`      | Seed                             |
 | `make db_reset`     | Migrate reset (force)            |
 | `make db_studio`    | http://localhost:5555            |
-| `make changeset`    | Changesets (interactive)         |
-| `make version`      | `changeset version`              |
 | `make clean`        | `node_modules`, `dist`, `.turbo` |

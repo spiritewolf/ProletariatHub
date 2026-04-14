@@ -1,6 +1,5 @@
 .PHONY: lint typecheck format format_check check \
-        db_generate db_migrate db_seed db_reset db_studio \
-        changeset version clean
+        db_generate db_migrate db_seed db_reset db_studio clean
 
 COMPOSE := docker compose
 
@@ -32,12 +31,6 @@ db_reset:
 
 db_studio:
 	$(COMPOSE) run --rm -T -p 5555:5555 api sh -c 'cd libs/database && pnpm exec prisma studio --hostname 0.0.0.0 --port 5555'
-
-changeset:
-	$(COMPOSE) run --rm --no-deps api pnpm changeset
-
-version:
-	$(COMPOSE) run --rm --no-deps api pnpm changeset version
 
 build_ui:
 	$(COMPOSE) pnpm --filter @proletariat-hub/web run build

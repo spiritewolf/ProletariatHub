@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_call:
   pull_request:
   push:
     branches: [main]
@@ -12,46 +13,16 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:16-alpine
-        env:
-          POSTGRES_USER: proletariat
-          POSTGRES_PASSWORD: proletariat
-          POSTGRES_DB: proletariat_hub
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U proletariat"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
-      redis:
-        image: redis:7-alpine
-        ports:
-          - 6379:6379
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 5
+    timeout-minutes: 10
 
     env:
-      DATABASE_URL: postgresql://proletariat:proletariat@localhost:5432/proletariat_hub
-      REDIS_URL: redis://localhost:6379
-      SESSION_SECRET: ci-session-secret-minimum-thirty-two-characters-long
-      ENCRYPTION_KEY: ci-encryption-key-minimum-thirty-two-characters
       NODE_ENV: test
-      PORT: 3000
-      WEB_ORIGIN: http://localhost:5173
       VITE_API_URL: http://localhost:3000
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.0
 
       - uses: actions/setup-node@v4
         with:
@@ -59,12 +30,14 @@ jobs:
           cache: pnpm
 
       - name: Install
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Prisma generate
         run: pnpm db:generate
 
       - name: Prisma validate
+        env:
+          DATABASE_URL: postgresql://ci:ci@127.0.0.1:5432/ci
         run: pnpm --filter @proletariat-hub/database exec prisma validate
 
       - name: Lint

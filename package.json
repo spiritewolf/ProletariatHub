@@ -12,10 +12,7 @@
     "format:check": "prettier --check .",
     "db:generate": "node ./scripts/turbo-with-env.mjs db:generate",
     "db:migrate": "node ./scripts/turbo-with-env.mjs db:migrate",
-    "db:seed": "node ./scripts/turbo-with-env.mjs db:seed",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release:publish": "node ./scripts/turbo-with-env.mjs build --filter=@proletariat-hub/api --filter=@proletariat-hub/web --filter=@proletariat-hub/worker"
+    "db:seed": "node ./scripts/turbo-with-env.mjs db:seed"
   },
   "packageManager": "pnpm@9.15.0",
   "engines": {
@@ -23,7 +20,6 @@
     "pnpm": ">=9.0.0"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.29.8",
     "@eslint/js": "^9.39.1",
     "@playwright/test": "^1.57.0",
     "@types/node": "^22.19.3",

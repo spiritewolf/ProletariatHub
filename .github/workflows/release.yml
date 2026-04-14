@@ -1,94 +1,105 @@
 name: Release
 
-on:
-  push:
-    branches: [main]
+# ┌─────────────────────────────────────────────────────────────┐
+# │  DISABLED until first stable release.                       │
+# │                                                             │
+# │  To enable:                                                 │
+# │  1. Uncomment the 'on: push: tags:' trigger below           │
+# │  2. Delete the 'on: workflow_dispatch' placeholder          │
+# │  3. Commit, then tag: git tag v1.0.0 && git push origin v1.0.0  │
+# └─────────────────────────────────────────────────────────────┘
+
+# DISABLED: Uncomment to enable release on version tags:
+# on:
+#   push:
+#     tags: ['v*.*.*']
+
+# Placeholder — keeps GitHub from rejecting a workflow with no trigger.
+# Delete this line when you enable the real trigger above.
+on: workflow_dispatch
+
+env:
+  REGISTRY: ghcr.io
 
 permissions:
   contents: write
   packages: write
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
+  ci:
+    name: CI Checks
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
   release:
+    name: Build & Publish Images
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: ci
+
+    strategy:
+      matrix:
+        image:
+          - name: api
+            dockerfile: docker/Dockerfile.api
+          - name: web
+            dockerfile: docker/Dockerfile.web
+          - name: worker
+            dockerfile: docker/Dockerfile.worker
+
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9.15.0
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: pnpm
-
-      - name: Install
-        run: pnpm install
-
-      - name: Prisma generate
-        run: pnpm turbo db:generate
-
-      - uses: changesets/action@v1
-        id: changesets
-        with:
-          version: pnpm run version-packages
-          publish: pnpm run release:publish
-          createGithubReleases: false
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
-        if: steps.changesets.outputs.published == 'true'
         uses: docker/setup-buildx-action@v3
 
-      - name: Log in to GitHub Container Registry
-        if: steps.changesets.outputs.published == 'true'
+      - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract version
-        if: steps.changesets.outputs.published == 'true'
+      - name: Generate image tags
         id: meta
-        run: echo "version=$(node -p \"require('./apps/api/package.json').version\")" >> "$GITHUB_OUTPUT"
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/proletariat-hub-${{ matrix.image.name }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=raw,value=latest
 
-      - name: Build and push API
-        if: steps.changesets.outputs.published == 'true'
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: docker/Dockerfile.api
+          file: ${{ matrix.image.dockerfile }}
           target: production
           push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/proletariat-hub-api:latest
-            ghcr.io/${{ github.repository_owner }}/proletariat-hub-api:v${{ steps.meta.outputs.version }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      - name: Build and push worker
-        if: steps.changesets.outputs.published == 'true'
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          file: docker/Dockerfile.worker
-          target: production
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/proletariat-hub-worker:latest
-            ghcr.io/${{ github.repository_owner }}/proletariat-hub-worker:v${{ steps.meta.outputs.version }}
+  github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: release
 
-      - name: Build and push web
-        if: steps.changesets.outputs.published == 'true'
-        uses: docker/build-push-action@v6
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
         with:
-          context: .
-          file: docker/Dockerfile.web
-          target: production
-          push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/proletariat-hub-web:latest
-            ghcr.io/${{ github.repository_owner }}/proletariat-hub-web:v${{ steps.meta.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
