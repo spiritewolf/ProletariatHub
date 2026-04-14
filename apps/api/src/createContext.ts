@@ -4,15 +4,38 @@ import { prisma } from '@proletariat-hub/database';
 import type { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
 
 import { ComradeAccessLayer } from './domains/comrade';
+import { ComradeSettingsAccessLayer } from './domains/comradeSettings';
 import { HubAccessLayer } from './domains/hub';
+import { PeripheryAccessLayer } from './domains/periphery';
 import { RoleAccessLayer } from './domains/role';
 import { getRedis } from './shared/redis';
-import type { Context } from './types/context';
+import { createDomainErrorHandler } from './shared/util/prismaErrorHandler';
+import type { PublicContext } from './types/context';
 
-export async function createContext({ req, res }: CreateFastifyContextOptions): Promise<Context> {
-  const roleAccessLayer = new RoleAccessLayer(prisma);
-  const hubAccessLayer = new HubAccessLayer(prisma);
-  const comradeAccessLayer = new ComradeAccessLayer(prisma, { hubAccessLayer, roleAccessLayer });
+export async function createContext({
+  req,
+  res,
+}: CreateFastifyContextOptions): Promise<PublicContext> {
+  const comradeErrorHandler = createDomainErrorHandler('comrade');
+  const comradeSettingsErrorHandler = createDomainErrorHandler('comradeSettings');
+  const hubErrorHandler = createDomainErrorHandler('hub');
+  const peripheryErrorHandler = createDomainErrorHandler('periphery');
+  const roleErrorHandler = createDomainErrorHandler('role');
+
+  const roleAccessLayer = new RoleAccessLayer(prisma, roleErrorHandler);
+  const hubAccessLayer = new HubAccessLayer(prisma, hubErrorHandler);
+  const peripheryAccessLayer = new PeripheryAccessLayer(prisma, peripheryErrorHandler);
+  const comradeAccessLayer = new ComradeAccessLayer(prisma, comradeErrorHandler, {
+    hubAccessLayer,
+    roleAccessLayer,
+  });
+  const comradeSettingsAccessLayer = new ComradeSettingsAccessLayer(
+    prisma,
+    comradeSettingsErrorHandler,
+    {
+      comradeAccessLayer,
+    },
+  );
 
   return {
     req,
@@ -20,6 +43,8 @@ export async function createContext({ req, res }: CreateFastifyContextOptions): 
     db: prisma,
     redis: getRedis(),
     comradeAccessLayer,
+    comradeSettingsAccessLayer,
+    peripheryAccessLayer,
     hubAccessLayer,
     roleAccessLayer,
   };

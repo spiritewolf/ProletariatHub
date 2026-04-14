@@ -52,7 +52,7 @@ export function SetupWizardContent(): ReactElement {
               ProletariatHub
             </Heading>
             <Text mt={2} fontSize="sm" color="text.light" opacity={0.92}>
-              the household collective
+              the hub collective
             </Text>
             <HStack
               gap={2}

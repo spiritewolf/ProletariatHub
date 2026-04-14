@@ -6,17 +6,7 @@ import {
 } from '@proletariat-hub/types';
 import { z } from 'zod';
 
-const comradeSettingsOutputSchema = z.object({
-  id: z.string().uuid(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  avatarIcon: z.nativeEnum(ComradeAvatarIconType).nullable(),
-  avatarColor: z.string().nullable(),
-  phoneNumber: z.string().nullable(),
-  email: z.string().nullable(),
-  signalUsername: z.string().nullable(),
-  telegramUsername: z.string().nullable(),
-});
+import { comradeSettingsConfigOutputSchema } from '../comradeSettings/schemas';
 
 export const comradeOutputSchema: z.ZodType<Comrade> = z.object({
   id: z.string().uuid(),
@@ -25,12 +15,8 @@ export const comradeOutputSchema: z.ZodType<Comrade> = z.object({
   username: z.string(),
   role: z.nativeEnum(ComradeRole),
   onboardStatus: z.nativeEnum(ComradeOnboardStatus),
-  hubId: z.string().uuid().nullable().optional(),
-  settings: comradeSettingsOutputSchema,
-  phoneNumber: z.string().optional(),
-  email: z.string().optional(),
-  signalUsername: z.string().optional(),
-  telegramUsername: z.string().optional(),
+  hubId: z.string().uuid(),
+  settings: comradeSettingsConfigOutputSchema,
 });
 
 const recruitAvatarIconSchema = z.enum([

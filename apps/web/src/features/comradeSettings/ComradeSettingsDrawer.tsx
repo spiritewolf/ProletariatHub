@@ -1,0 +1,421 @@
+import {
+  Box,
+  Button,
+  Drawer,
+  Field,
+  Flex,
+  HStack,
+  Input,
+  Separator,
+  Stack,
+  Text,
+} from '@chakra-ui/react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { Comrade } from '@proletariat-hub/types';
+import { trpc } from '@proletariat-hub/web/shared/trpc';
+import { TRPCClientError } from '@trpc/client';
+import { Settings, Sparkle, X } from 'lucide-react';
+import { type ReactElement, useEffect, useRef } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+
+import { comradeSettingsFormSchema } from './schema';
+import type { ComradeSettingsFormValues, ComradeSettingsParsedValues } from './types';
+
+function formatComradeSettingsSaveError(error: unknown): string | null {
+  if (error instanceof TRPCClientError) {
+    return error.message;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return 'Could not save settings';
+}
+
+function buildDefaultValues(comrade: Comrade): ComradeSettingsFormValues {
+  return {
+    username: comrade.username,
+    birthDate:
+      comrade.settings.birthDate == null
+        ? ''
+        : comrade.settings.birthDate.toISOString().slice(0, 10),
+    phoneNumber: comrade.settings.phoneNumber ?? '',
+    email: comrade.settings.email ?? '',
+    signalUsername: comrade.settings.signalUsername ?? '',
+    telegramUsername: comrade.settings.telegramUsername ?? '',
+    newPassword: '',
+    confirmPassword: '',
+  };
+}
+
+type ComradeSettingsDrawerProps = {
+  comrade: Comrade;
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+};
+
+export function ComradeSettingsDrawer({
+  comrade,
+  isOpen,
+  onOpenChange,
+}: ComradeSettingsDrawerProps): ReactElement {
+  const utils = trpc.useUtils();
+  const updateOneMutation = trpc.comrade.updateOne.useMutation();
+
+  const formMethods = useForm<ComradeSettingsFormValues, unknown, ComradeSettingsParsedValues>({
+    resolver: zodResolver(comradeSettingsFormSchema),
+    mode: 'onChange',
+    defaultValues: buildDefaultValues(comrade),
+  });
+
+  const { handleSubmit, register, reset, formState, getValues } = formMethods;
+
+  const wasOpenRef = useRef(false);
+  useEffect(() => {
+    if (isOpen && !wasOpenRef.current) {
+      reset(buildDefaultValues(comrade));
+    }
+    wasOpenRef.current = isOpen;
+  }, [isOpen, comrade, reset]);
+
+  const onSubmitForm = (values: ComradeSettingsParsedValues): void => {
+    const phone = values.phoneNumber ?? '';
+    const signal = values.signalUsername ?? '';
+    const telegram = values.telegramUsername ?? '';
+    const birth = values.birthDate ?? '';
+
+    updateOneMutation.mutate(
+      {
+        email: values.email ?? null,
+        phoneNumber: phone === '' ? null : phone,
+        signalUsername: signal === '' ? null : signal,
+        telegramUsername: telegram === '' ? null : telegram,
+        birthDate: birth === '' ? null : birth,
+        newPassword: values.newPassword ?? '',
+        confirmPassword: values.confirmPassword ?? '',
+      },
+      {
+        onSuccess: (settings) => {
+          void utils.auth.findUniqueComradeFromSession.invalidate().then(() => {
+            reset({
+              username: getValues('username'),
+              birthDate: settings.birthDate ? settings.birthDate.toISOString().slice(0, 10) : '',
+              phoneNumber: settings.phoneNumber ?? '',
+              email: settings.email ?? '',
+              signalUsername: settings.signalUsername ?? '',
+              telegramUsername: settings.telegramUsername ?? '',
+              newPassword: '',
+              confirmPassword: '',
+            });
+          });
+        },
+      },
+    );
+  };
+
+  const onDrawerOpenChange = (details: { open: boolean }): void => {
+    if (!details.open) {
+      updateOneMutation.reset();
+    }
+    onOpenChange(details.open);
+  };
+
+  const saveErrorMessage = updateOneMutation.isError
+    ? formatComradeSettingsSaveError(updateOneMutation.error)
+    : null;
+
+  const isSaveDisabled = !formState.isDirty || updateOneMutation.isPending;
+
+  return (
+    <Drawer.Root
+      open={isOpen}
+      onOpenChange={onDrawerOpenChange}
+      placement="end"
+      size={{ base: 'full', md: 'lg' }}
+    >
+      <Drawer.Backdrop bg="blackAlpha.600" />
+      <Drawer.Positioner w={{ base: '100%', md: 'auto' }} padding={0}>
+        <Drawer.Content
+          w={{ base: '100%', md: '31vw' }}
+          minW={{ base: '100%', md: 'auto' }}
+          maxW={{ base: '100%', md: '31vw' }}
+          display="flex"
+          flexDirection="column"
+          h="100dvh"
+          maxH="100dvh"
+          overflow="hidden"
+          bg="bg.primary"
+          borderStartWidth={{ base: '0', md: '1px' }}
+          borderColor="border.primary"
+          borderRadius={{ base: '0', md: 'l2' }}
+        >
+          <Box
+            flexShrink={0}
+            bg="topbar.primary"
+            color="text.light"
+            px={{ base: 5, md: 6 }}
+            pt={5}
+            pb={4}
+          >
+            <Flex justify="space-between" align="flex-start" gap={3}>
+              <HStack gap={3} align="flex-start">
+                <Box color="text.light" opacity={0.92} lineHeight={0} pt="0.5">
+                  <Settings size={18} strokeWidth={2} aria-hidden />
+                </Box>
+                <Stack gap={1}>
+                  <Text fontSize="md" fontWeight="medium" color="text.light" lineHeight="short">
+                    Comrade settings
+                  </Text>
+                  <Text fontSize="xs" color="text.light" opacity={0.92} lineHeight="tall">
+                    Your profile, contact info, and security. Changes save when you&apos;re ready.
+                  </Text>
+                </Stack>
+              </HStack>
+              <Drawer.CloseTrigger asChild>
+                <Button
+                  type="button"
+                  aria-label="Close settings"
+                  variant="ghost"
+                  size="sm"
+                  color="text.light"
+                  opacity={0.75}
+                  minW="10"
+                  px={2}
+                  _hover={{ opacity: 1, bg: 'whiteAlpha.200' }}
+                >
+                  <X size={18} aria-hidden />
+                </Button>
+              </Drawer.CloseTrigger>
+            </Flex>
+          </Box>
+
+          <FormProvider {...formMethods}>
+            <Box
+              as="form"
+              id="comrade-settings-form"
+              onSubmit={(e) => {
+                void handleSubmit(onSubmitForm)(e);
+              }}
+              display="flex"
+              flexDirection="column"
+              flex="1"
+              minH={0}
+            >
+              <Drawer.Body
+                flex="1"
+                minH={0}
+                minW={0}
+                overflowY="auto"
+                overscrollBehavior="contain"
+                px={{ base: 5, md: 6 }}
+                py={5}
+              >
+                <Stack gap={5} align="stretch">
+                  <Stack gap={3}>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="semibold"
+                      letterSpacing="0.12em"
+                      color="accent.primary"
+                      textTransform="uppercase"
+                    >
+                      Profile
+                    </Text>
+                    <Field.Root>
+                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                        Username
+                      </Field.Label>
+                      <Input
+                        readOnly
+                        disabled
+                        variant="outline"
+                        borderRadius="full"
+                        bg="bg.secondary"
+                        borderColor="border.primary"
+                        py="2"
+                        px="3.5"
+                        fontSize="sm"
+                        {...register('username')}
+                      />
+                    </Field.Root>
+                    <Field.Root invalid={formState.errors.birthDate !== undefined}>
+                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                        Birth date
+                      </Field.Label>
+                      <Input
+                        type="date"
+                        variant="outline"
+                        borderRadius="full"
+                        py="2"
+                        px="3.5"
+                        fontSize="sm"
+                        borderColor="border.primary"
+                        {...register('birthDate')}
+                      />
+                      <Field.ErrorText>{formState.errors.birthDate?.message}</Field.ErrorText>
+                    </Field.Root>
+                  </Stack>
+
+                  <Separator borderColor="border.secondary" />
+
+                  <Stack gap={3}>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="semibold"
+                      letterSpacing="0.12em"
+                      color="accent.primary"
+                      textTransform="uppercase"
+                    >
+                      How we reach you
+                    </Text>
+                    <Field.Root invalid={formState.errors.phoneNumber !== undefined}>
+                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                        Phone (SMS)
+                      </Field.Label>
+                      <Input
+                        type="tel"
+                        autoComplete="tel"
+                        placeholder="+1 (555) 000-0000"
+                        variant="outline"
+                        borderRadius="full"
+                        py="2"
+                        px="3.5"
+                        fontSize="sm"
+                        borderColor="border.primary"
+                        {...register('phoneNumber')}
+                      />
+                      <Field.ErrorText>{formState.errors.phoneNumber?.message}</Field.ErrorText>
+                    </Field.Root>
+                    <Field.Root invalid={formState.errors.email !== undefined}>
+                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                        Email
+                      </Field.Label>
+                      <Input
+                        type="email"
+                        autoComplete="email"
+                        placeholder="comrade@hub.local"
+                        variant="outline"
+                        borderRadius="full"
+                        py="2"
+                        px="3.5"
+                        fontSize="sm"
+                        borderColor="border.primary"
+                        {...register('email')}
+                      />
+                      <Field.ErrorText>{formState.errors.email?.message}</Field.ErrorText>
+                    </Field.Root>
+                    <Field.Root invalid={formState.errors.signalUsername !== undefined}>
+                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                        Signal username
+                      </Field.Label>
+                      <Input
+                        placeholder="@comrade.01"
+                        variant="outline"
+                        borderRadius="full"
+                        py="2"
+                        px="3.5"
+                        fontSize="sm"
+                        borderColor="border.primary"
+                        {...register('signalUsername')}
+                      />
+                      <Field.ErrorText>{formState.errors.signalUsername?.message}</Field.ErrorText>
+                    </Field.Root>
+                    <Field.Root invalid={formState.errors.telegramUsername !== undefined}>
+                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                        Telegram username
+                      </Field.Label>
+                      <Input
+                        placeholder="@comrade_01"
+                        variant="outline"
+                        borderRadius="full"
+                        py="2"
+                        px="3.5"
+                        fontSize="sm"
+                        borderColor="border.primary"
+                        {...register('telegramUsername')}
+                      />
+                      <Field.ErrorText>
+                        {formState.errors.telegramUsername?.message}
+                      </Field.ErrorText>
+                    </Field.Root>
+                  </Stack>
+
+                  <Separator borderColor="border.secondary" />
+
+                  <Stack gap={3}>
+                    <Text
+                      fontSize="xs"
+                      fontWeight="semibold"
+                      letterSpacing="0.12em"
+                      color="accent.primary"
+                      textTransform="uppercase"
+                    >
+                      Security
+                    </Text>
+                    <Field.Root invalid={formState.errors.newPassword !== undefined}>
+                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                        New password
+                      </Field.Label>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="New password"
+                        variant="outline"
+                        borderRadius="full"
+                        py="2"
+                        px="3.5"
+                        fontSize="sm"
+                        borderColor="border.primary"
+                        {...register('newPassword')}
+                      />
+                      <Field.ErrorText>{formState.errors.newPassword?.message}</Field.ErrorText>
+                    </Field.Root>
+                    <Field.Root invalid={formState.errors.confirmPassword !== undefined}>
+                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                        Confirm password
+                      </Field.Label>
+                      <Input
+                        type="password"
+                        autoComplete="new-password"
+                        placeholder="Confirm password"
+                        variant="outline"
+                        borderRadius="full"
+                        py="2"
+                        px="3.5"
+                        fontSize="sm"
+                        borderColor="border.primary"
+                        {...register('confirmPassword')}
+                      />
+                      <Field.ErrorText>{formState.errors.confirmPassword?.message}</Field.ErrorText>
+                    </Field.Root>
+                  </Stack>
+
+                  {saveErrorMessage !== null ? (
+                    <Text fontSize="sm" color="status.error" role="alert">
+                      {saveErrorMessage}
+                    </Text>
+                  ) : null}
+                </Stack>
+              </Drawer.Body>
+
+              <Box flexShrink={0} px={{ base: 5, md: 6 }} pb={5} pt={2}>
+                <Button
+                  type="submit"
+                  form="comrade-settings-form"
+                  width="full"
+                  size="sm"
+                  variant="solid"
+                  borderRadius="full"
+                  fontSize="sm"
+                  disabled={isSaveDisabled}
+                  loading={updateOneMutation.isPending}
+                >
+                  Save changes <Sparkle size={16} aria-hidden style={{ display: 'inline' }} />
+                </Button>
+              </Box>
+            </Box>
+          </FormProvider>
+        </Drawer.Content>
+      </Drawer.Positioner>
+    </Drawer.Root>
+  );
+}

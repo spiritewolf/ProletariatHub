@@ -28,6 +28,7 @@ export type UpdateOneComradeInput = {
     phoneNumber?: string | null;
     signalUsername?: string | null;
     telegramUsername?: string | null;
+    birthDate?: Date | null;
   };
 };
 

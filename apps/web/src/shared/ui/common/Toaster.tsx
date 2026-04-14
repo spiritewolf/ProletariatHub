@@ -1,14 +1,14 @@
 import {
-  Toaster as ChakraToaster,
   createToaster,
   Portal,
   Spinner,
   Stack,
   Toast,
+  Toaster as ChakraToaster,
 } from '@chakra-ui/react';
 import type { ReactElement } from 'react';
 
-type ToastCreateInput = {
+export type ToastCreateInput = {
   type?: 'success' | 'error' | 'warning' | 'info' | 'loading';
   title?: string;
   description?: string;
@@ -16,12 +16,16 @@ type ToastCreateInput = {
   closable?: boolean;
 };
 
+export type HubToaster = {
+  create: (input: ToastCreateInput) => void;
+};
+
 const store = createToaster({
   placement: 'bottom-end',
   pauseOnPageIdle: true,
 });
 
-export const toaster = {
+export const toaster: HubToaster = {
   create(input: ToastCreateInput): void {
     store.create(input);
   },

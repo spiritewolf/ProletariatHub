@@ -30,6 +30,7 @@ export function parseComrade(comradeDbRecord: ComradeDbRecord): Comrade {
       id: comradeDbRecord.settings.id,
       createdAt: comradeDbRecord.settings.createdAt,
       updatedAt: comradeDbRecord.settings.updatedAt,
+      birthDate: comradeDbRecord.settings.birthDate,
       avatarIcon,
       avatarColor: comradeDbRecord.settings.avatarColor,
       phoneNumber: comradeDbRecord.settings.phoneNumber,
@@ -37,9 +38,5 @@ export function parseComrade(comradeDbRecord: ComradeDbRecord): Comrade {
       signalUsername: comradeDbRecord.settings.signalUsername,
       telegramUsername: comradeDbRecord.settings.telegramUsername,
     },
-    phoneNumber: comradeDbRecord.settings.phoneNumber ?? undefined,
-    email: comradeDbRecord.settings.email ?? undefined,
-    signalUsername: comradeDbRecord.settings.signalUsername ?? undefined,
-    telegramUsername: comradeDbRecord.settings.telegramUsername ?? undefined,
   };
 }

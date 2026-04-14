@@ -6,9 +6,9 @@ import {
 import type { FastifyInstance } from 'fastify';
 
 import { type AppRouter, appRouter } from '../appRouter';
-import type { Context } from '../types/context';
+import type { PublicContext } from '../types/context';
 
-export type CreateContextFn = (opts: CreateFastifyContextOptions) => Promise<Context>;
+export type CreateContextFn = (opts: CreateFastifyContextOptions) => Promise<PublicContext>;
 
 export async function registerTrpc(
   server: FastifyInstance,

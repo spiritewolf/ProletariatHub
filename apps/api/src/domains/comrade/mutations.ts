@@ -28,6 +28,7 @@ export async function updateOneComrade(params: {
           phoneNumber: data.settings.phoneNumber,
           signalUsername: data.settings.signalUsername,
           telegramUsername: data.settings.telegramUsername,
+          birthDate: data.settings.birthDate,
         },
       }
     : undefined;

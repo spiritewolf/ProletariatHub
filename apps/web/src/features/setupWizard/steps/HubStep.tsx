@@ -21,7 +21,7 @@ export function HubStep(): ReactElement {
           <Field.Label color="text.primary">Hub name</Field.Label>
           <Input variant="outline" borderRadius="full" {...register('hubName')} />
           <Field.HelperText color="text.secondary">
-            This is your household&apos;s name. You can change it later in Settings.
+            This is your hub&apos;s name. You can change it later in Settings.
           </Field.HelperText>
           <Field.ErrorText>{errors.hubName?.message}</Field.ErrorText>
         </Field.Root>

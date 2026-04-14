@@ -1,7 +1,11 @@
 import { ComradeOnboardStatus, ComradeRole } from '@proletariat-hub/types';
 import { TRPCError } from '@trpc/server';
 
-import { protectedProcedure, router } from '../../trpc';
+import { adminProcedure, protectedProcedure, router } from '../../trpc';
+import {
+  comradeSettingsConfigOutputSchema,
+  updateComradeSettingsInputSchema,
+} from '../comradeSettings/schemas';
 import {
   completeAdminSetupInputSchema,
   completeMemberSetupInputSchema,
@@ -9,13 +13,10 @@ import {
 } from './schemas';
 
 export const comradeRouter = router({
-  completeAdminSetup: protectedProcedure
+  completeAdminSetup: adminProcedure
     .input(completeAdminSetupInputSchema)
     .output(comradeOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      if (ctx.comrade.role !== ComradeRole.ADMIN) {
-        throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin setup only' });
-      }
       if (ctx.comrade.onboardStatus === ComradeOnboardStatus.COMPLETE) {
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'Setup already completed' });
       }
@@ -36,6 +37,16 @@ export const comradeRouter = router({
         throw new TRPCError({ code: 'BAD_REQUEST', message: 'Setup already completed' });
       }
       return ctx.comradeAccessLayer.completeMemberSetup({
+        comrade: ctx.comrade,
+        input,
+      });
+    }),
+
+  updateOne: protectedProcedure
+    .input(updateComradeSettingsInputSchema)
+    .output(comradeSettingsConfigOutputSchema)
+    .mutation(async ({ ctx, input }) => {
+      return ctx.comradeSettingsAccessLayer.updateOne({
         comrade: ctx.comrade,
         input,
       });

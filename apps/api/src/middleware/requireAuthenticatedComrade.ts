@@ -4,7 +4,7 @@ import { TRPCError } from '@trpc/server';
 import type { ComradeAccessLayer } from '../domains/comrade';
 import type { ApiRequest } from '../types/context';
 
-export async function requireSessionComrade(params: {
+export async function requireAuthenticatedComrade(params: {
   req: ApiRequest;
   comradeAccessLayer: ComradeAccessLayer;
 }): Promise<Comrade> {

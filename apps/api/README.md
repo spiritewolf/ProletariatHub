@@ -13,7 +13,7 @@ Fastify server. **tRPC** is the main API surface (`/trpc`). **Prisma** is the DB
 | `src/trpc.ts`          | tRPC init, `publicProcedure`, `protectedProcedure`                                                                                                                              |
 | `src/types/context.ts` | Portable `Context` type (Prisma, Redis, `req`/`res`, entity access layers)                                                                                                      |
 | `src/createContext.ts` | Per-request `createContext`: builds access layers and returns `Context`                                                                                                         |
-| `src/middleware/`      | tRPC middleware (e.g. session to comrade via `comradeAccessLayer`)                                                                                                              |
+| `src/middleware/`      | tRPC middleware (e.g. resolve authenticated comrade via `comradeAccessLayer`)                                                                                                   |
 | `src/domains/<name>/`  | Entity domain: `accessLayer.ts`, internal `queries.ts` / `mutations.ts`, `mapper.ts`, `types.ts`, optional `router.ts` / `schemas.ts`; auth is infrastructure (no access layer) |
 | `src/shared/`          | Cross-cutting helpers (`util/`, Redis client, shutdown)                                                                                                                         |
 
@@ -28,7 +28,7 @@ Fastify server. **tRPC** is the main API surface (`/trpc`). **Prisma** is the DB
 ## Procedures
 
 - **`publicProcedure`:** No login required. Use for login and anything that must work before a session exists.
-- **`protectedProcedure`:** Runs session middleware first (`middleware/requireSessionComrade.ts`): loads the comrade from `ctx.req.session` and DB, then continues with an augmented `ctx` (including `comrade`). Use for mutations/queries that must only run for a logged-in comrade.
+- **`protectedProcedure`:** Runs auth middleware first (`middleware/requireAuthenticatedComrade.ts`): loads the authenticated comrade from `ctx.req.session` and DB, then continues with an augmented `ctx` (including `comrade`). Use for mutations/queries that must only run for a logged-in comrade.
 
 Add **explicit Zod `.input()` / `.output()`** on procedures that cross the wire so the web client stays type-safe.
 

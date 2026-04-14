@@ -31,37 +31,30 @@ async function main(): Promise<void> {
     where: { roleType: ComradeRole.ADMIN },
   });
 
-  const comradeSettings = await prisma.comradeSettings.create({
+  const comradeSettings = await prisma.comradeSettingsConfig.create({
     data: {},
   });
 
-  const adminComrade = await prisma.comrade.create({
-    data: {
-      username: SEED_ADMIN_USERNAME,
-      password: adminPasswordHash,
-      onboardStatus: ComradeOnboardStatus.PENDING,
-      roleId: adminRole.id,
-      settingsId: comradeSettings.id,
-    },
-  });
-
   const hubSettings = await prisma.hubSettings.create({
-    data: {
-      updatedById: adminComrade.id,
-    },
+    data: {},
   });
 
   const hub = await prisma.hub.create({
     data: {
       name: 'My Hub',
       settingsId: hubSettings.id,
-      createdById: adminComrade.id,
     },
   });
 
-  await prisma.comrade.update({
-    where: { id: adminComrade.id },
-    data: { hubId: hub.id },
+  await prisma.comrade.create({
+    data: {
+      username: SEED_ADMIN_USERNAME,
+      password: adminPasswordHash,
+      onboardStatus: ComradeOnboardStatus.PENDING,
+      roleId: adminRole.id,
+      settingsId: comradeSettings.id,
+      hubId: hub.id,
+    },
   });
 
   console.info(

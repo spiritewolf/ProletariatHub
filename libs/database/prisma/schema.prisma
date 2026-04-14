@@ -19,12 +19,9 @@ model Hub {
   settingsId String      @unique @db.Uuid
   settings   HubSettings @relation(fields: [settingsId], references: [id])
 
-  createdById String  @db.Uuid
-  createdBy   Comrade @relation("HubCreator", fields: [createdById], references: [id])
+  comrades  Comrade[]      @relation("HubMembers")
+  periphery HubPeriphery[]
 
-  comrades Comrade[] @relation("HubMembers")
-
-  @@index([createdById])
   @@index([archivedAt])
 }
 
@@ -36,8 +33,8 @@ model HubSettings {
 
   dashboardTheme String @default("SYSTEM") // enum DashboardTheme
 
-  updatedById String  @db.Uuid
-  updatedBy   Comrade @relation("HubSettingsUpdater", fields: [updatedById], references: [id])
+  updatedById String?  @db.Uuid
+  updatedBy   Comrade? @relation("HubSettingsUpdater", fields: [updatedById], references: [id])
 
   hub Hub?
 
@@ -55,30 +52,30 @@ model Comrade {
   password      String
   onboardStatus String @default("PENDING") // enum ComradeOnboardStatus
 
-  settingsId String          @unique @db.Uuid
-  settings   ComradeSettings @relation(fields: [settingsId], references: [id])
+  settingsId String                @unique @db.Uuid
+  settings   ComradeSettingsConfig @relation(fields: [settingsId], references: [id])
 
-  hubId String? @db.Uuid
-  hub   Hub?    @relation("HubMembers", fields: [hubId], references: [id])
+  hubId String @db.Uuid
+  hub   Hub    @relation("HubMembers", fields: [hubId], references: [id])
 
   roleId String @db.Uuid
   role   Role   @relation(fields: [roleId], references: [id])
 
-  createdHubs        Hub[]         @relation("HubCreator")
-  updatedHubSettings HubSettings[] @relation("HubSettingsUpdater")
-  sessions           Session[]
+  updatedHubSettings  HubSettings[]  @relation("HubSettingsUpdater")
+  createdHubPeriphery HubPeriphery[] @relation("HubPeripheryCreator")
 
   @@index([hubId])
   @@index([roleId])
   @@index([archivedAt])
 }
 
-model ComradeSettings {
+model ComradeSettingsConfig {
   id         String    @id @default(uuid()) @db.Uuid
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
   archivedAt DateTime?
 
+  birthDate        DateTime?
   avatarIcon       String? // enum ComradeAvatarIconType
   avatarColor      String?
   phoneNumber      String?
@@ -87,6 +84,45 @@ model ComradeSettings {
   telegramUsername String?
 
   comrade Comrade?
+}
+
+model HubPeriphery {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  name              String
+  peripheryCategory String // enum HubPeripheryCategory (PERSON, PET)
+  notes             String?
+
+  settingsId String                     @unique @db.Uuid
+  settings   HubPeripherySettingsConfig @relation(fields: [settingsId], references: [id])
+
+  hubId String @db.Uuid
+  hub   Hub    @relation(fields: [hubId], references: [id])
+
+  createdById String  @db.Uuid
+  createdBy   Comrade @relation("HubPeripheryCreator", fields: [createdById], references: [id])
+
+  @@index([hubId])
+  @@index([createdById])
+  @@index([archivedAt])
+}
+
+model HubPeripherySettingsConfig {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  birthDate   DateTime?
+  avatarIcon  String?
+  avatarColor String?
+  phoneNumber String?
+  email       String?
+
+  periphery HubPeriphery?
 }
 
 model Role {
@@ -103,18 +139,4 @@ model Role {
   comrades Comrade[]
 
   @@index([archivedAt])
-}
-
-// TODO: Reserved for future session audit / multi-device tracking — not used by @fastify/session + Redis in Step 2.
-model Session {
-  id        String   @id @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  expiresAt DateTime
-
-  comradeId String  @db.Uuid
-  comrade   Comrade @relation(fields: [comradeId], references: [id], onDelete: Cascade)
-
-  @@index([comradeId])
-  @@index([expiresAt])
 }

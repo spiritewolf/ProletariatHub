@@ -13,7 +13,7 @@ export type HubSettings = {
   createdAt: Date;
   updatedAt: Date;
   dashboardTheme: string;
-  updatedById: string;
+  updatedById: string | null;
 };
 
 export type Hub = {

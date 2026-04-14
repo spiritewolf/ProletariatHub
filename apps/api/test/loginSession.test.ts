@@ -12,6 +12,7 @@ import type { ApiRequest } from '../src/types/context';
 const COMRADE_ID = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const SETTINGS_ID = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb';
 const ROLE_ID = 'cccccccc-cccc-4ccc-8ccc-cccccccccccc';
+const HUB_ID = 'dddddddd-dddd-4ddd-8ddd-dddddddddddd';
 
 function mockComradeRecord(passwordHash: string): ComradeDbRecord {
   return {
@@ -23,7 +24,7 @@ function mockComradeRecord(passwordHash: string): ComradeDbRecord {
     password: passwordHash,
     onboardStatus: ComradeOnboardStatus.PENDING,
     settingsId: SETTINGS_ID,
-    hubId: null,
+    hubId: HUB_ID,
     roleId: ROLE_ID,
     role: {
       id: ROLE_ID,
@@ -38,6 +39,7 @@ function mockComradeRecord(passwordHash: string): ComradeDbRecord {
       createdAt: new Date('2020-01-01T00:00:00.000Z'),
       updatedAt: new Date('2020-01-02T00:00:00.000Z'),
       archivedAt: null,
+      birthDate: null,
       avatarIcon: null,
       avatarColor: null,
       phoneNumber: null,
@@ -75,7 +77,7 @@ describe('createOneLoginSession', () => {
     passwordHash = await hashPassword('secret-pass');
   });
 
-  it('sets session comrade id and returns the comrade when credentials match', async (): Promise<void> => {
+  it('sets comrade id on session and returns the comrade when credentials match', async (): Promise<void> => {
     const comradeAccessLayer = mockDeep<ComradeAccessLayer>();
     comradeAccessLayer.findUniqueComradeUnsafeRaw.mockResolvedValue(
       mockComradeRecord(passwordHash),
