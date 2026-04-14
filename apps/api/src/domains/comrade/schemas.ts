@@ -55,14 +55,7 @@ export const completeAdminSetupInputSchema = z
     newPassword: z.string().min(8, 'Password must be at least 8 characters'),
     confirmPassword: z.string(),
     phoneNumber: z.string().optional(),
-    email: z
-      .string()
-      .optional()
-      .transform((v) => {
-        const trimmed = v?.trim();
-        return trimmed === '' ? undefined : trimmed;
-      })
-      .pipe(z.string().email().optional()),
+    email: z.string().email().optional(),
     signalUsername: z.string().optional(),
     telegramUsername: z.string().optional(),
     hubName: z.string().min(1, 'Hub name is required'),

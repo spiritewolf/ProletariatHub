@@ -64,6 +64,9 @@ jobs:
       - name: Prisma generate
         run: pnpm db:generate
 
+      - name: Prisma validate
+        run: pnpm --filter @proletariat-hub/database exec prisma validate
+
       - name: Lint
         run: pnpm lint
 
@@ -72,3 +75,9 @@ jobs:
 
       - name: Format check
         run: pnpm format:check
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test

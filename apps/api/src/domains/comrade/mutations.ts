@@ -2,7 +2,6 @@ import type { PrismaClient } from '@proletariat-hub/database';
 import { ComradeOnboardStatus } from '@proletariat-hub/shared';
 
 import { hashPassword } from '../auth/passwordHash';
-import { trimToUndefined } from './helpers';
 import { resolveComradeUniqueWhere } from './queries';
 import type {
   ComradeDbRecord,
@@ -22,26 +21,24 @@ export async function updateOneComrade(params: {
   const { db, where, data } = params;
   const prismaWhere = resolveComradeUniqueWhere(where);
   const passwordHash = !data.password ? undefined : await hashPassword(data.password);
-
-  const settingsUpdate =
-    data.settings !== undefined
-      ? {
-          update: {
-            email: trimToUndefined(data.settings.email) ?? null,
-            phoneNumber: trimToUndefined(data.settings.phoneNumber) ?? null,
-            signalUsername: trimToUndefined(data.settings.signalUsername) ?? null,
-            telegramUsername: trimToUndefined(data.settings.telegramUsername) ?? null,
-          },
-        }
-      : undefined;
+  const settingsUpdateData = data.settings
+    ? {
+        update: {
+          email: data.settings.email,
+          phoneNumber: data.settings.phoneNumber,
+          signalUsername: data.settings.signalUsername,
+          telegramUsername: data.settings.telegramUsername,
+        },
+      }
+    : undefined;
 
   return await db.comrade.update({
     where: prismaWhere,
     data: {
-      ...(data.username !== undefined ? { username: data.username } : {}),
-      ...(passwordHash !== undefined ? { password: passwordHash } : {}),
-      ...(data.onboardStatus !== undefined ? { onboardStatus: data.onboardStatus } : {}),
-      ...(settingsUpdate !== undefined ? { settings: settingsUpdate } : {}),
+      username: data.username,
+      password: passwordHash,
+      onboardStatus: data.onboardStatus,
+      settings: settingsUpdateData,
     },
     include: COMRADE_DEFAULT_INCLUDE,
   });
