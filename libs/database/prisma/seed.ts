@@ -3,15 +3,21 @@ import bcrypt from 'bcrypt';
 
 import { prisma } from '../src/client';
 
+const SEED_ADMIN_USERNAME = 'admin';
+const SEED_ADMIN_PASSWORD = 'password';
+
 async function main(): Promise<void> {
   const existingAdmin = await prisma.comrade.findUnique({
-    where: { username: 'admin' },
+    where: { username: SEED_ADMIN_USERNAME },
   });
   if (existingAdmin !== null) {
+    console.info(
+      `Seed skipped: "${SEED_ADMIN_USERNAME}" already exists; passwords are not reset by seed.`,
+    );
     return;
   }
 
-  const adminPasswordHash: string = await bcrypt.hash('password', 12);
+  const adminPasswordHash: string = await bcrypt.hash(SEED_ADMIN_PASSWORD, 12);
 
   await prisma.role.createMany({
     data: [
@@ -31,7 +37,7 @@ async function main(): Promise<void> {
 
   const adminComrade = await prisma.comrade.create({
     data: {
-      username: 'admin',
+      username: SEED_ADMIN_USERNAME,
       password: adminPasswordHash,
       onboardStatus: ComradeOnboardStatus.PENDING,
       roleId: adminRole.id,
@@ -57,6 +63,10 @@ async function main(): Promise<void> {
     where: { id: adminComrade.id },
     data: { hubId: hub.id },
   });
+
+  console.info(
+    `Seeded dev admin: username="${SEED_ADMIN_USERNAME}" password="${SEED_ADMIN_PASSWORD}" (change after setup).`,
+  );
 }
 
 main()

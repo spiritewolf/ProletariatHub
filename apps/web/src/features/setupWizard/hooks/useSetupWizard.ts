@@ -8,12 +8,16 @@ import { SetupSteps, STEP_FORM_FIELDS } from '../constants';
 import type { SetupWizardFormValues } from '../schema';
 import { assertSetupWizardContext, SetupWizardContext } from '../SetupWizardContext';
 
+export type SubmitCompleteSetupOptions = {
+  onMutationSuccess?: () => void;
+};
+
 export type SetupWizardHookProps = {
   stepper: UseStepsReturn;
   goToNextWizardStep: () => Promise<void>;
   skipToNextWizardStep: () => void;
   goToPrevWizardStep: () => void;
-  submitWizard: () => Promise<void>;
+  submitCompleteSetup: (options?: SubmitCompleteSetupOptions) => Promise<void>;
   submitMutation: CompleteWizardMutation;
   setupSteps: SetupSteps[];
   isAdmin: boolean;
@@ -54,24 +58,35 @@ export function useSetupWizard(): SetupWizardHookProps {
     stepper.goToPrevStep();
   }, [stepper]);
 
-  const submitWizard = useCallback(async (): Promise<void> => {
-    await formMethods.handleSubmit((data) => {
-      submitMutation.mutate({
-        ...data,
-        recruits: data.recruits.map((recruit) => ({
-          username: recruit.username,
-          icon: recruit.icon ?? ComradeAvatarIconType.USER,
-        })),
-      });
-    })();
-  }, [formMethods, submitMutation]);
+  const submitCompleteSetup = useCallback(
+    async (options?: SubmitCompleteSetupOptions): Promise<void> => {
+      await formMethods.handleSubmit((data) => {
+        const onMutationSuccess = options?.onMutationSuccess;
+        submitMutation.mutate(
+          {
+            ...data,
+            email:
+              data.email === undefined || data.email === null || data.email === ''
+                ? undefined
+                : data.email,
+            recruits: data.recruits.map((recruit) => ({
+              username: recruit.username,
+              icon: recruit.icon ?? ComradeAvatarIconType.USER,
+            })),
+          },
+          onMutationSuccess !== undefined ? { onSuccess: onMutationSuccess } : undefined,
+        );
+      })();
+    },
+    [formMethods, submitMutation],
+  );
 
   return {
     stepper,
     goToNextWizardStep,
     skipToNextWizardStep,
     goToPrevWizardStep,
-    submitWizard,
+    submitCompleteSetup,
     submitMutation,
     setupSteps,
     stepIndex: stepper.value,

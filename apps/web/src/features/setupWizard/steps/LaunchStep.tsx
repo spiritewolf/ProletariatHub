@@ -1,5 +1,6 @@
 import { Box, Button, Field, HStack, Stack, Text } from '@chakra-ui/react';
 import { ComradeAvatarIconType } from '@proletariat-hub/types';
+import { toaster } from '@proletariat-hub/web/shared/ui';
 import { Sparkle } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
@@ -13,10 +14,18 @@ export function LaunchStep(): ReactElement {
   const { control } = useFormContext<SetupWizardFormValues>();
   const hubName = useWatch({ control, name: 'hubName' });
   const recruits = useWatch({ control, name: 'recruits' }) ?? [];
-  const { goToPrevWizardStep, submitWizard, submitMutation } = useSetupWizard();
+  const { goToPrevWizardStep, submitCompleteSetup, submitMutation } = useSetupWizard();
 
   const onSubmitSetup = async (): Promise<void> => {
-    await submitWizard();
+    await submitCompleteSetup({
+      onMutationSuccess: () => {
+        toaster.create({
+          type: 'success',
+          title: 'Setup complete',
+          description: 'Welcome to your Hub.',
+        });
+      },
+    });
   };
 
   return (

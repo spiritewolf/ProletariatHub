@@ -37,15 +37,18 @@ export const setupWizardSchema = z
     confirmPassword: z.string(),
     phoneNumber: z.string().optional(),
     email: z
-      .string()
-      .optional()
-      .refine(
-        (value) => {
-          const trimmed = (value ?? '').trim();
-          return trimmed === '' || z.string().email().safeParse(trimmed).success;
-        },
-        { message: 'Invalid email', path: ['email'] },
-      ),
+      .union([z.string(), z.undefined(), z.null()])
+      .transform((value): string | undefined => {
+        if (value === null || value === undefined) {
+          return undefined;
+        }
+        const trimmed = value.trim();
+        if (trimmed === '') {
+          return undefined;
+        }
+        return trimmed;
+      })
+      .pipe(z.string().email().optional()),
     signalUsername: z.string().optional(),
     telegramUsername: z.string().optional(),
     hubName: z.string().min(1, 'Hub name is required'),

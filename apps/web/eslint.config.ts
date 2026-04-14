@@ -74,7 +74,10 @@ export default [
       ...react.configs.flat.recommended?.rules,
       ...react.configs.flat['jsx-runtime']?.rules,
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      'react-refresh/only-export-components': [
+        'warn',
+        { allowConstantExport: true, allowExportNames: ['toaster'] },
+      ],
     },
     settings: {
       react: {

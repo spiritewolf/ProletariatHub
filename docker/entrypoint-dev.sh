@@ -12,14 +12,14 @@ if [ ! -d node_modules/.pnpm ]; then
   pnpm install --frozen-lockfile
 fi
 
-# Named volumes can retain another OS's optional @esbuild/*; only reinstall on esbuild's platform-mismatch error.
+# Named volumes can retain another OS/arch optional @esbuild/* or @rollup/*; reinstall on native mismatch.
 if [ -d node_modules ]; then
   set +e
   node /app/docker/check-esbuild-heal.mjs
-  esbuild_heal_rc=$?
+  native_heal_rc=$?
   set -e
-  if [ "$esbuild_heal_rc" -eq 2 ]; then
-    echo "esbuild platform mismatch — reinstalling node_modules"
+  if [ "$native_heal_rc" -eq 2 ]; then
+    echo "native optional deps mismatch — reinstalling node_modules"
     rm -rf node_modules
     pnpm install --frozen-lockfile
   fi
