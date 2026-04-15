@@ -67,6 +67,44 @@ export const semanticTokens = defineSemanticTokens({
       },
     },
 
+    // ── Hub list widget (priority pill fills + label colors + row/divider borders in dark mode) ──
+    hubList: {
+      border: {
+        value: {
+          base: '{colors.rose.200}',
+          _dark: '{colors.navy.500}',
+        },
+      },
+      priorityMedium: {
+        bg: {
+          value: {
+            base: '#E3F2FD',
+            _dark: '#1A2633',
+          },
+        },
+        fg: {
+          value: {
+            base: '#1565C0',
+            _dark: '#7DA7B8',
+          },
+        },
+      },
+      priorityLow: {
+        bg: {
+          value: {
+            base: '#E8F5E9',
+            _dark: '#1A2E28',
+          },
+        },
+        fg: {
+          value: {
+            base: '#2E7D32',
+            _dark: '#6BB89A',
+          },
+        },
+      },
+    },
+
     // ── Accent ──
     accent: {
       primary: {
