@@ -16,7 +16,12 @@ import {
   ComradeRole,
   HubPeripheryCategory as HubPeripheryCategoryConst,
 } from '@proletariat-hub/types';
-import { trpc } from '@proletariat-hub/web/shared/trpc';
+import { useFindManyPeriphery } from '@proletariat-hub/web/shared/trpc';
+import {
+  useArchiveOnePeriphery,
+  useCreateOnePeriphery,
+  useUpdateOnePeriphery,
+} from '@proletariat-hub/web/shared/trpc/mutations';
 import { toaster } from '@proletariat-hub/web/shared/ui';
 import { Info, Plus } from 'lucide-react';
 import { type ReactElement, useEffect, useState } from 'react';
@@ -44,18 +49,14 @@ type HubPeripherySectionProps = {
 export function HubPeripherySection({ comrade }: HubPeripherySectionProps): ReactElement {
   const isAdmin = comrade.role === ComradeRole.ADMIN;
 
-  const utils = trpc.useUtils();
   const [accordionValue, setAccordionValue] = useState<string[]>([]);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [showAllPeriphery, setShowAllPeriphery] = useState(false);
   const [removeConfirmId, setRemoveConfirmId] = useState<string | null>(null);
 
-  const { data: peripheryRecords = [], isLoading } = trpc.periphery.findManyPeriphery.useQuery(
-    undefined,
-    {
-      enabled: isAdmin,
-    },
-  );
+  const { data: peripheryRecords = [], isLoading } = useFindManyPeriphery({
+    enabled: isAdmin,
+  });
 
   const addForm = useForm<HubPeripheryDrawerFormValues>({
     resolver: zodResolver(hubPeripheryDrawerFormSchema),
@@ -69,24 +70,21 @@ export function HubPeripherySection({ comrade }: HubPeripherySectionProps): Reac
     defaultValues: PERIPHERY_FORM_DEFAULTS,
   });
 
-  const createMutation = trpc.periphery.createOnePeriphery.useMutation({
+  const createMutation = useCreateOnePeriphery({
     onSuccess: async () => {
-      await utils.periphery.findManyPeriphery.invalidate();
       setIsAddOpen(false);
       addForm.reset(PERIPHERY_FORM_DEFAULTS);
     },
   });
 
-  const updateMutation = trpc.periphery.updateOnePeriphery.useMutation({
+  const updateMutation = useUpdateOnePeriphery({
     onSuccess: async () => {
-      await utils.periphery.findManyPeriphery.invalidate();
       setRemoveConfirmId(null);
     },
   });
 
-  const archiveMutation = trpc.periphery.archiveOnePeriphery.useMutation({
+  const archiveMutation = useArchiveOnePeriphery({
     onSuccess: async () => {
-      await utils.periphery.findManyPeriphery.invalidate();
       setAccordionValue([]);
       setRemoveConfirmId(null);
     },
