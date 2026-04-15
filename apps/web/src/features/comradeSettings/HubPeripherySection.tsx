@@ -17,6 +17,7 @@ import {
   HubPeripheryCategory as HubPeripheryCategoryConst,
 } from '@proletariat-hub/types';
 import { trpc } from '@proletariat-hub/web/shared/trpc';
+import { toaster } from '@proletariat-hub/web/shared/ui';
 import { Info, Plus } from 'lucide-react';
 import { type ReactElement, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -40,7 +41,7 @@ type HubPeripherySectionProps = {
   comrade: Comrade;
 };
 
-export function HubPeripherySection({ comrade }: HubPeripherySectionProps): ReactElement | null {
+export function HubPeripherySection({ comrade }: HubPeripherySectionProps): ReactElement {
   const isAdmin = comrade.role === ComradeRole.ADMIN;
 
   const utils = trpc.useUtils();
@@ -49,9 +50,12 @@ export function HubPeripherySection({ comrade }: HubPeripherySectionProps): Reac
   const [showAllPeriphery, setShowAllPeriphery] = useState(false);
   const [removeConfirmId, setRemoveConfirmId] = useState<string | null>(null);
 
-  const listQuery = trpc.periphery.findManyPeriphery.useQuery(undefined, {
-    enabled: isAdmin,
-  });
+  const { data: peripheryRecords = [], isLoading } = trpc.periphery.findManyPeriphery.useQuery(
+    undefined,
+    {
+      enabled: isAdmin,
+    },
+  );
 
   const addForm = useForm<HubPeripheryDrawerFormValues>({
     resolver: zodResolver(hubPeripheryDrawerFormSchema),
@@ -88,12 +92,11 @@ export function HubPeripherySection({ comrade }: HubPeripherySectionProps): Reac
     },
   });
 
-  const peripheryList = listQuery.data ?? [];
-  const total = peripheryList.length;
+  const total = peripheryRecords.length;
   const displayedList =
     showAllPeriphery || total <= PERIPHERY_PAGE_SIZE
-      ? peripheryList
-      : peripheryList.slice(0, PERIPHERY_PAGE_SIZE);
+      ? peripheryRecords
+      : peripheryRecords.slice(0, PERIPHERY_PAGE_SIZE);
 
   const openPeripheryId = accordionValue[0];
 
@@ -101,25 +104,24 @@ export function HubPeripherySection({ comrade }: HubPeripherySectionProps): Reac
     if (openPeripheryId === undefined) {
       return;
     }
-    const list = listQuery.data ?? [];
-    const selected = list.find((p) => p.id === openPeripheryId);
-    if (selected === undefined) {
+    const selectedPeripheryRecord = peripheryRecords.find((p) => p.id === openPeripheryId);
+    if (selectedPeripheryRecord === undefined) {
       return;
     }
     const editValues: HubPeripheryDrawerFormValues = {
-      name: selected.name,
-      peripheryCategory: selected.peripheryCategory,
-      birthDate:
-        selected.settings.birthDate === null
-          ? ''
-          : selected.settings.birthDate.toISOString().slice(0, 10),
+      name: selectedPeripheryRecord.name,
+      peripheryCategory: selectedPeripheryRecord.peripheryCategory,
+      birthDate: selectedPeripheryRecord.settings.birthDate
+        ? selectedPeripheryRecord.settings.birthDate.toISOString().slice(0, 10)
+        : '',
       petAvatarIcon:
-        selected.peripheryCategory === HubPeripheryCategoryConst.PET && selected.settings.avatarIcon
-          ? selected.settings.avatarIcon
+        selectedPeripheryRecord.peripheryCategory === HubPeripheryCategoryConst.PET &&
+        selectedPeripheryRecord.settings.avatarIcon
+          ? selectedPeripheryRecord.settings.avatarIcon
           : ComradeAvatarIconType.SNAIL,
     };
     editForm.reset(editValues);
-  }, [openPeripheryId, listQuery.data, editForm]);
+  }, [openPeripheryId, peripheryRecords, editForm]);
 
   const onOpenAdd = (): void => {
     setAccordionValue([]);
@@ -133,15 +135,26 @@ export function HubPeripherySection({ comrade }: HubPeripherySectionProps): Reac
     addForm.reset(PERIPHERY_FORM_DEFAULTS);
   };
 
-  const onSubmitAdd = (values: HubPeripheryDrawerFormValues): void => {
+  const onSubmitAdd = async (values: HubPeripheryDrawerFormValues): Promise<void> => {
     const avatarIcon: string | null =
       values.peripheryCategory === HubPeripheryCategoryConst.PET ? values.petAvatarIcon : null;
-    createMutation.mutate({
-      name: values.name,
-      peripheryCategory: values.peripheryCategory,
-      birthDate: values.birthDate || null,
-      avatarIcon,
-    });
+    createMutation.mutate(
+      {
+        name: values.name,
+        peripheryCategory: values.peripheryCategory,
+        birthDate: values.birthDate || null,
+        avatarIcon,
+      },
+      {
+        onSuccess: () => {
+          toaster.create({
+            type: 'success',
+            title: 'Periphery added',
+            description: 'The periphery member has been added to your Hub.',
+          });
+        },
+      },
+    );
   };
 
   const onSubmitEdit = (values: HubPeripheryDrawerFormValues): void => {
@@ -166,10 +179,6 @@ export function HubPeripherySection({ comrade }: HubPeripherySectionProps): Reac
 
   const addFormId = 'hub-periphery-add-form';
   const editFormId = 'hub-periphery-edit-form';
-
-  if (!isAdmin) {
-    return null;
-  }
 
   return (
     <>
@@ -208,13 +217,13 @@ export function HubPeripherySection({ comrade }: HubPeripherySectionProps): Reac
           </Tooltip.Root>
         </HStack>
 
-        {listQuery.isLoading ? (
+        {isLoading ? (
           <Text fontSize="sm" color="text.secondary">
             Loading…
           </Text>
         ) : null}
 
-        {!listQuery.isLoading && total === 0 && !isAddOpen ? (
+        {!isLoading && total === 0 && !isAddOpen ? (
           <Flex align="center" justify="space-between" gap={3} flexWrap="wrap" py={1} px={1}>
             <Text fontSize="sm" color="text.secondary" flex="1" minW={0}>
               No periphery yet? Click Add to get started.
