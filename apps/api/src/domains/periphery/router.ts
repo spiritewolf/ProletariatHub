@@ -37,4 +37,10 @@ export const peripheryRouter = router({
         input: patch,
       });
     }),
+
+  archiveOnePeriphery: adminProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.peripheryAccessLayer.archiveOne({ id: input.id });
+    }),
 });

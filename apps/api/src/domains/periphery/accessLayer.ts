@@ -3,7 +3,7 @@ import type { Periphery } from '@proletariat-hub/types';
 
 import type { DomainErrorHandler } from '../../shared/util/prismaErrorHandler';
 import { parsePeriphery } from './mapper';
-import { createOnePeriphery, updateOnePeriphery } from './mutations';
+import { archiveOnePeriphery, createOnePeriphery, updateOnePeriphery } from './mutations';
 import { findManyPeriphery } from './queries';
 import type { CreateOnePeripheryInput, UpdateOnePeripheryInput } from './schemas';
 import type { UpdateOnePeripheryData } from './types';
@@ -41,7 +41,7 @@ export class PeripheryAccessLayer {
           createdById: comradeId,
           settings: {
             birthDate: input.birthDate,
-            avatarIcon: input.avatarIcon,
+            avatarIcon: input.avatarIcon ?? null,
             avatarColor: null,
             phoneNumber: input.phoneNumber,
             email: input.email,
@@ -82,6 +82,12 @@ export class PeripheryAccessLayer {
       });
 
       return parsePeriphery(updatedHubPeripheryDbRecord);
+    });
+  }
+
+  async archiveOne(params: { id: string }): Promise<void> {
+    return this.domainError.returnOrThrowTRPCError(async () => {
+      await archiveOnePeriphery({ db: this.db, where: { id: params.id } });
     });
   }
 }

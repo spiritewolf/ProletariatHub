@@ -47,3 +47,13 @@ export async function updateOnePeriphery(params: {
     include: PERIPHERY_DEFAULT_INCLUDE,
   });
 }
+
+export async function archiveOnePeriphery(params: {
+  db: HubPeripheryDb;
+  where: { id: string };
+}): Promise<void> {
+  await params.db.hubPeriphery.update({
+    where: { id: params.where.id },
+    data: { archivedAt: new Date() },
+  });
+}

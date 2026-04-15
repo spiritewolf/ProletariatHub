@@ -20,6 +20,9 @@ export const ComradeAvatarIconType = {
   EGG_FRIED: 'EGG_FRIED',
   PALETTE: 'PALETTE',
   SNAIL: 'SNAIL',
+  CAT: 'CAT',
+  DOG: 'DOG',
+  FISH: 'FISH',
 } as const;
 export type ComradeAvatarIconType =
   (typeof ComradeAvatarIconType)[keyof typeof ComradeAvatarIconType];

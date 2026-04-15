@@ -1,5 +1,4 @@
 import {
-  ComradeAvatarIconType,
   HubPeripheryCategory,
   type HubPeripherySettingsConfig,
   type Periphery,
@@ -14,10 +13,7 @@ function parsePeripherySettings(settings: PeripherySettingsDbRecord): HubPeriphe
     createdAt: settings.createdAt,
     updatedAt: settings.updatedAt,
     birthDate: settings.birthDate,
-    avatarIcon:
-      settings.avatarIcon == null
-        ? null
-        : validateConstEnumType(ComradeAvatarIconType, settings.avatarIcon, 'avatar icon'),
+    avatarIcon: settings.avatarIcon,
     avatarColor: settings.avatarColor,
     phoneNumber: settings.phoneNumber,
     email: settings.email,

@@ -20,7 +20,7 @@ export function ContactStep(): ReactElement {
 
   return (
     <SetupStepCard
-      title="How we reach you"
+      title="Should the Hub need to get in contact"
       description="Optional for now — add phone, email, or handles so your Comrades can coordinate with you."
     >
       <Stack gap={5}>

@@ -1,17 +1,6 @@
 import type { Periphery } from '@proletariat-hub/types';
-import { ComradeAvatarIconType, HubPeripheryCategory } from '@proletariat-hub/types';
+import { HubPeripheryCategory } from '@proletariat-hub/types';
 import { z } from 'zod';
-
-const peripheryAvatarIconSchema = z.enum([
-  ComradeAvatarIconType.ATOM,
-  ComradeAvatarIconType.CROWN,
-  ComradeAvatarIconType.EGG_FRIED,
-  ComradeAvatarIconType.HAND_FIST,
-  ComradeAvatarIconType.MENU,
-  ComradeAvatarIconType.PALETTE,
-  ComradeAvatarIconType.SNAIL,
-  ComradeAvatarIconType.USER,
-]);
 
 const peripheryCategorySchema = z.enum([HubPeripheryCategory.PERSON, HubPeripheryCategory.PET]);
 
@@ -32,7 +21,7 @@ export const createOnePeripheryInputSchema = z.object({
   peripheryCategory: peripheryCategorySchema,
   notes: optionalNullableString,
   birthDate: birthDateValue,
-  avatarIcon: z.union([z.null(), peripheryAvatarIconSchema]).optional(),
+  avatarIcon: z.string().nullable().optional(),
   phoneNumber: optionalNullableString,
   email: z.union([z.null(), z.string().email()]).optional(),
 });
@@ -43,7 +32,7 @@ export const updateOnePeripheryInputSchema = z.object({
   peripheryCategory: peripheryCategorySchema.optional(),
   notes: optionalNullableString,
   birthDate: birthDateField,
-  avatarIcon: z.union([z.null(), peripheryAvatarIconSchema]).optional(),
+  avatarIcon: z.string().nullable().optional(),
   phoneNumber: optionalNullableString,
   email: z.union([z.null(), z.string().email()]).optional(),
 });
@@ -53,7 +42,7 @@ const peripherySettingsOutputSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
   birthDate: z.date().nullable(),
-  avatarIcon: peripheryAvatarIconSchema.nullable(),
+  avatarIcon: z.string().nullable(),
   avatarColor: z.string().nullable(),
   phoneNumber: z.string().nullable(),
   email: z.string().nullable(),

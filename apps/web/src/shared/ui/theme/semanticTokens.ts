@@ -76,7 +76,7 @@ export const semanticTokens = defineSemanticTokens({
         value: { base: '{colors.rose.700}', _dark: '{colors.radical.pinkHover}' },
       },
       secondary: {
-        value: { base: '{colors.rose.800}', _dark: '{colors.radical.mint}' },
+        value: { base: '{colors.rose.800}', _dark: '{colors.radical.pink}' },
       },
     },
 

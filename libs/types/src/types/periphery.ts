@@ -1,5 +1,3 @@
-import type { ComradeAvatarIconType } from './comrade';
-
 export const HubPeripheryCategory = {
   PERSON: 'PERSON',
   PET: 'PET',
@@ -11,7 +9,7 @@ export type HubPeripherySettingsConfig = {
   createdAt: Date;
   updatedAt: Date;
   birthDate: Date | null;
-  avatarIcon: ComradeAvatarIconType | null;
+  avatarIcon: string | null;
   avatarColor: string | null;
   phoneNumber: string | null;
   email: string | null;

@@ -1,15 +1,4 @@
-import {
-  Box,
-  Button,
-  Drawer,
-  Field,
-  Flex,
-  HStack,
-  Input,
-  Separator,
-  Stack,
-  Text,
-} from '@chakra-ui/react';
+import { Box, Button, Drawer, Field, Flex, HStack, Input, Stack, Text } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Comrade } from '@proletariat-hub/types';
 import { trpc } from '@proletariat-hub/web/shared/trpc';
@@ -17,6 +6,7 @@ import { Settings, Sparkle, X } from 'lucide-react';
 import { type ReactElement, useEffect, useRef } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
+import { HubPeripherySection } from './HubPeripherySection';
 import { comradeSettingsFormSchema } from './schema';
 import type { ComradeSettingsFormValues, ComradeSettingsParsedValues } from './types';
 
@@ -151,7 +141,7 @@ export function ComradeSettingsDrawer({
                     Comrade settings
                   </Text>
                   <Text fontSize="xs" color="text.light" opacity={0.92} lineHeight="tall">
-                    Your profile, contact info, and security. Changes save when you&apos;re ready.
+                    Your profile, contact info, and security.
                   </Text>
                 </Stack>
               </HStack>
@@ -174,17 +164,7 @@ export function ComradeSettingsDrawer({
           </Box>
 
           <FormProvider {...formMethods}>
-            <Box
-              as="form"
-              id="comrade-settings-form"
-              onSubmit={(e) => {
-                void handleSubmit(onSubmitForm)(e);
-              }}
-              display="flex"
-              flexDirection="column"
-              flex="1"
-              minH={0}
-            >
+            <Flex direction="column" flex="1" minH={0}>
               <Drawer.Body
                 flex="1"
                 minH={0}
@@ -195,209 +175,216 @@ export function ComradeSettingsDrawer({
                 py={5}
               >
                 <Stack gap={5} align="stretch">
-                  <Stack gap={3}>
-                    <Text
-                      fontSize="xs"
-                      fontWeight="semibold"
-                      letterSpacing="0.12em"
-                      color="accent.primary"
-                      textTransform="uppercase"
-                    >
-                      Profile
-                    </Text>
-                    <Field.Root>
-                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                        Username
-                      </Field.Label>
-                      <Input
-                        readOnly
-                        disabled
-                        variant="outline"
-                        borderRadius="full"
-                        bg="bg.secondary"
-                        borderColor="border.primary"
-                        py="2"
-                        px="3.5"
-                        fontSize="sm"
-                        {...register('username')}
-                      />
-                    </Field.Root>
-                    <Field.Root invalid={formState.errors.birthDate !== undefined}>
-                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                        Birth date
-                      </Field.Label>
-                      <Input
-                        type="date"
-                        variant="outline"
-                        borderRadius="full"
-                        py="2"
-                        px="3.5"
-                        fontSize="sm"
-                        borderColor="border.primary"
-                        {...register('birthDate')}
-                      />
-                      <Field.ErrorText>{formState.errors.birthDate?.message}</Field.ErrorText>
-                    </Field.Root>
-                  </Stack>
+                  <form
+                    onSubmit={(e) => {
+                      void handleSubmit(onSubmitForm)(e);
+                    }}
+                  >
+                    <Stack gap={5} align="stretch">
+                      <Stack gap={3}>
+                        <Text
+                          fontSize="xs"
+                          fontWeight="semibold"
+                          letterSpacing="0.12em"
+                          color="accent.primary"
+                          textTransform="uppercase"
+                        >
+                          Profile
+                        </Text>
+                        <Field.Root>
+                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                            Username
+                          </Field.Label>
+                          <Input
+                            readOnly
+                            disabled
+                            variant="outline"
+                            borderRadius="full"
+                            bg="bg.secondary"
+                            borderColor="border.primary"
+                            py="2"
+                            px="3.5"
+                            fontSize="sm"
+                            {...register('username')}
+                          />
+                        </Field.Root>
+                        <Field.Root invalid={formState.errors.birthDate !== undefined}>
+                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                            Birth date
+                          </Field.Label>
+                          <Input
+                            type="date"
+                            variant="outline"
+                            borderRadius="full"
+                            py="2"
+                            px="3.5"
+                            fontSize="sm"
+                            borderColor="border.primary"
+                            {...register('birthDate')}
+                          />
+                          <Field.ErrorText>{formState.errors.birthDate?.message}</Field.ErrorText>
+                        </Field.Root>
+                      </Stack>
 
-                  <Separator borderColor="border.secondary" />
+                      <Stack gap={3}>
+                        <Text
+                          fontSize="xs"
+                          fontWeight="semibold"
+                          letterSpacing="0.12em"
+                          color="accent.primary"
+                          textTransform="uppercase"
+                        >
+                          Contact info
+                        </Text>
+                        <Field.Root invalid={formState.errors.phoneNumber !== undefined}>
+                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                            Phone (SMS)
+                          </Field.Label>
+                          <Input
+                            type="tel"
+                            autoComplete="tel"
+                            placeholder="+1 (555) 000-0000"
+                            variant="outline"
+                            borderRadius="full"
+                            py="2"
+                            px="3.5"
+                            fontSize="sm"
+                            borderColor="border.primary"
+                            {...register('phoneNumber')}
+                          />
+                          <Field.ErrorText>{formState.errors.phoneNumber?.message}</Field.ErrorText>
+                        </Field.Root>
+                        <Field.Root invalid={formState.errors.email !== undefined}>
+                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                            Email
+                          </Field.Label>
+                          <Input
+                            type="email"
+                            autoComplete="email"
+                            placeholder="comrade@hub.local"
+                            variant="outline"
+                            borderRadius="full"
+                            py="2"
+                            px="3.5"
+                            fontSize="sm"
+                            borderColor="border.primary"
+                            {...register('email')}
+                          />
+                          <Field.ErrorText>{formState.errors.email?.message}</Field.ErrorText>
+                        </Field.Root>
+                        <Field.Root invalid={formState.errors.signalUsername !== undefined}>
+                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                            Signal username
+                          </Field.Label>
+                          <Input
+                            placeholder="@comrade.01"
+                            variant="outline"
+                            borderRadius="full"
+                            py="2"
+                            px="3.5"
+                            fontSize="sm"
+                            borderColor="border.primary"
+                            {...register('signalUsername')}
+                          />
+                          <Field.ErrorText>
+                            {formState.errors.signalUsername?.message}
+                          </Field.ErrorText>
+                        </Field.Root>
+                        <Field.Root invalid={formState.errors.telegramUsername !== undefined}>
+                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                            Telegram username
+                          </Field.Label>
+                          <Input
+                            placeholder="@comrade_01"
+                            variant="outline"
+                            borderRadius="full"
+                            py="2"
+                            px="3.5"
+                            fontSize="sm"
+                            borderColor="border.primary"
+                            {...register('telegramUsername')}
+                          />
+                          <Field.ErrorText>
+                            {formState.errors.telegramUsername?.message}
+                          </Field.ErrorText>
+                        </Field.Root>
+                      </Stack>
 
-                  <Stack gap={3}>
-                    <Text
-                      fontSize="xs"
-                      fontWeight="semibold"
-                      letterSpacing="0.12em"
-                      color="accent.primary"
-                      textTransform="uppercase"
-                    >
-                      How we reach you
-                    </Text>
-                    <Field.Root invalid={formState.errors.phoneNumber !== undefined}>
-                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                        Phone (SMS)
-                      </Field.Label>
-                      <Input
-                        type="tel"
-                        autoComplete="tel"
-                        placeholder="+1 (555) 000-0000"
-                        variant="outline"
-                        borderRadius="full"
-                        py="2"
-                        px="3.5"
-                        fontSize="sm"
-                        borderColor="border.primary"
-                        {...register('phoneNumber')}
-                      />
-                      <Field.ErrorText>{formState.errors.phoneNumber?.message}</Field.ErrorText>
-                    </Field.Root>
-                    <Field.Root invalid={formState.errors.email !== undefined}>
-                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                        Email
-                      </Field.Label>
-                      <Input
-                        type="email"
-                        autoComplete="email"
-                        placeholder="comrade@hub.local"
-                        variant="outline"
-                        borderRadius="full"
-                        py="2"
-                        px="3.5"
-                        fontSize="sm"
-                        borderColor="border.primary"
-                        {...register('email')}
-                      />
-                      <Field.ErrorText>{formState.errors.email?.message}</Field.ErrorText>
-                    </Field.Root>
-                    <Field.Root invalid={formState.errors.signalUsername !== undefined}>
-                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                        Signal username
-                      </Field.Label>
-                      <Input
-                        placeholder="@comrade.01"
-                        variant="outline"
-                        borderRadius="full"
-                        py="2"
-                        px="3.5"
-                        fontSize="sm"
-                        borderColor="border.primary"
-                        {...register('signalUsername')}
-                      />
-                      <Field.ErrorText>{formState.errors.signalUsername?.message}</Field.ErrorText>
-                    </Field.Root>
-                    <Field.Root invalid={formState.errors.telegramUsername !== undefined}>
-                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                        Telegram username
-                      </Field.Label>
-                      <Input
-                        placeholder="@comrade_01"
-                        variant="outline"
-                        borderRadius="full"
-                        py="2"
-                        px="3.5"
-                        fontSize="sm"
-                        borderColor="border.primary"
-                        {...register('telegramUsername')}
-                      />
-                      <Field.ErrorText>
-                        {formState.errors.telegramUsername?.message}
-                      </Field.ErrorText>
-                    </Field.Root>
-                  </Stack>
+                      <Stack gap={3}>
+                        <Text
+                          fontSize="xs"
+                          fontWeight="semibold"
+                          letterSpacing="0.12em"
+                          color="accent.primary"
+                          textTransform="uppercase"
+                        >
+                          Security
+                        </Text>
+                        <Field.Root invalid={formState.errors.newPassword !== undefined}>
+                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                            New password
+                          </Field.Label>
+                          <Input
+                            type="password"
+                            autoComplete="new-password"
+                            placeholder="New password"
+                            variant="outline"
+                            borderRadius="full"
+                            py="2"
+                            px="3.5"
+                            fontSize="sm"
+                            borderColor="border.primary"
+                            {...register('newPassword')}
+                          />
+                          <Field.ErrorText>{formState.errors.newPassword?.message}</Field.ErrorText>
+                        </Field.Root>
+                        <Field.Root invalid={formState.errors.confirmPassword !== undefined}>
+                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+                            Confirm password
+                          </Field.Label>
+                          <Input
+                            type="password"
+                            autoComplete="new-password"
+                            placeholder="Confirm password"
+                            variant="outline"
+                            borderRadius="full"
+                            py="2"
+                            px="3.5"
+                            fontSize="sm"
+                            borderColor="border.primary"
+                            {...register('confirmPassword')}
+                          />
+                          <Field.ErrorText>
+                            {formState.errors.confirmPassword?.message}
+                          </Field.ErrorText>
+                        </Field.Root>
+                      </Stack>
 
-                  <Separator borderColor="border.secondary" />
+                      {saveErrorMessage !== null ? (
+                        <Text fontSize="sm" color="status.error" role="alert">
+                          {saveErrorMessage}
+                        </Text>
+                      ) : null}
 
-                  <Stack gap={3}>
-                    <Text
-                      fontSize="xs"
-                      fontWeight="semibold"
-                      letterSpacing="0.12em"
-                      color="accent.primary"
-                      textTransform="uppercase"
-                    >
-                      Security
-                    </Text>
-                    <Field.Root invalid={formState.errors.newPassword !== undefined}>
-                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                        New password
-                      </Field.Label>
-                      <Input
-                        type="password"
-                        autoComplete="new-password"
-                        placeholder="New password"
-                        variant="outline"
+                      <Button
+                        type="submit"
+                        width="full"
+                        size="sm"
+                        variant="solid"
                         borderRadius="full"
-                        py="2"
-                        px="3.5"
                         fontSize="sm"
-                        borderColor="border.primary"
-                        {...register('newPassword')}
-                      />
-                      <Field.ErrorText>{formState.errors.newPassword?.message}</Field.ErrorText>
-                    </Field.Root>
-                    <Field.Root invalid={formState.errors.confirmPassword !== undefined}>
-                      <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                        Confirm password
-                      </Field.Label>
-                      <Input
-                        type="password"
-                        autoComplete="new-password"
-                        placeholder="Confirm password"
-                        variant="outline"
-                        borderRadius="full"
-                        py="2"
-                        px="3.5"
-                        fontSize="sm"
-                        borderColor="border.primary"
-                        {...register('confirmPassword')}
-                      />
-                      <Field.ErrorText>{formState.errors.confirmPassword?.message}</Field.ErrorText>
-                    </Field.Root>
-                  </Stack>
+                        disabled={isSaveDisabled}
+                        loading={updateOneMutation.isPending}
+                      >
+                        Save changes <Sparkle size={16} aria-hidden style={{ display: 'inline' }} />
+                      </Button>
+                    </Stack>
+                  </form>
 
-                  {saveErrorMessage !== null ? (
-                    <Text fontSize="sm" color="status.error" role="alert">
-                      {saveErrorMessage}
-                    </Text>
-                  ) : null}
+                  <HubPeripherySection comrade={comrade} />
                 </Stack>
               </Drawer.Body>
-
-              <Box flexShrink={0} px={{ base: 5, md: 6 }} pb={5} pt={2}>
-                <Button
-                  type="submit"
-                  form="comrade-settings-form"
-                  width="full"
-                  size="sm"
-                  variant="solid"
-                  borderRadius="full"
-                  fontSize="sm"
-                  disabled={isSaveDisabled}
-                  loading={updateOneMutation.isPending}
-                >
-                  Save changes <Sparkle size={16} aria-hidden style={{ display: 'inline' }} />
-                </Button>
-              </Box>
-            </Box>
+            </Flex>
           </FormProvider>
         </Drawer.Content>
       </Drawer.Positioner>

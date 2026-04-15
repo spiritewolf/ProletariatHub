@@ -40,9 +40,11 @@ export function Topbar(): ReactElement {
         bg="topbar.primary"
         color="text.tertiary"
       >
-        <Link href="/" color="text.tertiary">
-          Proletariat Hub
-        </Link>
+        <HStack gap={2} align="center">
+          <Link href="/" color="text.tertiary">
+            Proletariat Hub
+          </Link>
+        </HStack>
         <HStack gap="3">
           {comrade ? (
             <>
@@ -52,9 +54,6 @@ export function Topbar(): ReactElement {
                 variant="ghost"
                 size="sm"
                 color="text.tertiary"
-                borderRadius="full"
-                borderWidth="1px"
-                borderColor="border.secondary"
                 onClick={settingsDrawer.onOpen}
               >
                 <Settings size={18} />
@@ -64,20 +63,20 @@ export function Topbar(): ReactElement {
                 isOpen={settingsDrawer.open}
                 onClose={settingsDrawer.onClose}
               />
+              <IconButton
+                type="button"
+                aria-label="Log out"
+                variant="ghost"
+                size="sm"
+                color="text.tertiary"
+                onClick={onLogout}
+              >
+                <LogOut size={18} />
+              </IconButton>
             </>
           ) : null}
-          <IconButton
-            type="button"
-            aria-label="Log out"
-            variant="ghost"
-            size="sm"
-            color="text.tertiary"
-            onClick={onLogout}
-          >
-            <LogOut size={18} />
-          </IconButton>
           <ThemeToggleButton />
-          <Text fontSize="sm" opacity={0.9}>
+          <Text fontSize="sm" opacity={0.9} color="text.tertiary">
             {dateLabel}
           </Text>
         </HStack>
