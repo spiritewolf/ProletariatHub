@@ -32,6 +32,8 @@ const withAuthenticatedComrade = (params: { requireAdmin: boolean }) =>
     });
   });
 
-export const protectedProcedure = t.procedure.use(withAuthenticatedComrade({ requireAdmin: false }));
+export const protectedProcedure = t.procedure.use(
+  withAuthenticatedComrade({ requireAdmin: false }),
+);
 
 export const adminProcedure = t.procedure.use(withAuthenticatedComrade({ requireAdmin: true }));
