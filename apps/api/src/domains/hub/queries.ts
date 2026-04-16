@@ -1,7 +1,6 @@
 import type { PrismaClient } from '@proletariat-hub/database';
 
 import type { FindHubWhereUniqueInput, HubDbRecord } from './types';
-import { HUB_DEFAULT_INCLUDE } from './types';
 
 export async function findUniqueHub(params: {
   db: PrismaClient;
@@ -12,6 +11,6 @@ export async function findUniqueHub(params: {
       id: params.where.id,
       archivedAt: null,
     },
-    include: HUB_DEFAULT_INCLUDE,
+    include: { settings: true },
   });
 }

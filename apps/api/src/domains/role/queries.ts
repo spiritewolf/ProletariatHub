@@ -11,12 +11,5 @@ export async function findUniqueRole(params: {
       roleType: params.where.roleType,
       archivedAt: null,
     },
-    select: {
-      id: true,
-      roleType: true,
-      createdAt: true,
-      updatedAt: true,
-      archivedAt: true,
-    },
   });
 }

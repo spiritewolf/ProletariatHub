@@ -1,14 +1,14 @@
 import { Box, Flex, HStack, Text } from '@chakra-ui/react';
+import type { HubListItem } from '@proletariat-hub/types';
 import type { ReactElement } from 'react';
 
-import type { HubListMockItem } from '../mockData';
 import { HubListItemDisplayStatus } from '../types';
 import { ComradeAssigneeBadge } from './ComradeAssigneeBadge';
 import { HubListCheckbox } from './HubListCheckbox';
 import { PriorityBadge } from './PriorityBadge';
 
 type HubListWidgetItemProps = {
-  item: HubListMockItem;
+  item: HubListItem;
   displayStatus: HubListItemDisplayStatus;
   isLastRowInSection: boolean;
 };
@@ -43,19 +43,19 @@ export function HubListWidgetItem({
             >
               {item.productName}
             </Text>
-            {item.brand !== null ? (
+            {item.productBrand !== null ? (
               <>
                 <Text as="span" fontSize="xs" color="text.secondary" ml="1"></Text>
                 <Text as="span" fontSize="xs" color="text.secondary">
-                  {item.brand}
+                  {item.productBrand}
                 </Text>
               </>
             ) : null}
-            {item.vendor !== null ? (
+            {item.vendorName !== null ? (
               <>
                 <Text as="span" fontSize="xs" color="text.secondary" ml="1"></Text>
                 <Text as="span" fontSize="xs" color="text.secondary">
-                  {item.vendor}
+                  {item.vendorName}
                 </Text>
               </>
             ) : null}

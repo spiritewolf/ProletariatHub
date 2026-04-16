@@ -1,4 +1,6 @@
-import { Box, Stack } from '@chakra-ui/react';
+import { Box, Center, Spinner, Stack } from '@chakra-ui/react';
+import { type HubListItem, HubListItemPriority, HubListItemStatus } from '@proletariat-hub/types';
+import { useFindUniqueHubList } from '@proletariat-hub/web/shared/trpc/queries';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 
@@ -7,24 +9,22 @@ import { HubListWidgetEmptyState } from './components/HubListWidgetEmptyState';
 import { HubListWidgetHeader } from './components/HubListWidgetHeader';
 import { HubListWidgetItem } from './components/HubListWidgetItem';
 import { HubListWidgetSection } from './components/HubListWidgetSection';
-import type { HubListMockItem, HubListPriority } from './mockData';
-import { MOCK_HUB_LIST_ITEMS } from './mockData';
 import { HubListItemDisplayStatus } from './types';
 
-const PRIORITY_RANK: Record<HubListPriority, number> = {
-  URGENT: 0,
-  HIGH: 1,
-  MEDIUM: 2,
-  LOW: 3,
+const PRIORITY_RANK: Record<HubListItemPriority, number> = {
+  [HubListItemPriority.URGENT]: 0,
+  [HubListItemPriority.HIGH]: 1,
+  [HubListItemPriority.MEDIUM]: 2,
+  [HubListItemPriority.LOW]: 3,
 };
 
-function partitionHubListItems(items: HubListMockItem[]): {
-  active: HubListMockItem[];
-  claimed: HubListMockItem[];
-  purchased: HubListMockItem[];
+function partitionHubListItems(items: HubListItem[]): {
+  active: HubListItem[];
+  claimed: HubListItem[];
+  purchased: HubListItem[];
 } {
   const active = items
-    .filter((item) => item.status === HubListItemDisplayStatus.ACTIVE)
+    .filter((item) => item.status === HubListItemStatus.ACTIVE)
     .sort((a, b) => {
       const byPriority = PRIORITY_RANK[a.priority] - PRIORITY_RANK[b.priority];
       if (byPriority !== 0) {
@@ -32,24 +32,22 @@ function partitionHubListItems(items: HubListMockItem[]): {
       }
       return a.id.localeCompare(b.id);
     });
-  const claimed = items.filter((item) => item.status === HubListItemDisplayStatus.CLAIMED);
-  const purchased = items.filter((item) => item.status === HubListItemDisplayStatus.PURCHASED);
+  const claimed = items.filter((item) => item.status === HubListItemStatus.CLAIMED);
+  const purchased = items.filter((item) => item.status === HubListItemStatus.PURCHASED);
   return { active, claimed, purchased };
 }
 
-type HubListWidgetProps = {
-  items?: HubListMockItem[];
-};
-
-export function HubListWidget({ items = MOCK_HUB_LIST_ITEMS }: HubListWidgetProps): ReactElement {
+export function HubListWidget(): ReactElement {
   const [addItemModalKey, setAddItemModalKey] = useState(0);
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
-  const { active, claimed, purchased } = partitionHubListItems(items);
+  const { data: hubList, isLoading } = useFindUniqueHubList();
+  const listItems = hubList.items;
+  const { active, claimed, purchased } = partitionHubListItems(listItems);
 
   const hasActive = active.length > 0;
   const hasClaimed = claimed.length > 0;
   const hasPurchased = purchased.length > 0;
-  const isEmpty = items.length === 0;
+  const isEmpty = listItems.length === 0;
 
   return (
     <Box
@@ -83,7 +81,11 @@ export function HubListWidget({ items = MOCK_HUB_LIST_ITEMS }: HubListWidgetProp
         onClose={() => setIsAddItemOpen(false)}
       />
       <Box flex="1" minH="0" overflowY="auto" py="2">
-        {isEmpty ? (
+        {isLoading ? (
+          <Center py="12">
+            <Spinner size="lg" color="accent.primary" />
+          </Center>
+        ) : isEmpty ? (
           <HubListWidgetEmptyState />
         ) : (
           <Stack gap="0" w="full" pb="4">

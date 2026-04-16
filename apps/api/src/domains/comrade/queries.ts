@@ -1,15 +1,14 @@
 import type { PrismaClient } from '@proletariat-hub/database';
 
 import type { ComradeDbRecord, FindComradeWhereInput, FindComradeWhereUniqueInput } from './types';
-import { COMRADE_DEFAULT_INCLUDE } from './types';
 
 export function resolveComradeUniqueWhere(
   where: FindComradeWhereUniqueInput,
 ): { id: string } | { username: string } {
-  if (where.id !== undefined && where.id !== '') {
+  if (where.id) {
     return { id: where.id };
   }
-  if (where.username !== undefined && where.username !== '') {
+  if (where.username) {
     return { username: where.username };
   }
   throw new Error('resolveComradeUniqueWhere requires id or username');
@@ -24,7 +23,7 @@ export async function findUniqueComradeUnsafeRaw(params: {
       username: params.username,
       archivedAt: null,
     },
-    include: COMRADE_DEFAULT_INCLUDE,
+    include: { role: true, settings: true },
   });
 }
 
@@ -34,11 +33,11 @@ export async function findManyComrades(params: {
 }): Promise<ComradeDbRecord[]> {
   const { db, where } = params;
 
-  if (where.ids !== undefined && where.ids.length === 0) {
+  if (where.ids?.length === 0) {
     return [];
   }
 
-  const hasIds = where.ids !== undefined && where.ids.length > 0;
+  const hasIds = Boolean(where.ids?.length);
   const hasHubId = where.hubId !== undefined;
 
   if (!hasIds && !hasHubId) {
@@ -51,7 +50,7 @@ export async function findManyComrades(params: {
       hubId: where.hubId,
       archivedAt: null,
     },
-    include: COMRADE_DEFAULT_INCLUDE,
+    include: { role: true, settings: true },
   });
 }
 
@@ -60,22 +59,22 @@ export async function findUniqueComrade(params: {
   where: FindComradeWhereUniqueInput;
 }): Promise<ComradeDbRecord> {
   const { db, where } = params;
-  if (where.id !== undefined && where.id !== '') {
+  if (where.id) {
     return db.comrade.findFirstOrThrow({
       where: {
         id: where.id,
         archivedAt: null,
       },
-      include: COMRADE_DEFAULT_INCLUDE,
+      include: { role: true, settings: true },
     });
   }
-  if (where.username !== undefined && where.username !== '') {
+  if (where.username) {
     return db.comrade.findFirstOrThrow({
       where: {
         username: where.username,
         archivedAt: null,
       },
-      include: COMRADE_DEFAULT_INCLUDE,
+      include: { role: true, settings: true },
     });
   }
   throw new Error('findUniqueComrade requires id or username');

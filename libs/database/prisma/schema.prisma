@@ -19,8 +19,13 @@ model Hub {
   settingsId String      @unique @db.Uuid
   settings   HubSettings @relation(fields: [settingsId], references: [id])
 
-  comrades  Comrade[]      @relation("HubMembers")
-  periphery HubPeriphery[]
+  comrades                      Comrade[]                     @relation("HubMembers")
+  periphery                     HubPeriphery[]
+  hubLists                      HubList[]
+  hubInventoryProducts          HubInventoryProduct[]
+  hubInventoryProductCategories HubInventoryProductCategory[]
+  hubInventoryVendors           HubInventoryVendor[]
+  hubPurchaseLogs               HubPurchaseLog[]
 
   @@index([archivedAt])
 }
@@ -32,6 +37,9 @@ model HubSettings {
   archivedAt DateTime?
 
   dashboardTheme String @default("SYSTEM") // enum DashboardTheme
+
+  claimExpiryHours  Int @default(48)
+  expiryWarningDays Int @default(3)
 
   updatedById String?  @db.Uuid
   updatedBy   Comrade? @relation("HubSettingsUpdater", fields: [updatedById], references: [id])
@@ -63,6 +71,13 @@ model Comrade {
 
   updatedHubSettings  HubSettings[]  @relation("HubSettingsUpdater")
   createdHubPeriphery HubPeriphery[] @relation("HubPeripheryCreator")
+
+  createdListItems         HubListItem[]         @relation("ListItemCreatedBy")
+  claimedListItems         HubListItem[]         @relation("ListItemClaimedBy")
+  purchasedListItems       HubListItem[]         @relation("ListItemPurchasedBy")
+  createdInventoryProducts HubInventoryProduct[] @relation("InventoryProductCreator")
+  lastPurchasedProducts    HubInventoryProduct[] @relation("ProductLastPurchasedBy")
+  purchaseLogs             HubPurchaseLog[]      @relation("PurchaseLogPurchasedBy")
 
   @@index([hubId])
   @@index([roleId])
@@ -139,4 +154,174 @@ model Role {
   comrades Comrade[]
 
   @@index([archivedAt])
+}
+
+model HubList {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  name String
+
+  hubId String @db.Uuid
+  hub   Hub    @relation(fields: [hubId], references: [id])
+
+  items HubListItem[]
+
+  @@index([hubId])
+  @@index([archivedAt])
+}
+
+model HubListItem {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  status   String // ACTIVE, CLAIMED, PURCHASED
+  priority String // URGENT, HIGH, MEDIUM, LOW
+  quantity Float?
+  notes    String?
+
+  productId String              @db.Uuid
+  product   HubInventoryProduct @relation(fields: [productId], references: [id])
+
+  listId String  @db.Uuid
+  list   HubList @relation(fields: [listId], references: [id], onDelete: Cascade)
+
+  createdById String  @db.Uuid
+  createdBy   Comrade @relation("ListItemCreatedBy", fields: [createdById], references: [id])
+
+  claimedAt   DateTime?
+  claimedById String?   @db.Uuid
+  claimedBy   Comrade?  @relation("ListItemClaimedBy", fields: [claimedById], references: [id])
+
+  purchasedById String?  @db.Uuid
+  purchasedBy   Comrade? @relation("ListItemPurchasedBy", fields: [purchasedById], references: [id])
+
+  @@index([listId])
+  @@index([productId])
+  @@index([createdById])
+  @@index([claimedById])
+  @@index([purchasedById])
+  @@index([status])
+}
+
+model HubInventoryProduct {
+  id         String    @id @default(uuid()) @db.Uuid
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  archivedAt DateTime?
+
+  name                String
+  brandName           String?
+  description         String?
+  productCode         String?
+  productUrl          String?
+  purchaseFrequency   String
+  customFrequencyDays Int?
+  notes               String?
+
+  // Stock
+  quantityInStock      Float     @default(0)
+  lastPurchasedAt      DateTime?
+  lastPurchasedById    String?   @db.Uuid
+  lastPurchasedBy      Comrade?  @relation("ProductLastPurchasedBy", fields: [lastPurchasedById], references: [id])
+  minStockThreshold    Float?
+  urgentStockThreshold Float?
+  expiresAt            DateTime?
+  openedAt             DateTime?
+
+  // Storage
+  storageLocation       String? // FRIDGE, FREEZER, BEDROOM, BATHROOM, LAUNDRY, GARAGE, OTHER
+  storageLocationOpened String? // FRIDGE, FREEZER, BEDROOM, BATHROOM, LAUNDRY, GARAGE, OTHER
+  storageNotes          String?
+  shelfLifeDays         Int?
+  shelfLifeOpenedDays   Int?
+
+  categoryId String?                      @db.Uuid
+  category   HubInventoryProductCategory? @relation(fields: [categoryId], references: [id])
+
+  vendorId String?             @db.Uuid
+  vendor   HubInventoryVendor? @relation("ProductPreferredVendor", fields: [vendorId], references: [id])
+
+  hubId String @db.Uuid
+  hub   Hub    @relation(fields: [hubId], references: [id])
+
+  createdById String  @db.Uuid
+  createdBy   Comrade @relation("InventoryProductCreator", fields: [createdById], references: [id])
+
+  listItems    HubListItem[]
+  purchaseLogs HubPurchaseLog[]
+
+  @@unique([hubId, productCode])
+  @@index([hubId])
+  @@index([categoryId])
+  @@index([vendorId])
+  @@index([createdById])
+  @@index([lastPurchasedById])
+  @@index([archivedAt])
+}
+
+model HubInventoryProductCategory {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name String
+
+  hubId String @db.Uuid
+  hub   Hub    @relation(fields: [hubId], references: [id])
+
+  products HubInventoryProduct[]
+
+  @@unique([hubId, name])
+  @@index([hubId])
+}
+
+model HubInventoryVendor {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  name            String
+  website         String?
+  fulfillmentType String
+  notes           String?
+
+  hubId String @db.Uuid
+  hub   Hub    @relation(fields: [hubId], references: [id])
+
+  products     HubInventoryProduct[] @relation("ProductPreferredVendor")
+  purchaseLogs HubPurchaseLog[]
+
+  @@unique([hubId, name])
+  @@index([hubId])
+}
+
+model HubPurchaseLog {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+
+  quantityPurchased Float
+  price             Float?
+  notes             String?
+
+  productId String              @db.Uuid
+  product   HubInventoryProduct @relation(fields: [productId], references: [id])
+
+  vendorId String?             @db.Uuid
+  vendor   HubInventoryVendor? @relation(fields: [vendorId], references: [id])
+
+  purchasedById String  @db.Uuid
+  purchasedBy   Comrade @relation("PurchaseLogPurchasedBy", fields: [purchasedById], references: [id])
+
+  hubId String @db.Uuid
+  hub   Hub    @relation(fields: [hubId], references: [id])
+
+  @@index([productId])
+  @@index([vendorId])
+  @@index([purchasedById])
+  @@index([hubId])
+  @@index([createdAt])
 }

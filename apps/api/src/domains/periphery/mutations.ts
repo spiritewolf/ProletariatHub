@@ -1,13 +1,13 @@
+import type { PrismaClient } from '@proletariat-hub/database';
+
 import type {
   CreateOnePeripheryMutationData,
-  HubPeripheryDb,
   PeripheryDbRecord,
   UpdateOnePeripheryData,
 } from './types';
-import { PERIPHERY_DEFAULT_INCLUDE } from './types';
 
 export async function createOnePeriphery(params: {
-  db: HubPeripheryDb;
+  db: PrismaClient;
   data: CreateOnePeripheryMutationData;
 }): Promise<PeripheryDbRecord> {
   return params.db.hubPeriphery.create({
@@ -27,12 +27,12 @@ export async function createOnePeriphery(params: {
         },
       },
     },
-    include: PERIPHERY_DEFAULT_INCLUDE,
+    include: { settings: true },
   });
 }
 
 export async function updateOnePeriphery(params: {
-  db: HubPeripheryDb;
+  db: PrismaClient;
   where: { id: string };
   data: UpdateOnePeripheryData;
 }): Promise<PeripheryDbRecord> {
@@ -44,12 +44,12 @@ export async function updateOnePeriphery(params: {
       notes: params.data.notes,
       settings: params.data.settings,
     },
-    include: PERIPHERY_DEFAULT_INCLUDE,
+    include: { settings: true },
   });
 }
 
 export async function archiveOnePeriphery(params: {
-  db: HubPeripheryDb;
+  db: PrismaClient;
   where: { id: string };
 }): Promise<void> {
   await params.db.hubPeriphery.update({

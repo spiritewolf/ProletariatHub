@@ -9,7 +9,6 @@ import type {
   FindComradeWhereUniqueInput,
   UpdateOneComradeInput,
 } from './types';
-import { COMRADE_DEFAULT_INCLUDE } from './types';
 
 const RECRUIT_DEFAULT_PASSWORD = 'password';
 
@@ -41,7 +40,7 @@ export async function updateOneComrade(params: {
       onboardStatus: data.onboardStatus,
       settings: settingsUpdateData,
     },
-    include: COMRADE_DEFAULT_INCLUDE,
+    include: { role: true, settings: true },
   });
 }
 

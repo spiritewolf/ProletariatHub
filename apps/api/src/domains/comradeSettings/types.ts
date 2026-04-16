@@ -1,8 +1,4 @@
-import type { Prisma } from '@proletariat-hub/database';
-
-export type ComradeSettingsConfigDbRecord = Prisma.ComradeSettingsConfigGetPayload<
-  Record<string, never>
->;
+export type { ComradeSettingsConfigDbRecord } from '@proletariat-hub/database';
 
 export type FindComradeSettingsConfigWhereUniqueInput = {
   id: string;

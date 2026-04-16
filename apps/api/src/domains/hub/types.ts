@@ -1,12 +1,11 @@
-import type { Prisma } from '@proletariat-hub/database';
+import type {
+  HubDbRecord as HubDbRecordBase,
+  HubSettingsDbRecord,
+} from '@proletariat-hub/database';
 
-export const HUB_DEFAULT_INCLUDE = {
-  settings: true,
-} as const;
-
-export type HubDbRecord = Prisma.HubGetPayload<{
-  include: typeof HUB_DEFAULT_INCLUDE;
-}>;
+export interface HubDbRecord extends HubDbRecordBase {
+  settings: HubSettingsDbRecord;
+}
 
 export type HubSettings = {
   id: string;

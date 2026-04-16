@@ -4,6 +4,8 @@ import type { Comrade } from '@proletariat-hub/types';
 import type { ComradeAccessLayer } from '../domains/comrade';
 import type { ComradeSettingsAccessLayer } from '../domains/comradeSettings';
 import type { HubAccessLayer } from '../domains/hub';
+import type { HubInventoryAccessLayer } from '../domains/hubInventory';
+import type { HubListAccessLayer } from '../domains/hubList';
 import type { PeripheryAccessLayer } from '../domains/periphery';
 import type { RoleAccessLayer } from '../domains/role';
 
@@ -27,6 +29,8 @@ export interface SharedContext {
   comradeAccessLayer: ComradeAccessLayer;
   comradeSettingsAccessLayer: ComradeSettingsAccessLayer;
   peripheryAccessLayer: PeripheryAccessLayer;
+  hubListAccessLayer: HubListAccessLayer;
+  hubInventoryAccessLayer: HubInventoryAccessLayer;
   hubAccessLayer: HubAccessLayer;
   roleAccessLayer: RoleAccessLayer;
 }

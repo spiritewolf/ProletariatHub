@@ -1,7 +1,6 @@
 import type { PrismaClient } from '@proletariat-hub/database';
 
 import type { FindPeripheryWhereUniqueInput, PeripheryDbRecord } from './types';
-import { PERIPHERY_DEFAULT_INCLUDE } from './types';
 
 export async function findUniquePeriphery(params: {
   db: PrismaClient;
@@ -9,7 +8,7 @@ export async function findUniquePeriphery(params: {
 }): Promise<PeripheryDbRecord> {
   const hubPeripheryDbRecord = await params.db.hubPeriphery.findUniqueOrThrow({
     where: { id: params.where.id },
-    include: PERIPHERY_DEFAULT_INCLUDE,
+    include: { settings: true },
   });
   return hubPeripheryDbRecord;
 }
@@ -23,7 +22,7 @@ export async function findManyPeriphery(params: {
       hubId: params.where.hubId,
       archivedAt: null,
     },
-    include: PERIPHERY_DEFAULT_INCLUDE,
+    include: { settings: true },
     orderBy: { createdAt: 'asc' },
   });
 }

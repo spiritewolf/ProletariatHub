@@ -1,11 +1,11 @@
 import { Box } from '@chakra-ui/react';
+import type { HubListItemPriority } from '@proletariat-hub/types';
 import type { ReactElement } from 'react';
 
-import type { HubListPriority } from '../mockData';
-import { PRIORITY_CONFIG } from '../mockData';
+import { PRIORITY_CONFIG } from '../priorityBadgeConfig';
 
 type PriorityBadgeProps = {
-  priority: HubListPriority;
+  priority: HubListItemPriority;
 };
 
 export function PriorityBadge({ priority }: PriorityBadgeProps): ReactElement {

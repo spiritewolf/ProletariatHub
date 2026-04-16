@@ -57,6 +57,36 @@ async function main(): Promise<void> {
     },
   });
 
+  await prisma.hubList.create({
+    data: {
+      name: 'Hub List',
+      hubId: hub.id,
+    },
+  });
+
+  const defaultInventoryCategories = [
+    'Produce',
+    'Dairy',
+    'Meat',
+    'Pantry',
+    'Frozen',
+    'Beverages',
+    'Snacks',
+    'Cleaning',
+    'Personal Care',
+    'Pet',
+    'Household',
+    'Baby',
+    'Medicine',
+  ] as const;
+
+  await prisma.hubInventoryProductCategory.createMany({
+    data: defaultInventoryCategories.map((name) => ({
+      name,
+      hubId: hub.id,
+    })),
+  });
+
   console.info(
     `Seeded dev admin: username="${SEED_ADMIN_USERNAME}" password="${SEED_ADMIN_PASSWORD}" (change after setup).`,
   );

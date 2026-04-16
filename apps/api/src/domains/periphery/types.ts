@@ -1,18 +1,13 @@
-import type { Prisma, PrismaClient } from '@proletariat-hub/database';
+import type {
+  HubPeripheryDbRecord as HubPeripheryDbRecordBase,
+  HubPeripherySettingsConfigDbRecord,
+} from '@proletariat-hub/database';
 
-export const PERIPHERY_DEFAULT_INCLUDE = {
-  settings: true,
-} as const;
+export type { HubPeripherySettingsConfigDbRecord } from '@proletariat-hub/database';
 
-export type HubPeripheryDb = Pick<PrismaClient, 'hubPeriphery'>;
-
-export type PeripheryDbRecord = Prisma.HubPeripheryGetPayload<{
-  include: typeof PERIPHERY_DEFAULT_INCLUDE;
-}>;
-
-export type PeripherySettingsDbRecord = Prisma.HubPeripherySettingsConfigGetPayload<
-  Record<string, never>
->;
+export interface PeripheryDbRecord extends HubPeripheryDbRecordBase {
+  settings: HubPeripherySettingsConfigDbRecord;
+}
 
 export type FindPeripheryWhereUniqueInput = {
   id: string;
