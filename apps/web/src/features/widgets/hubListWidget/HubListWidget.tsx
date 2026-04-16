@@ -9,6 +9,7 @@ import { HubListWidgetEmptyState } from './components/HubListWidgetEmptyState';
 import { HubListWidgetHeader } from './components/HubListWidgetHeader';
 import { HubListWidgetItem } from './components/HubListWidgetItem';
 import { HubListWidgetSection } from './components/HubListWidgetSection';
+import { HubListWidgetWrapper } from './componentstwo/HubListWidgetWrapper';
 import { HubListItemDisplayStatus } from './types';
 
 const PRIORITY_RANK: Record<HubListItemPriority, number> = {
@@ -50,24 +51,7 @@ export function HubListWidget(): ReactElement {
   const isEmpty = listItems.length === 0;
 
   return (
-    <Box
-      as="section"
-      aria-label="Hub shopping list"
-      display="flex"
-      flexDirection="column"
-      h="380px"
-      w="full"
-      maxW="full"
-      minW="0"
-      bg="bg.primary"
-      borderWidth="1px"
-      borderColor="border.primary"
-      borderRadius="l2"
-      overflow="hidden"
-      px="4"
-      pt="4"
-      pb="0"
-    >
+    <HubListWidgetWrapper>
       <HubListWidgetHeader
         activeCount={active.length}
         onAddClick={() => {
@@ -94,6 +78,7 @@ export function HubListWidget(): ReactElement {
                 {active.map((item, index) => (
                   <HubListWidgetItem
                     key={item.id}
+                    hubListId={hubList.id}
                     item={item}
                     displayStatus={HubListItemDisplayStatus.ACTIVE}
                     isLastRowInSection={index === active.length - 1}
@@ -128,6 +113,6 @@ export function HubListWidget(): ReactElement {
           </Stack>
         )}
       </Box>
-    </Box>
+    </HubListWidgetWrapper>
   );
 }

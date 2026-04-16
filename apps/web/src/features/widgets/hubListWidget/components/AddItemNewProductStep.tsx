@@ -1,75 +1,168 @@
-import { Button, Field, HStack, Input, NativeSelect, Stack } from '@chakra-ui/react';
+import { Button, Field, Input, NativeSelect, Stack } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { HubInventoryProductFrequency, HubListItemPriority } from '@proletariat-hub/types';
+import { useCreateOneProduct, useFindManyCategories, useFindManyVendors } from '@proletariat-hub/web/shared/trpc';
 import { toaster } from '@proletariat-hub/web/shared/ui';
 import type { ReactElement } from 'react';
-import { useEffect } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useMemo, useState } from 'react';
+import { Controller, useForm, useWatch } from 'react-hook-form';
 
+import { PILL_INPUT_PROPS } from '../constants';
 import {
-  ADD_ITEM_FREQUENCY,
-  ADD_ITEM_FREQUENCY_LABEL,
-  ADD_ITEM_PRIORITY_FORM,
-  ADD_ITEM_PRIORITY_LABEL,
   addItemNewProductFormSchema,
   type AddItemNewProductFormValues,
   type AddItemNewProductParsedValues,
-} from '../addItemFormSchema';
-import { MOCK_CATEGORIES, MOCK_VENDORS } from '../mockCatalog';
+  HUB_INVENTORY_FREQUENCY_LABEL,
+} from '../types';
+import type { AutocompleteSelectItem } from './AutocompleteSelect';
+import { AutocompleteSelect } from './AutocompleteSelect';
+import { InlineVendorCreator } from './InlineVendorCreator';
+
+export type AddItemListItemContext = {
+  priority: HubListItemPriority;
+  quantity: number;
+  notes: string | null;
+};
 
 type AddItemNewProductStepProps = {
   initialName: string;
+  listItemContext: AddItemListItemContext;
   onSubmitSuccess: () => void;
 };
 
 function buildDefaultValues(initialName: string): AddItemNewProductFormValues {
   return {
     name: initialName,
-    category: '',
-    vendorName: '',
-    frequency: ADD_ITEM_FREQUENCY.ONE_TIME,
-    priority: ADD_ITEM_PRIORITY_FORM.MEDIUM,
-    notes: '',
+    brandName: null,
+    categoryId: null,
+    vendorId: null,
+    purchaseFrequency: HubInventoryProductFrequency.ONE_TIME,
+    customFrequencyDays: null,
+    quantityInStock: 0,
   };
 }
 
+const HUB_INVENTORY_FREQUENCY_UI_ORDER: HubInventoryProductFrequency[] = [
+  HubInventoryProductFrequency.ONE_TIME,
+  HubInventoryProductFrequency.WEEKLY,
+  HubInventoryProductFrequency.BIWEEKLY,
+  HubInventoryProductFrequency.MONTHLY,
+  HubInventoryProductFrequency.CUSTOM,
+];
+
 export function AddItemNewProductStep({
   initialName,
+  listItemContext,
   onSubmitSuccess,
 }: AddItemNewProductStepProps): ReactElement {
+  const { data: categories } = useFindManyCategories();
+  const { data: vendors } = useFindManyVendors();
+  const [vendorSearchText, setVendorSearchText] = useState('');
+
+  const categoryItems: AutocompleteSelectItem[] = useMemo(
+    () => categories.map((c) => ({ id: c.id, name: c.name })),
+    [categories],
+  );
+  const vendorItems: AutocompleteSelectItem[] = useMemo(
+    () => vendors.map((v) => ({ id: v.id, name: v.name })),
+    [vendors],
+  );
+
   const form = useForm<AddItemNewProductFormValues, unknown, AddItemNewProductParsedValues>({
     resolver: zodResolver(addItemNewProductFormSchema),
     defaultValues: buildDefaultValues(initialName),
   });
 
-  const { register, control, handleSubmit, reset, formState } = form;
+  const { register, control, handleSubmit, setValue, formState } = form;
 
-  useEffect(() => {
-    reset(buildDefaultValues(initialName));
-  }, [initialName, reset]);
+  const categoryId = useWatch({
+    control,
+    name: 'categoryId',
+    defaultValue: null,
+  });
+  const vendorId = useWatch({
+    control,
+    name: 'vendorId',
+    defaultValue: null,
+  });
 
-  const onSubmit = (_values: AddItemNewProductParsedValues): void => {
-    toaster.create({
-      type: 'success',
-      title: 'Product created',
-      description: 'Added to your hub list (mock).',
+  const selectedCategoryItem = useMemo((): AutocompleteSelectItem | null => {
+    if (categoryId === null) {
+      return null;
+    }
+    const category = categories.find((c) => c.id === categoryId);
+    if (category === undefined) {
+      return null;
+    }
+    return { id: category.id, name: category.name };
+  }, [categoryId, categories]);
+
+  const selectedVendorItem = useMemo((): AutocompleteSelectItem | null => {
+    if (vendorId === null) {
+      return null;
+    }
+    const vendor = vendors.find((v) => v.id === vendorId);
+    if (vendor === undefined) {
+      return null;
+    }
+    return { id: vendor.id, name: vendor.name };
+  }, [vendorId, vendors]);
+
+  const vendorMatchCount = useMemo(() => {
+    const query = vendorSearchText.trim().toLowerCase();
+    if (query.length < 2) {
+      return 0;
+    }
+    return vendorItems.filter((v) => v.name.toLowerCase().includes(query)).length;
+  }, [vendorSearchText, vendorItems]);
+
+  const showVendorCreator =
+    vendorSearchText.trim().length >= 2 && vendorMatchCount === 0 && selectedVendorItem === null;
+
+  const createOneProduct = useCreateOneProduct({
+    onSuccess: () => {
+      toaster.create({
+        type: 'success',
+        title: 'Product added to hub list',
+      });
+      onSubmitSuccess();
+    },
+    onError: (error) => {
+      toaster.create({
+        type: 'error',
+        title: error.message,
+      });
+    },
+  });
+
+  const purchaseFrequency = useWatch({
+    control,
+    name: 'purchaseFrequency',
+    defaultValue: HubInventoryProductFrequency.ONE_TIME,
+  });
+
+  const onSubmit = (values: AddItemNewProductParsedValues): void => {
+    createOneProduct.mutate({
+      name: values.name,
+      brandName: values.brandName,
+      categoryId: values.categoryId,
+      vendorId: values.vendorId,
+      purchaseFrequency: values.purchaseFrequency,
+      customFrequencyDays:
+        values.purchaseFrequency === HubInventoryProductFrequency.CUSTOM
+          ? values.customFrequencyDays
+          : null,
+      quantityInStock: values.quantityInStock,
+      priority: listItemContext.priority,
+      quantity: listItemContext.quantity,
+      notes: listItemContext.notes,
     });
-    onSubmitSuccess();
-  };
-
-  const pillInputProps = {
-    variant: 'outline' as const,
-    borderRadius: 'full' as const,
-    py: '2',
-    px: '3.5',
-    fontSize: 'sm',
-    borderColor: 'border.primary',
-    bg: 'bg.primary',
   };
 
   return (
     <form
-      onSubmit={(e) => {
-        void handleSubmit(onSubmit)(e);
+      onSubmit={(event) => {
+        void handleSubmit(onSubmit)(event);
       }}
     >
       <Stack gap="4" align="stretch">
@@ -77,65 +170,90 @@ export function AddItemNewProductStep({
           <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
             Name
           </Field.Label>
-          <Input {...register('name')} {...pillInputProps} />
+          <Input {...register('name')} {...PILL_INPUT_PROPS} />
           <Field.ErrorText>{formState.errors.name?.message}</Field.ErrorText>
         </Field.Root>
 
+        <Controller
+          name="categoryId"
+          control={control}
+          render={() => (
+            <AutocompleteSelect
+              label="Category"
+              items={categoryItems}
+              selectedItem={selectedCategoryItem}
+              onSelect={(item) => {
+                setValue('categoryId', item.id);
+              }}
+              onClear={() => {
+                setValue('categoryId', null);
+              }}
+              placeholder="Search categories..."
+            />
+          )}
+        />
+
         <Field.Root>
           <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-            Category
+            Brand (optional)
           </Field.Label>
           <Controller
-            name="category"
+            name="brandName"
             control={control}
             render={({ field }) => (
-              <NativeSelect.Root size="md" variant="outline" w="full">
-                <NativeSelect.Field
-                  {...field}
-                  borderRadius="full"
-                  borderColor="border.primary"
-                  bg="bg.primary"
-                  value={field.value ?? ''}
-                  onChange={(e) => {
-                    field.onChange(e.target.value);
-                  }}
-                >
-                  <option value="">Select category</option>
-                  {MOCK_CATEGORIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </NativeSelect.Field>
-                <NativeSelect.Indicator />
-              </NativeSelect.Root>
+              <Input
+                {...PILL_INPUT_PROPS}
+                value={field.value ?? ''}
+                onChange={(event) => {
+                  const next = event.target.value;
+                  field.onChange(next === '' ? null : next);
+                }}
+              />
             )}
           />
         </Field.Root>
 
-        <Field.Root>
-          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-            Vendor
-          </Field.Label>
-          <Input
-            {...register('vendorName')}
-            {...pillInputProps}
-            list="hub-add-item-vendor-options"
-            placeholder="Choose or type a vendor"
-          />
-          <datalist id="hub-add-item-vendor-options">
-            {MOCK_VENDORS.map((v) => (
-              <option key={v} value={v} />
-            ))}
-          </datalist>
-        </Field.Root>
+        <Controller
+          name="vendorId"
+          control={control}
+          render={() => (
+            <>
+              <AutocompleteSelect
+                label="Vendor"
+                items={vendorItems}
+                selectedItem={selectedVendorItem}
+                onSelect={(item) => {
+                  setValue('vendorId', item.id);
+                  setVendorSearchText('');
+                }}
+                onClear={() => {
+                  setValue('vendorId', null);
+                  setVendorSearchText('');
+                }}
+                placeholder="Search vendors..."
+                onSearchChange={(value) => {
+                  setVendorSearchText(value);
+                }}
+              />
+              <InlineVendorCreator
+                visible={showVendorCreator}
+                draftName={vendorSearchText}
+                onDraftNameChange={setVendorSearchText}
+                onVendorCreated={(id) => {
+                  setValue('vendorId', id);
+                  setVendorSearchText('');
+                }}
+              />
+            </>
+          )}
+        />
 
-        <Field.Root invalid={formState.errors.frequency !== undefined}>
+        <Field.Root invalid={formState.errors.purchaseFrequency !== undefined}>
           <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
             How often?
           </Field.Label>
           <Controller
-            name="frequency"
+            name="purchaseFrequency"
             control={control}
             render={({ field }) => (
               <NativeSelect.Root size="md" variant="outline" w="full">
@@ -144,13 +262,13 @@ export function AddItemNewProductStep({
                   borderColor="border.primary"
                   bg="bg.primary"
                   value={field.value}
-                  onChange={(e) => {
-                    field.onChange(e.target.value);
+                  onChange={(event) => {
+                    field.onChange(event.target.value);
                   }}
                 >
-                  {Object.values(ADD_ITEM_FREQUENCY).map((value) => (
+                  {HUB_INVENTORY_FREQUENCY_UI_ORDER.map((value) => (
                     <option key={value} value={value}>
-                      {ADD_ITEM_FREQUENCY_LABEL[value]}
+                      {HUB_INVENTORY_FREQUENCY_LABEL[value]}
                     </option>
                   ))}
                 </NativeSelect.Field>
@@ -158,48 +276,52 @@ export function AddItemNewProductStep({
               </NativeSelect.Root>
             )}
           />
-          <Field.ErrorText>{formState.errors.frequency?.message}</Field.ErrorText>
+          <Field.ErrorText>{formState.errors.purchaseFrequency?.message}</Field.ErrorText>
         </Field.Root>
 
-        <Field.Root>
+        {purchaseFrequency === HubInventoryProductFrequency.CUSTOM ? (
+          <Field.Root invalid={formState.errors.customFrequencyDays !== undefined}>
+            <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
+              Custom frequency (days)
+            </Field.Label>
+            <Controller
+              name="customFrequencyDays"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  {...PILL_INPUT_PROPS}
+                  type="number"
+                  min={1}
+                  step={1}
+                  value={field.value ?? ''}
+                  onChange={(event) => {
+                    const raw = event.target.value;
+                    if (raw === '') {
+                      field.onChange(null);
+                      return;
+                    }
+                    const parsed = Number.parseInt(raw, 10);
+                    field.onChange(Number.isNaN(parsed) ? null : parsed);
+                  }}
+                />
+              )}
+            />
+            <Field.ErrorText>{formState.errors.customFrequencyDays?.message}</Field.ErrorText>
+          </Field.Root>
+        ) : null}
+
+        <Field.Root invalid={formState.errors.quantityInStock !== undefined}>
           <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-            Priority
+            Qty in stock
           </Field.Label>
-          <Controller
-            name="priority"
-            control={control}
-            render={({ field }) => (
-              <HStack gap="2" flexWrap="wrap">
-                {Object.values(ADD_ITEM_PRIORITY_FORM).map((value) => {
-                  const isSelected = field.value === value;
-                  return (
-                    <Button
-                      key={value}
-                      type="button"
-                      size="sm"
-                      borderRadius="full"
-                      variant={isSelected ? 'solid' : 'outline'}
-                      bg={isSelected ? 'accent.primary' : undefined}
-                      color={isSelected ? 'text.light' : 'text.primary'}
-                      borderColor="border.primary"
-                      onClick={() => {
-                        field.onChange(value);
-                      }}
-                    >
-                      {ADD_ITEM_PRIORITY_LABEL[value]}
-                    </Button>
-                  );
-                })}
-              </HStack>
-            )}
+          <Input
+            {...register('quantityInStock', { valueAsNumber: true })}
+            {...PILL_INPUT_PROPS}
+            type="number"
+            min={0}
+            step="any"
           />
-        </Field.Root>
-
-        <Field.Root>
-          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-            Notes (optional)
-          </Field.Label>
-          <Input {...register('notes')} {...pillInputProps} placeholder="e.g. preferred brand" />
+          <Field.ErrorText>{formState.errors.quantityInStock?.message}</Field.ErrorText>
         </Field.Root>
 
         <Button
@@ -210,6 +332,7 @@ export function AddItemNewProductStep({
           colorPalette="brandPalette"
           variant="solid"
           mt="2"
+          loading={createOneProduct.isPending}
         >
           Create &amp; add to list
         </Button>

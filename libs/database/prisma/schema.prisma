@@ -156,6 +156,8 @@ model Role {
   @@index([archivedAt])
 }
 
+// SHOPPING LIST STUFF
+
 model HubList {
   id         String    @id @default(uuid()) @db.Uuid
   createdAt  DateTime  @default(now())

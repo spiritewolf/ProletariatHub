@@ -71,3 +71,71 @@ export function useFindUniqueHubList(
     : emptyFindUniqueHubListData;
   return { ...query, data };
 }
+
+type FindManyHubInventoryCategoriesQueryOpts = Parameters<
+  typeof trpc.hubInventory.findManyCategories.useQuery
+>[1];
+
+export type FindManyHubInventoryCategoriesData =
+  inferRouterOutputs<AppRouter>['hubInventory']['findManyCategories'];
+
+const emptyFindManyHubInventoryCategoriesData: FindManyHubInventoryCategoriesData = [];
+
+const findManyHubInventoryCategoriesResponseGuard = z.array(z.object({ id: z.string() }));
+
+function isFindManyHubInventoryCategoriesData(
+  value: unknown,
+): value is FindManyHubInventoryCategoriesData {
+  return findManyHubInventoryCategoriesResponseGuard.safeParse(value).success;
+}
+
+interface UseFindManyCategoriesResult extends Omit<
+  ReturnType<typeof trpc.hubInventory.findManyCategories.useQuery>,
+  'data'
+> {
+  data: FindManyHubInventoryCategoriesData;
+}
+
+export function useFindManyCategories(
+  opts?: FindManyHubInventoryCategoriesQueryOpts,
+): UseFindManyCategoriesResult {
+  const query = trpc.hubInventory.findManyCategories.useQuery(undefined, opts ?? {});
+  const data: FindManyHubInventoryCategoriesData = isFindManyHubInventoryCategoriesData(query.data)
+    ? query.data
+    : emptyFindManyHubInventoryCategoriesData;
+  return { ...query, data };
+}
+
+type FindManyHubInventoryVendorsQueryOpts = Parameters<
+  typeof trpc.hubInventory.findManyVendors.useQuery
+>[1];
+
+export type FindManyHubInventoryVendorsData =
+  inferRouterOutputs<AppRouter>['hubInventory']['findManyVendors'];
+
+const emptyFindManyHubInventoryVendorsData: FindManyHubInventoryVendorsData = [];
+
+const findManyHubInventoryVendorsResponseGuard = z.array(z.object({ id: z.string() }));
+
+function isFindManyHubInventoryVendorsData(
+  value: unknown,
+): value is FindManyHubInventoryVendorsData {
+  return findManyHubInventoryVendorsResponseGuard.safeParse(value).success;
+}
+
+interface UseFindManyVendorsResult extends Omit<
+  ReturnType<typeof trpc.hubInventory.findManyVendors.useQuery>,
+  'data'
+> {
+  data: FindManyHubInventoryVendorsData;
+}
+
+export function useFindManyVendors(
+  opts?: FindManyHubInventoryVendorsQueryOpts,
+): UseFindManyVendorsResult {
+  const query = trpc.hubInventory.findManyVendors.useQuery(undefined, opts ?? {});
+  const data: FindManyHubInventoryVendorsData = isFindManyHubInventoryVendorsData(query.data)
+    ? query.data
+    : emptyFindManyHubInventoryVendorsData;
+  return { ...query, data };
+}

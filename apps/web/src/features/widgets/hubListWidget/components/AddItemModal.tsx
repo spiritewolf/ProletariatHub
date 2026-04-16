@@ -1,17 +1,16 @@
 import { Box, Dialog, Flex, IconButton, Text } from '@chakra-ui/react';
+import type { HubInventoryProduct } from '@proletariat-hub/types';
+import { HubListItemPriority } from '@proletariat-hub/types';
 import { ArrowLeft, X } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useCallback, useLayoutEffect, useState } from 'react';
 
-import type { MockProduct } from '../mockCatalog';
-import { AddItemExistingProductStep } from './AddItemExistingProductStep';
 import { AddItemNewProductStep } from './AddItemNewProductStep';
 import { AddItemSearchStep } from './AddItemSearchStep';
 
 const STEP = {
   SEARCH: 'search',
   NEW_PRODUCT: 'newProduct',
-  EXISTING_PRODUCT: 'existingProduct',
 } as const;
 
 type AddItemStep = (typeof STEP)[keyof typeof STEP];
@@ -39,8 +38,13 @@ type AddItemModalProps = {
 
 export function AddItemModal({ isOpen, onClose }: AddItemModalProps): ReactElement {
   const [step, setStep] = useState<AddItemStep>(STEP.SEARCH);
-  const [selectedProduct, setSelectedProduct] = useState<MockProduct | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState<HubInventoryProduct | null>(null);
+  const [listQuantity, setListQuantity] = useState(1);
+  const [listPriority, setListPriority] = useState<
+    (typeof HubListItemPriority)[keyof typeof HubListItemPriority]
+  >(HubListItemPriority.MEDIUM);
+  const [listNotes, setListNotes] = useState<string | null>(null);
 
   const scheduleRestoreDocumentInteraction = useCallback((): void => {
     queueMicrotask(() => {
@@ -77,7 +81,6 @@ export function AddItemModal({ isOpen, onClose }: AddItemModalProps): ReactEleme
 
   const goBackToSearch = useCallback((): void => {
     setStep(STEP.SEARCH);
-    setSelectedProduct(null);
   }, []);
 
   const headerTitle = step === STEP.NEW_PRODUCT ? 'New product' : 'Add to hub list';
@@ -105,7 +108,7 @@ export function AddItemModal({ isOpen, onClose }: AddItemModalProps): ReactEleme
           overflow="hidden"
           display="flex"
           flexDirection="column"
-          maxH="min(90dvh, 720px)"
+          maxH="600px"
         >
           <Box
             flexShrink={0}
@@ -162,24 +165,34 @@ export function AddItemModal({ isOpen, onClose }: AddItemModalProps): ReactEleme
               <AddItemSearchStep
                 searchQuery={searchQuery}
                 onSearchQueryChange={setSearchQuery}
+                listQuantity={listQuantity}
+                onListQuantityChange={setListQuantity}
+                listPriority={listPriority}
+                onListPriorityChange={setListPriority}
+                listNotes={listNotes}
+                onListNotesChange={setListNotes}
+                selectedProduct={selectedProduct}
                 onSelectProduct={(product) => {
                   setSelectedProduct(product);
-                  setStep(STEP.EXISTING_PRODUCT);
+                }}
+                onClearSelectedProduct={() => {
+                  setSelectedProduct(null);
                 }}
                 onCreateNew={() => {
                   setStep(STEP.NEW_PRODUCT);
                 }}
+                onAddedToList={finishAndClose}
               />
             ) : null}
             {step === STEP.NEW_PRODUCT ? (
               <AddItemNewProductStep
-                initialName={searchQuery.trim()}
-                onSubmitSuccess={finishAndClose}
-              />
-            ) : null}
-            {step === STEP.EXISTING_PRODUCT && selectedProduct !== null ? (
-              <AddItemExistingProductStep
-                product={selectedProduct}
+                key={searchQuery}
+                initialName={searchQuery}
+                listItemContext={{
+                  priority: listPriority,
+                  quantity: listQuantity,
+                  notes: listNotes,
+                }}
                 onSubmitSuccess={finishAndClose}
               />
             ) : null}

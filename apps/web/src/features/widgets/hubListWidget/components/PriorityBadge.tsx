@@ -2,7 +2,7 @@ import { Box } from '@chakra-ui/react';
 import type { HubListItemPriority } from '@proletariat-hub/types';
 import type { ReactElement } from 'react';
 
-import { PRIORITY_CONFIG } from '../priorityBadgeConfig';
+import { PRIORITY_CONFIG } from '../constants';
 
 type PriorityBadgeProps = {
   priority: HubListItemPriority;

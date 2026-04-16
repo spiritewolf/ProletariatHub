@@ -3,6 +3,11 @@
 
 COMPOSE := docker compose
 
+# Prisma CLI inside `docker compose run api` must use the compose network hostname `postgres`, not
+# `localhost` from `.env`. Passing this explicitly avoids missing or host-only DATABASE_URL when
+# `scripts/turbo-with-env.mjs` runs Node with `--env-file=.env`.
+DATABASE_URL_DOCKER := postgresql://proletariat:proletariat@postgres:5432/proletariat_hub
+
 lint:
 	$(COMPOSE) run --rm -T --no-deps api pnpm run lint
 
@@ -21,19 +26,19 @@ db_generate:
 	$(COMPOSE) run --rm -T --no-deps api pnpm run db:generate
 
 db_migrate:
-	$(COMPOSE) run --rm -T api pnpm run db:migrate
+	$(COMPOSE) run --rm -T -e DATABASE_URL=$(DATABASE_URL_DOCKER) api pnpm run db:migrate
 
 db_migrate_deploy:
-	$(COMPOSE) run --rm -T api pnpm run db:migrate:deploy
+	$(COMPOSE) run --rm -T -e DATABASE_URL=$(DATABASE_URL_DOCKER) api pnpm run db:migrate:deploy
 
 db_seed:
-	$(COMPOSE) run --rm -T api pnpm run db:seed
+	$(COMPOSE) run --rm -T -e DATABASE_URL=$(DATABASE_URL_DOCKER) api pnpm run db:seed
 
 db_reset:
-	$(COMPOSE) run --rm -T api sh -c 'cd libs/database && pnpm exec prisma migrate reset --force'
+	$(COMPOSE) run --rm -T -e DATABASE_URL=$(DATABASE_URL_DOCKER) api sh -c 'cd libs/database && pnpm exec prisma migrate reset --force'
 
 db_studio:
-	$(COMPOSE) run --rm -T -p 5555:5555 api sh -c 'cd libs/database && pnpm exec prisma studio --hostname 0.0.0.0 --port 5555'
+	$(COMPOSE) run --rm -T -p 5555:5555 -e DATABASE_URL=$(DATABASE_URL_DOCKER) api sh -c 'cd libs/database && pnpm exec prisma studio --hostname 0.0.0.0 --port 5555'
 
 build_ui:
 	$(COMPOSE) pnpm --filter @proletariat-hub/web run build

@@ -7,6 +7,7 @@ import {
   HubInventoryProductFrequency,
   HubInventoryStorageLocation,
   HubInventoryVendorFulfillmentType,
+  HubListItemPriority,
 } from '@proletariat-hub/types';
 import { z } from 'zod';
 
@@ -91,3 +92,42 @@ export const findManyHubInventoryProductsInputSchema = z
     searchText: z.string().nullish(),
   })
   .optional();
+
+const hubListItemPriorityForProductCreateSchema = z.enum([
+  HubListItemPriority.URGENT,
+  HubListItemPriority.HIGH,
+  HubListItemPriority.MEDIUM,
+  HubListItemPriority.LOW,
+]);
+
+export const createOneProductInputSchema = z
+  .object({
+    name: z.string().min(1),
+    brandName: z.string().nullable(),
+    categoryId: z.string().uuid().nullable(),
+    vendorId: z.string().uuid().nullable(),
+    purchaseFrequency: hubInventoryProductFrequencySchema,
+    customFrequencyDays: z.number().int().positive().nullable(),
+    quantityInStock: z.number().min(0).default(0),
+    priority: hubListItemPriorityForProductCreateSchema,
+    quantity: z.number().min(1).default(1),
+    notes: z.string().nullable(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.purchaseFrequency === HubInventoryProductFrequency.CUSTOM) {
+      if (data.customFrequencyDays == null) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'Custom frequency requires a number of days',
+          path: ['customFrequencyDays'],
+        });
+      }
+    }
+  });
+
+export const createOneVendorInputSchema = z.object({
+  name: z.string().min(1),
+  fulfillmentType: hubInventoryVendorFulfillmentTypeSchema.default(
+    HubInventoryVendorFulfillmentType.BOTH,
+  ),
+});

@@ -1,3 +1,4 @@
+export type { Comrade, Periphery } from '@proletariat-hub/types';
 export {
   ComradeAvatarIconType,
   ComradeOnboardStatus,
@@ -5,4 +6,3 @@ export {
   DashboardTheme,
   HubPeripheryCategory,
 } from '@proletariat-hub/types';
-export type { Comrade, Periphery } from '@proletariat-hub/types';

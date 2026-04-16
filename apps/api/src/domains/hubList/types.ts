@@ -6,6 +6,7 @@ import type {
   HubListDbRecord as HubListDbRecordBase,
   HubListItemDbRecord as HubListItemDbRecordBase,
 } from '@proletariat-hub/database';
+import type { HubListItemPriority } from '@proletariat-hub/types';
 
 interface HubListItemProductDbRecord extends HubInventoryProductDbRecordBase {
   vendor: HubInventoryVendorDbRecord | null;
@@ -22,3 +23,21 @@ export interface HubListItemDbRecord extends HubListItemDbRecordBase {
 export interface HubListDbRecord extends HubListDbRecordBase {
   items: HubListItemDbRecord[];
 }
+
+export type CreateOneHubListItemInputData = {
+  listId: string;
+  productId: string;
+  createdById: string;
+  status: string;
+  priority: string;
+  quantity: number | null;
+  notes: string | null;
+};
+
+export type CreateOneHubListItemAccessInputData = {
+  productId: string;
+  createdById: string;
+  priority: HubListItemPriority;
+  quantity: number | null;
+  notes: string | null;
+};

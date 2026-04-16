@@ -42,3 +42,10 @@ export const hubListOutputSchema: z.ZodType<HubList> = z.object({
   createdAt: z.date(),
   items: z.array(hubListItemOutputSchema),
 });
+
+export const createOneListItemInputSchema = z.object({
+  productId: z.string().uuid(),
+  priority: hubListItemPrioritySchema.default(HubListItemPriority.MEDIUM),
+  quantity: z.number().nullable().default(null),
+  notes: z.string().nullable().default(null),
+});
