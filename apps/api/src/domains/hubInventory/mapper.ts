@@ -10,7 +10,7 @@ import {
 import { validateConstEnumType } from '../../shared/util/helpers';
 import type {
   HubInventoryProductCategoryDbRecord,
-  HubInventoryProductDbRecord,
+  HubInventoryProductParseSource,
   HubInventoryVendorDbRecord,
 } from './types';
 
@@ -20,7 +20,9 @@ function parseOptionalStorageLocation(value: string | null): HubInventoryStorage
     : validateConstEnumType(HubInventoryStorageLocation, value, 'storage location');
 }
 
-export function parseHubInventoryProduct(record: HubInventoryProductDbRecord): HubInventoryProduct {
+export function parseHubInventoryProduct(
+  record: HubInventoryProductParseSource,
+): HubInventoryProduct {
   return {
     id: record.id,
     createdAt: record.createdAt,
@@ -53,6 +55,8 @@ export function parseHubInventoryProduct(record: HubInventoryProductDbRecord): H
     shelfLifeOpenedDays: record.shelfLifeOpenedDays,
     categoryId: record.categoryId,
     vendorId: record.vendorId,
+    categoryName: record.category?.name ?? null,
+    vendorName: record.vendor?.name ?? null,
     hubId: record.hubId,
     createdById: record.createdById,
   };

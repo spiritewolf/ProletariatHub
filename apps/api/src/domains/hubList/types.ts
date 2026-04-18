@@ -5,6 +5,7 @@ import type {
   HubInventoryVendorDbRecord,
   HubListDbRecord as HubListDbRecordBase,
   HubListItemDbRecord as HubListItemDbRecordBase,
+  Prisma,
 } from '@proletariat-hub/database';
 import type { HubListItemPriority } from '@proletariat-hub/types';
 
@@ -23,6 +24,10 @@ export interface HubListItemDbRecord extends HubListItemDbRecordBase {
 export interface HubListDbRecord extends HubListDbRecordBase {
   items: HubListItemDbRecord[];
 }
+
+export type HubListItemsOrderByInput = {
+  priority: Prisma.SortOrder;
+};
 
 export type CreateOneHubListItemInputData = {
   listId: string;

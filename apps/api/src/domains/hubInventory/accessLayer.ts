@@ -1,10 +1,10 @@
 import type { PrismaClient } from '@proletariat-hub/database';
-import { TRPCError } from '@trpc/server';
 import type {
   HubInventoryProduct,
   HubInventoryProductCategory,
   HubInventoryVendor,
 } from '@proletariat-hub/types';
+import { TRPCError } from '@trpc/server';
 
 import type { DomainErrorHandler } from '../../shared/util/prismaErrorHandler';
 import {
@@ -14,6 +14,7 @@ import {
 } from './mapper';
 import { createOneHubInventoryProduct, createOneHubInventoryVendor } from './mutations';
 import {
+  findFirstHubInventoryVendorNullable,
   findManyHubInventoryProductCategories,
   findManyHubInventoryProducts,
   findManyHubInventoryVendors,
@@ -21,6 +22,7 @@ import {
 import type {
   CreateOneHubInventoryProductInputData,
   CreateOneHubInventoryVendorInputData,
+  FindHubInventoryVendorNullableWhereFirstInput,
 } from './types';
 
 export class HubInventoryAccessLayer {
@@ -29,8 +31,10 @@ export class HubInventoryAccessLayer {
     private readonly domainError: DomainErrorHandler,
   ) {}
 
+  // PRODUCTS
+
   async findManyProducts(params: {
-    where: { hubId: string; searchText?: string | null };
+    where: { hubId: string; searchText?: string };
   }): Promise<HubInventoryProduct[]> {
     return this.domainError.returnOrThrowTRPCError(async () => {
       const hubInventoryProductDbRecords = await findManyHubInventoryProducts({
@@ -38,28 +42,6 @@ export class HubInventoryAccessLayer {
         where: params.where,
       });
       return hubInventoryProductDbRecords.map(parseHubInventoryProduct);
-    });
-  }
-
-  async findManyCategories(params: {
-    where: { hubId: string };
-  }): Promise<HubInventoryProductCategory[]> {
-    return this.domainError.returnOrThrowTRPCError(async () => {
-      const hubInventoryProductCategoryDbRecords = await findManyHubInventoryProductCategories({
-        db: this.db,
-        where: params.where,
-      });
-      return hubInventoryProductCategoryDbRecords.map(parseHubInventoryProductCategory);
-    });
-  }
-
-  async findManyVendors(params: { where: { hubId: string } }): Promise<HubInventoryVendor[]> {
-    return this.domainError.returnOrThrowTRPCError(async () => {
-      const hubInventoryVendorDbRecords = await findManyHubInventoryVendors({
-        db: this.db,
-        where: params.where,
-      });
-      return hubInventoryVendorDbRecords.map(parseHubInventoryVendor);
     });
   }
 
@@ -77,23 +59,67 @@ export class HubInventoryAccessLayer {
     });
   }
 
+  // CATEGORIES
+
+  async findManyCategories(params: {
+    where: { hubId: string };
+  }): Promise<HubInventoryProductCategory[]> {
+    return this.domainError.returnOrThrowTRPCError(async () => {
+      const hubInventoryProductCategoryDbRecords = await findManyHubInventoryProductCategories({
+        db: this.db,
+        where: params.where,
+      });
+      return hubInventoryProductCategoryDbRecords.map(parseHubInventoryProductCategory);
+    });
+  }
+
+  // VENDORS
+
+  async findFirstVendorNullable(params: {
+    where: FindHubInventoryVendorNullableWhereFirstInput;
+  }): Promise<HubInventoryVendor | null> {
+    return this.domainError.returnOrThrowTRPCError(async () => {
+      const hubInventoryVendorDbRecord = await findFirstHubInventoryVendorNullable({
+        db: this.db,
+        where: params.where,
+      });
+      return hubInventoryVendorDbRecord
+        ? parseHubInventoryVendor(hubInventoryVendorDbRecord)
+        : null;
+    });
+  }
+
+  async findManyVendors(params: {
+    where: { hubId: string; searchText?: string };
+  }): Promise<HubInventoryVendor[]> {
+    return this.domainError.returnOrThrowTRPCError(async () => {
+      const hubInventoryVendorDbRecords = await findManyHubInventoryVendors({
+        db: this.db,
+        where: params.where,
+      });
+      return hubInventoryVendorDbRecords.map(parseHubInventoryVendor);
+    });
+  }
+
   async createOneVendor(params: {
     where: { hubId: string };
     data: CreateOneHubInventoryVendorInputData;
   }): Promise<HubInventoryVendor> {
     return this.domainError.returnOrThrowTRPCError(async () => {
-      const existing = await this.db.hubInventoryVendor.findFirst({
+      const existingVendor = await this.findFirstVendorNullable({
         where: {
           hubId: params.where.hubId,
-          name: { equals: params.data.name, mode: 'insensitive' },
+          searchText: params.data.name,
         },
       });
-      if (existing !== null) {
+
+      if (existingVendor) {
         throw new TRPCError({
           code: 'BAD_REQUEST',
           message: 'A vendor with this name already exists',
         });
       }
+
       const hubInventoryVendorDbRecord = await createOneHubInventoryVendor({
         db: this.db,
         where: params.where,

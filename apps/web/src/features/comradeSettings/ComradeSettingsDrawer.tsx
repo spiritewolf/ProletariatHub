@@ -7,8 +7,11 @@ import { type ReactElement, useEffect, useRef } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import { HubPeripherySection } from './HubPeripherySection';
-import { comradeSettingsFormSchema } from './schema';
-import type { ComradeSettingsFormValues, ComradeSettingsParsedValues } from './types';
+import {
+  comradeSettingsFormSchema,
+  type ComradeSettingsFormValues,
+  type ComradeSettingsParsedValues,
+} from './types';
 
 function formatComradeSettingsSaveError(error: unknown): string {
   if (error instanceof Error) {
@@ -175,11 +178,7 @@ export function ComradeSettingsDrawer({
                 py={5}
               >
                 <Stack gap={5} align="stretch">
-                  <form
-                    onSubmit={(e) => {
-                      void handleSubmit(onSubmitForm)(e);
-                    }}
-                  >
+                  <form onSubmit={handleSubmit(onSubmitForm)}>
                     <Stack gap={5} align="stretch">
                       <Stack gap={3}>
                         <Text
@@ -192,16 +191,12 @@ export function ComradeSettingsDrawer({
                           Profile
                         </Text>
                         <Field.Root>
-                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                            Username
-                          </Field.Label>
+                          <Field.Label textStyle="fieldLabel">Username</Field.Label>
                           <Input
                             readOnly
                             disabled
-                            variant="outline"
-                            borderRadius="full"
+                            shape="pill"
                             bg="bg.secondary"
-                            borderColor="border.primary"
                             py="2"
                             px="3.5"
                             fontSize="sm"
@@ -209,17 +204,13 @@ export function ComradeSettingsDrawer({
                           />
                         </Field.Root>
                         <Field.Root invalid={formState.errors.birthDate !== undefined}>
-                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                            Birth date
-                          </Field.Label>
+                          <Field.Label textStyle="fieldLabel">Birth date</Field.Label>
                           <Input
                             type="date"
-                            variant="outline"
-                            borderRadius="full"
+                            shape="pill"
                             py="2"
                             px="3.5"
                             fontSize="sm"
-                            borderColor="border.primary"
                             {...register('birthDate')}
                           />
                           <Field.ErrorText>{formState.errors.birthDate?.message}</Field.ErrorText>
@@ -237,53 +228,41 @@ export function ComradeSettingsDrawer({
                           Contact info
                         </Text>
                         <Field.Root invalid={formState.errors.phoneNumber !== undefined}>
-                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                            Phone (SMS)
-                          </Field.Label>
+                          <Field.Label textStyle="fieldLabel">Phone (SMS)</Field.Label>
                           <Input
                             type="tel"
                             autoComplete="tel"
                             placeholder="+1 (555) 000-0000"
-                            variant="outline"
-                            borderRadius="full"
+                            shape="pill"
                             py="2"
                             px="3.5"
                             fontSize="sm"
-                            borderColor="border.primary"
                             {...register('phoneNumber')}
                           />
                           <Field.ErrorText>{formState.errors.phoneNumber?.message}</Field.ErrorText>
                         </Field.Root>
                         <Field.Root invalid={formState.errors.email !== undefined}>
-                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                            Email
-                          </Field.Label>
+                          <Field.Label textStyle="fieldLabel">Email</Field.Label>
                           <Input
                             type="email"
                             autoComplete="email"
                             placeholder="comrade@hub.local"
-                            variant="outline"
-                            borderRadius="full"
+                            shape="pill"
                             py="2"
                             px="3.5"
                             fontSize="sm"
-                            borderColor="border.primary"
                             {...register('email')}
                           />
                           <Field.ErrorText>{formState.errors.email?.message}</Field.ErrorText>
                         </Field.Root>
                         <Field.Root invalid={formState.errors.signalUsername !== undefined}>
-                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                            Signal username
-                          </Field.Label>
+                          <Field.Label textStyle="fieldLabel">Signal username</Field.Label>
                           <Input
                             placeholder="@comrade.01"
-                            variant="outline"
-                            borderRadius="full"
+                            shape="pill"
                             py="2"
                             px="3.5"
                             fontSize="sm"
-                            borderColor="border.primary"
                             {...register('signalUsername')}
                           />
                           <Field.ErrorText>
@@ -291,17 +270,13 @@ export function ComradeSettingsDrawer({
                           </Field.ErrorText>
                         </Field.Root>
                         <Field.Root invalid={formState.errors.telegramUsername !== undefined}>
-                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                            Telegram username
-                          </Field.Label>
+                          <Field.Label textStyle="fieldLabel">Telegram username</Field.Label>
                           <Input
                             placeholder="@comrade_01"
-                            variant="outline"
-                            borderRadius="full"
+                            shape="pill"
                             py="2"
                             px="3.5"
                             fontSize="sm"
-                            borderColor="border.primary"
                             {...register('telegramUsername')}
                           />
                           <Field.ErrorText>
@@ -321,37 +296,29 @@ export function ComradeSettingsDrawer({
                           Security
                         </Text>
                         <Field.Root invalid={formState.errors.newPassword !== undefined}>
-                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                            New password
-                          </Field.Label>
+                          <Field.Label textStyle="fieldLabel">New password</Field.Label>
                           <Input
                             type="password"
                             autoComplete="new-password"
                             placeholder="New password"
-                            variant="outline"
-                            borderRadius="full"
+                            shape="pill"
                             py="2"
                             px="3.5"
                             fontSize="sm"
-                            borderColor="border.primary"
                             {...register('newPassword')}
                           />
                           <Field.ErrorText>{formState.errors.newPassword?.message}</Field.ErrorText>
                         </Field.Root>
                         <Field.Root invalid={formState.errors.confirmPassword !== undefined}>
-                          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-                            Confirm password
-                          </Field.Label>
+                          <Field.Label textStyle="fieldLabel">Confirm password</Field.Label>
                           <Input
                             type="password"
                             autoComplete="new-password"
                             placeholder="Confirm password"
-                            variant="outline"
-                            borderRadius="full"
+                            shape="pill"
                             py="2"
                             px="3.5"
                             fontSize="sm"
-                            borderColor="border.primary"
                             {...register('confirmPassword')}
                           />
                           <Field.ErrorText>
@@ -371,7 +338,7 @@ export function ComradeSettingsDrawer({
                         width="full"
                         size="sm"
                         variant="solid"
-                        borderRadius="full"
+                        shape="pill"
                         fontSize="sm"
                         disabled={isSaveDisabled}
                         loading={updateOneMutation.isPending}

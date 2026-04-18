@@ -26,7 +26,7 @@ export function PriorityPillSelect({ value, onChange }: PriorityPillSelectProps)
             key={priority}
             type="button"
             size="sm"
-            borderRadius="full"
+            shape="pill"
             variant={isSelected ? 'solid' : 'outline'}
             bg={isSelected ? 'accent.primary' : undefined}
             color={isSelected ? 'text.light' : 'text.primary'}

@@ -15,6 +15,8 @@ export type HubPeripherySettingsConfig = {
   email: string | null;
 };
 
+export type PeripheryAvatarIcon = string | null;
+
 export type Periphery = {
   id: string;
   createdAt: Date;

@@ -169,10 +169,17 @@ export const buttonRecipe = defineRecipe({
         color: 'colorPalette.fg',
       },
     },
+    shape: {
+      rounded: {},
+      pill: {
+        borderRadius: 'full',
+      },
+    },
   },
   defaultVariants: {
     size: 'md',
     variant: 'solid',
+    shape: 'rounded',
   },
 });
 
@@ -394,10 +401,17 @@ export const inputRecipe = defineRecipe({
         },
       },
     },
+    shape: {
+      rounded: {},
+      pill: {
+        borderRadius: 'full',
+      },
+    },
   },
   defaultVariants: {
     size: 'md',
     variant: 'outline',
+    shape: 'rounded',
   },
 });
 

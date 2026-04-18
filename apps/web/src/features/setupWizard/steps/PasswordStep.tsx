@@ -26,12 +26,7 @@ export function PasswordStep(): ReactElement {
       <Stack gap={5}>
         <Field.Root invalid={errors.username !== undefined}>
           <Field.Label color="text.primary">Username</Field.Label>
-          <Input
-            autoComplete="username"
-            variant="outline"
-            borderRadius="full"
-            {...register('username')}
-          />
+          <Input autoComplete="username" shape="pill" {...register('username')} />
           <Field.ErrorText>{errors.username?.message}</Field.ErrorText>
         </Field.Root>
         <Field.Root invalid={errors.newPassword !== undefined}>
@@ -39,8 +34,7 @@ export function PasswordStep(): ReactElement {
           <Input
             type="password"
             autoComplete="new-password"
-            variant="outline"
-            borderRadius="full"
+            shape="pill"
             {...register('newPassword')}
           />
           <Field.ErrorText>{errors.newPassword?.message}</Field.ErrorText>
@@ -50,8 +44,7 @@ export function PasswordStep(): ReactElement {
           <Input
             type="password"
             autoComplete="new-password"
-            variant="outline"
-            borderRadius="full"
+            shape="pill"
             {...register('confirmPassword')}
           />
           <Field.ErrorText>{errors.confirmPassword?.message}</Field.ErrorText>

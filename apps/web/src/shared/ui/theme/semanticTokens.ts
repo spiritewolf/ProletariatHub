@@ -240,6 +240,28 @@ export const semanticTokens = defineSemanticTokens({
       focusRing: { value: { base: '#1976D2', _dark: '{colors.radical.cyan}' } },
       border: { value: { base: '#1976D2', _dark: '{colors.radical.cyan}' } },
     },
+
+    disabledPalette: {
+      solid: { value: { base: '{colors.gray.700}', _dark: '{colors.gray.200}' } },
+      contrast: { value: { base: '{colors.white}', _dark: '#12111F' } },
+      fg: { value: { base: '{colors.gray.700}', _dark: '{colors.gray.200}' } },
+      subtle: { value: { base: '#F0E8EC', _dark: '#1A192C' } },
+      muted: { value: { base: '#E0D4DA', _dark: '#232048' } },
+      emphasized: { value: { base: '{colors.gray.700}', _dark: '{colors.gray.200}' } },
+      focusRing: { value: { base: '{colors.gray.700}', _dark: '{colors.gray.200}' } },
+      border: { value: { base: '{colors.gray.700}', _dark: '{colors.gray.200}' } },
+    },
+
+    destructivePalette: {
+      solid: { value: { base: '#D32F2F', _dark: '{colors.radical.coral}' } },
+      contrast: { value: { base: '{colors.white}', _dark: '{colors.white}' } },
+      fg: { value: { base: '#D32F2F', _dark: '{colors.radical.coral}' } },
+      subtle: { value: { base: '#FFEBEE', _dark: '#3D2429' } },
+      muted: { value: { base: '#FFCDD2', _dark: '#4A2E34' } },
+      emphasized: { value: { base: '#D32F2F', _dark: '{colors.radical.coral}' } },
+      focusRing: { value: { base: '#D32F2F', _dark: '{colors.radical.coral}' } },
+      border: { value: { base: '#D32F2F', _dark: '{colors.radical.coral}' } },
+    },
   },
 
   // Chakra v3 internal aliases — recipes reference these

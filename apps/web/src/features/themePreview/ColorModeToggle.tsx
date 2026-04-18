@@ -28,7 +28,7 @@ export function ColorModeToggle(): ReactElement {
       wrap="wrap"
       justify="flex-end"
     >
-      <Text fontSize="sm" color="text.secondary" display={{ base: 'none', sm: 'block' }}>
+      <Text textStyle="helperText" display={{ base: 'none', sm: 'block' }}>
         Mode ({resolvedTheme ?? theme ?? THEME_DISPLAY_PENDING})
       </Text>
       {THEME_TOGGLE_ENTRIES.map((entry) => (

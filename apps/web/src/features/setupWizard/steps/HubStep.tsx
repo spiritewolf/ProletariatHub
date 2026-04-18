@@ -19,8 +19,8 @@ export function HubStep(): ReactElement {
       <Stack gap={5}>
         <Field.Root invalid={errors.hubName !== undefined}>
           <Field.Label color="text.primary">Hub name</Field.Label>
-          <Input variant="outline" borderRadius="full" {...register('hubName')} />
-          <Field.HelperText color="text.secondary">
+          <Input shape="pill" {...register('hubName')} />
+          <Field.HelperText textStyle="helperText">
             This is your hub&apos;s name. You can change it later in Settings.
           </Field.HelperText>
           <Field.ErrorText>{errors.hubName?.message}</Field.ErrorText>

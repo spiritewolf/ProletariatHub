@@ -14,15 +14,21 @@ const recruitAvatarIconSchema = z.enum([
 
 export const recruitSchema = z
   .object({
+    id: z
+      .string()
+      .uuid()
+      .default(() => crypto.randomUUID()),
     username: z.string(),
     icon: recruitAvatarIconSchema.default(ComradeAvatarIconType.USER),
   })
   .transform((raw) => ({
+    id: raw.id,
     username: raw.username.trim(),
     icon: raw.icon,
   }))
   .pipe(
     z.object({
+      id: z.string().uuid(),
       username: z.string().min(1, 'Username is required'),
       icon: recruitAvatarIconSchema,
     }),

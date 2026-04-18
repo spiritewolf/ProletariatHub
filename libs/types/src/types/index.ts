@@ -17,4 +17,4 @@ export type {
   HubListItem,
 } from './hubListAndInventory';
 export { HubPeripheryCategory } from './periphery';
-export type { HubPeripherySettingsConfig, Periphery } from './periphery';
+export type { HubPeripherySettingsConfig, Periphery, PeripheryAvatarIcon } from './periphery';

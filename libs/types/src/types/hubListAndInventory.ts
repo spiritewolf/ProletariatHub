@@ -99,6 +99,8 @@ export type HubInventoryProduct = {
   shelfLifeOpenedDays: number | null;
   categoryId: string | null;
   vendorId: string | null;
+  categoryName: string | null;
+  vendorName: string | null;
   hubId: string;
   createdById: string;
 };

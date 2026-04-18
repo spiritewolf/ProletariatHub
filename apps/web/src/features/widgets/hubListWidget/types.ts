@@ -38,8 +38,18 @@ export const addItemNewProductFormSchema = z
       HubInventoryProductFrequency.MONTHLY,
       HubInventoryProductFrequency.CUSTOM,
     ]),
-    customFrequencyDays: z.number().int().positive().nullable(),
-    quantityInStock: z.number().min(0),
+    customFrequencyDays: z.preprocess((value) => {
+      if (value === '' || value == null) {
+        return null;
+      }
+      return Number(value);
+    }, z.number().int().positive().nullable()),
+    quantityInStock: z.preprocess((value) => {
+      if (value === '' || value == null) {
+        return 0;
+      }
+      return Number(value);
+    }, z.number().min(0)),
   })
   .superRefine((data, ctx) => {
     if (data.purchaseFrequency === HubInventoryProductFrequency.CUSTOM) {
@@ -53,5 +63,5 @@ export const addItemNewProductFormSchema = z
     }
   });
 
-export type AddItemNewProductFormValues = z.infer<typeof addItemNewProductFormSchema>;
-export type AddItemNewProductParsedValues = AddItemNewProductFormValues;
+export type AddItemNewProductFormValues = z.input<typeof addItemNewProductFormSchema>;
+export type AddItemNewProductParsedValues = z.output<typeof addItemNewProductFormSchema>;

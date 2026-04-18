@@ -18,16 +18,6 @@ export type CategoryBadgeStyle = {
   color: CategoryBadgeVisual;
 };
 
-export const PILL_INPUT_PROPS = {
-  variant: 'outline' as const,
-  borderRadius: 'full' as const,
-  py: '2',
-  px: '3.5',
-  fontSize: 'sm',
-  borderColor: 'border.primary',
-  bg: 'bg.primary',
-} as const;
-
 export const PRIORITY_CONFIG = {
   [HubListItemPriority.URGENT]: { bg: 'error.subtle', color: 'error.fg' },
   [HubListItemPriority.HIGH]: { bg: 'warning.subtle', color: 'warning.fg' },

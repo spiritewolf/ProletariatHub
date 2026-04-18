@@ -25,7 +25,7 @@ export function AuthFlowHeader({
           <Heading as="h1" size="lg" letterSpacing="-0.02em" color="header.primary">
             ProletariatHub
           </Heading>
-          <Text mt={2} fontSize="sm" color="text.secondary">
+          <Text mt={2} textStyle="helperText">
             {subtitle}
           </Text>
         </Box>

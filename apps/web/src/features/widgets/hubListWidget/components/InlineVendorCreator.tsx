@@ -4,21 +4,17 @@ import { toaster } from '@proletariat-hub/web/shared/ui';
 import { Plus } from 'lucide-react';
 import type { ReactElement } from 'react';
 
-import { PILL_INPUT_PROPS } from '../constants';
-
 export type InlineVendorCreatorProps = {
-  visible: boolean;
   draftName: string;
   onDraftNameChange: (name: string) => void;
   onVendorCreated: (vendorId: string) => void;
 };
 
 export function InlineVendorCreator({
-  visible,
   draftName,
   onDraftNameChange,
   onVendorCreated,
-}: InlineVendorCreatorProps): ReactElement | null {
+}: InlineVendorCreatorProps): ReactElement {
   const createOneVendor = useCreateOneVendor({
     onSuccess: (vendor) => {
       onVendorCreated(vendor.id);
@@ -35,10 +31,6 @@ export function InlineVendorCreator({
     },
   });
 
-  if (!visible) {
-    return null;
-  }
-
   return (
     <>
       <Separator borderColor="border.primary" />
@@ -54,7 +46,7 @@ export function InlineVendorCreator({
         </Text>
         <HStack gap="2" align="stretch">
           <Input
-            {...PILL_INPUT_PROPS}
+            shape="pill"
             flex="1"
             placeholder="Vendor name"
             value={draftName}
@@ -65,12 +57,12 @@ export function InlineVendorCreator({
           <Button
             type="button"
             size="md"
-            borderRadius="full"
+            shape="pill"
             variant="outline"
             borderColor="border.primary"
             flexShrink={0}
             loading={createOneVendor.isPending}
-            disabled={draftName.trim().length === 0}
+            disabled={draftName.length === 0}
             onClick={() => {
               createOneVendor.mutate({
                 name: draftName,

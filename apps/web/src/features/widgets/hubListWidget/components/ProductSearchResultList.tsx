@@ -1,44 +1,18 @@
 import { Box, Button, Flex, HStack, Stack, Text } from '@chakra-ui/react';
-import type {
-  HubInventoryProduct,
-  HubInventoryProductCategory,
-  HubInventoryVendor,
-} from '@proletariat-hub/types';
+import type { HubInventoryProduct } from '@proletariat-hub/types';
 import type { ReactElement } from 'react';
-import { useMemo } from 'react';
 
-import { getCategoryBadgeStyle } from '../constants';
-import { getCategorySearchResultIcon } from '../constants';
+import { getCategoryBadgeStyle, getCategorySearchResultIcon } from '../constants';
 
 export type ProductSearchResultListProps = {
   products: HubInventoryProduct[];
-  categories: HubInventoryProductCategory[];
-  vendors: HubInventoryVendor[];
   onSelectProduct: (product: HubInventoryProduct) => void;
 };
 
 export function ProductSearchResultList({
   products,
-  categories,
-  vendors,
   onSelectProduct,
 }: ProductSearchResultListProps): ReactElement {
-  const categoryNameById = useMemo(() => {
-    const nameByCategoryId = new Map<string, string>();
-    for (const category of categories) {
-      nameByCategoryId.set(category.id, category.name);
-    }
-    return nameByCategoryId;
-  }, [categories]);
-
-  const vendorNameById = useMemo(() => {
-    const nameByVendorId = new Map<string, string>();
-    for (const vendor of vendors) {
-      nameByVendorId.set(vendor.id, vendor.name);
-    }
-    return nameByVendorId;
-  }, [vendors]);
-
   return (
     <Box
       borderWidth="1px"
@@ -49,14 +23,11 @@ export function ProductSearchResultList({
       overflowY="auto"
     >
       <Stack gap="0">
-        {products.map((product, index) => {
-          const categoryName =
-            product.categoryId !== null ? (categoryNameById.get(product.categoryId) ?? null) : null;
-          const vendorName =
-            product.vendorId !== null ? (vendorNameById.get(product.vendorId) ?? null) : null;
-          const categoryBadgeStyle =
-            categoryName !== null ? getCategoryBadgeStyle(categoryName) : null;
-          const CategoryIcon = getCategorySearchResultIcon(categoryName);
+        {products.map((product) => {
+          const categoryBadgeStyle = product.categoryName
+            ? getCategoryBadgeStyle(product.categoryName)
+            : null;
+          const CategoryIcon = getCategorySearchResultIcon(product.categoryName);
           return (
             <Button
               key={product.id}
@@ -67,8 +38,8 @@ export function ProductSearchResultList({
               py="3"
               px="3"
               borderRadius="0"
-              borderBottomWidth={index < products.length - 1 ? '1px' : undefined}
               borderColor="hubList.border"
+              _notLast={{ borderBottomWidth: '1px' }}
               onClick={() => {
                 onSelectProduct(product);
               }}
@@ -98,19 +69,19 @@ export function ProductSearchResultList({
                     {product.name}
                   </Text>
                   <HStack gap="3" flexWrap="wrap" align="baseline" w="full">
-                    {product.brandName !== null ? (
+                    {product.brandName ? (
                       <Text as="span" fontSize="xs" color="text.secondary" lineClamp={1}>
                         {product.brandName}
                       </Text>
                     ) : null}
-                    {vendorName !== null ? (
+                    {product.vendorName ? (
                       <Text as="span" fontSize="xs" color="text.primary" lineClamp={1}>
-                        {vendorName}
+                        {product.vendorName}
                       </Text>
                     ) : null}
                   </HStack>
                 </Stack>
-                {categoryBadgeStyle !== null && categoryName !== null ? (
+                {categoryBadgeStyle ? (
                   <Text
                     as="span"
                     fontSize="xs"
@@ -122,7 +93,7 @@ export function ProductSearchResultList({
                     bg={categoryBadgeStyle.bg}
                     color={categoryBadgeStyle.color}
                   >
-                    {categoryName}
+                    {product.categoryName}
                   </Text>
                 ) : null}
               </HStack>

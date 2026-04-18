@@ -5,6 +5,7 @@ import {
   createOneProductInputSchema,
   createOneVendorInputSchema,
   findManyHubInventoryProductsInputSchema,
+  findManyHubInventoryVendorsInputSchema,
   hubInventoryProductCategoryOutputSchema,
   hubInventoryProductOutputSchema,
   hubInventoryVendorOutputSchema,
@@ -30,10 +31,12 @@ export const hubInventoryRouter = router({
     }),
 
   findManyVendors: protectedProcedure
+    .input(findManyHubInventoryVendorsInputSchema)
     .output(z.array(hubInventoryVendorOutputSchema))
-    .query(async ({ ctx }) => {
+    .query(async ({ ctx, input }) => {
+      const searchText = input?.searchText;
       return ctx.hubInventoryAccessLayer.findManyVendors({
-        where: { hubId: ctx.comrade.hubId },
+        where: { hubId: ctx.comrade.hubId, searchText },
       });
     }),
 

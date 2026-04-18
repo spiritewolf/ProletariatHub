@@ -63,6 +63,8 @@ export const hubInventoryProductOutputSchema: z.ZodType<HubInventoryProduct> = z
   shelfLifeOpenedDays: z.number().nullable(),
   categoryId: z.string().uuid().nullable(),
   vendorId: z.string().uuid().nullable(),
+  categoryName: z.string().nullable(),
+  vendorName: z.string().nullable(),
   hubId: z.string().uuid(),
   createdById: z.string().uuid(),
 });
@@ -89,7 +91,13 @@ export const hubInventoryVendorOutputSchema: z.ZodType<HubInventoryVendor> = z.o
 
 export const findManyHubInventoryProductsInputSchema = z
   .object({
-    searchText: z.string().nullish(),
+    searchText: z.string().optional(),
+  })
+  .optional();
+
+export const findManyHubInventoryVendorsInputSchema = z
+  .object({
+    searchText: z.string().optional(),
   })
   .optional();
 

@@ -26,34 +26,22 @@ export function ContactStep(): ReactElement {
       <Stack gap={5}>
         <Field.Root invalid={errors.phoneNumber !== undefined}>
           <Field.Label color="text.primary">Phone (SMS)</Field.Label>
-          <Input
-            type="tel"
-            autoComplete="tel"
-            variant="outline"
-            borderRadius="full"
-            {...register('phoneNumber')}
-          />
+          <Input type="tel" autoComplete="tel" shape="pill" {...register('phoneNumber')} />
           <Field.ErrorText>{errors.phoneNumber?.message}</Field.ErrorText>
         </Field.Root>
         <Field.Root invalid={errors.email !== undefined}>
           <Field.Label color="text.primary">Email</Field.Label>
-          <Input
-            type="email"
-            autoComplete="email"
-            variant="outline"
-            borderRadius="full"
-            {...register('email')}
-          />
+          <Input type="email" autoComplete="email" shape="pill" {...register('email')} />
           <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
         </Field.Root>
         <Field.Root invalid={errors.signalUsername !== undefined}>
           <Field.Label color="text.primary">Signal username</Field.Label>
-          <Input variant="outline" borderRadius="full" {...register('signalUsername')} />
+          <Input shape="pill" {...register('signalUsername')} />
           <Field.ErrorText>{errors.signalUsername?.message}</Field.ErrorText>
         </Field.Root>
         <Field.Root invalid={errors.telegramUsername !== undefined}>
           <Field.Label color="text.primary">Telegram username</Field.Label>
-          <Input variant="outline" borderRadius="full" {...register('telegramUsername')} />
+          <Input shape="pill" {...register('telegramUsername')} />
           <Field.ErrorText>{errors.telegramUsername?.message}</Field.ErrorText>
         </Field.Root>
         <Text fontSize="xs" color="text.secondary">

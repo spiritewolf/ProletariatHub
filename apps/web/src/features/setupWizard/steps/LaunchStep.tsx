@@ -31,7 +31,7 @@ export function LaunchStep(): ReactElement {
   return (
     <SetupStepCard title="Comrades of the Hub, unite!">
       <Stack gap={5}>
-        <Text color="text.secondary" fontSize="sm" lineHeight="tall">
+        <Text textStyle="helperText" lineHeight="tall">
           Here&apos;s what we&apos;ll start with. You can always adjust people and the Hub name in
           Settings later.
         </Text>
@@ -49,8 +49,8 @@ export function LaunchStep(): ReactElement {
             <Text color="text.secondary">None added — it&apos;s just you for now.</Text>
           ) : (
             <Stack as="ul" gap={2} pl={0} listStyleType="none">
-              {recruits.map((r, index) => (
-                <Box as="li" key={`${r.username}-${String(index)}`} color="text.secondary">
+              {recruits.map((r) => (
+                <Box as="li" key={r.id} color="text.secondary">
                   <HStack gap={3} align="center">
                     <RecruitAvatarGlyph iconType={r.icon ?? ComradeAvatarIconType.USER} size={20} />
                     <Text>{r.username}</Text>

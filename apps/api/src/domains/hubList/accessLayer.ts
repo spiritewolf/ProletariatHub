@@ -6,7 +6,7 @@ import type { DomainErrorHandler } from '../../shared/util/prismaErrorHandler';
 import { parseHubList, parseHubListItem } from './mapper';
 import { createOneHubListItem, deleteOneHubListItem } from './mutations';
 import { findFirstHubList, findUniqueHubListItem } from './queries';
-import type { CreateOneHubListItemAccessInputData } from './types';
+import type { CreateOneHubListItemAccessInputData, HubListItemsOrderByInput } from './types';
 
 export class HubListAccessLayer {
   constructor(
@@ -14,11 +14,15 @@ export class HubListAccessLayer {
     private readonly domainError: DomainErrorHandler,
   ) {}
 
-  async findFirst(params: { where: { hubId: string } }): Promise<HubList> {
+  async findFirst(params: {
+    where: { hubId: string };
+    orderBy?: HubListItemsOrderByInput;
+  }): Promise<HubList> {
     return this.domainError.returnOrThrowTRPCError(async () => {
       const hubListDbRecord = await findFirstHubList({
         db: this.db,
         where: params.where,
+        orderBy: params.orderBy,
       });
       return parseHubList(hubListDbRecord);
     });

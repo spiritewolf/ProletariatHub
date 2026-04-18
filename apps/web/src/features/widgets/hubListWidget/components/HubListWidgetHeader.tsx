@@ -28,7 +28,7 @@ export function HubListWidgetHeader({
         <Text color="text.primary" fontWeight="semibold" fontSize="md" lineClamp={1}>
           Hub List
         </Text>
-        <Text color="text.secondary" fontSize="sm" flexShrink={0}>
+        <Text textStyle="helperText" flexShrink={0}>
           {activeCount} active
         </Text>
       </HStack>

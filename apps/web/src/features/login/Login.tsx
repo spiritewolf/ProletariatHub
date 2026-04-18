@@ -82,7 +82,7 @@ export function Login(): ReactElement {
         <Heading as="h2" size="xl" mb={3} color="text.primary">
           Welcome, Comrade
         </Heading>
-        <Text color="text.secondary" mb={6} fontSize="sm" lineHeight="tall">
+        <Text textStyle="helperText" mb={6} lineHeight="tall">
           Use your username and password to rejoin the Hub.
         </Text>
         <form onSubmit={onSubmit}>

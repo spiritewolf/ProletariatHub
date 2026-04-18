@@ -4,13 +4,10 @@ import { RECRUIT_AVATAR_MAP } from '@proletariat-hub/web/features/setupWizard/st
 import type { ReactElement } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
-import {
-  type HubPeripheryDrawerFormValues,
-  PERIPHERY_PET_GLYPH_ICONS,
-} from '../peripheryFormSchema';
+import { PERIPHERY_PET_GLYPH_ICONS } from '../constants';
+import type { HubPeripheryDrawerFormValues } from '../types';
 
 type PeripheryExpandedFieldsProps = {
-  formId: string;
   onCancel: () => void;
   isSaveDisabled: boolean;
   isSaveLoading: boolean;
@@ -19,7 +16,6 @@ type PeripheryExpandedFieldsProps = {
 };
 
 export function PeripheryExpandedFields({
-  formId,
   onCancel,
   isSaveDisabled,
   isSaveLoading,
@@ -32,24 +28,12 @@ export function PeripheryExpandedFields({
   return (
     <Stack gap={3} pt={3} pb={2} px={3} borderTopWidth="1px" borderColor="border.secondary">
       <Field.Root invalid={formState.errors.name !== undefined}>
-        <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-          Name
-        </Field.Label>
-        <Input
-          variant="outline"
-          borderRadius="full"
-          py="2"
-          px="3.5"
-          fontSize="sm"
-          borderColor="border.primary"
-          {...register('name')}
-        />
+        <Field.Label textStyle="fieldLabel">Name</Field.Label>
+        <Input shape="pill" {...register('name')} />
         <Field.ErrorText>{formState.errors.name?.message}</Field.ErrorText>
       </Field.Root>
       <Field.Root>
-        <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-          Category
-        </Field.Label>
+        <Field.Label textStyle="fieldLabel">Category</Field.Label>
         <Controller
           name="peripheryCategory"
           control={control}
@@ -57,14 +41,10 @@ export function PeripheryExpandedFields({
             <HStack gap={2} flexWrap="wrap">
               <Button
                 type="button"
-                borderRadius="full"
+                shape="pill"
                 size="sm"
                 variant={field.value === HubPeripheryCategoryConst.PERSON ? 'solid' : 'outline'}
-                bg={field.value === HubPeripheryCategoryConst.PERSON ? 'accent.primary' : undefined}
-                color={
-                  field.value === HubPeripheryCategoryConst.PERSON ? 'text.light' : 'text.primary'
-                }
-                borderColor="border.primary"
+                colorPalette="brandPalette"
                 onClick={() => {
                   field.onChange(HubPeripheryCategoryConst.PERSON);
                 }}
@@ -73,14 +53,10 @@ export function PeripheryExpandedFields({
               </Button>
               <Button
                 type="button"
-                borderRadius="full"
+                shape="pill"
                 size="sm"
                 variant={field.value === HubPeripheryCategoryConst.PET ? 'solid' : 'outline'}
-                bg={field.value === HubPeripheryCategoryConst.PET ? 'accent.primary' : undefined}
-                color={
-                  field.value === HubPeripheryCategoryConst.PET ? 'text.light' : 'text.primary'
-                }
-                borderColor="border.primary"
+                colorPalette="brandPalette"
                 onClick={() => {
                   field.onChange(HubPeripheryCategoryConst.PET);
                 }}
@@ -93,9 +69,7 @@ export function PeripheryExpandedFields({
       </Field.Root>
       {category === HubPeripheryCategoryConst.PET ? (
         <Field.Root invalid={formState.errors.petAvatarIcon !== undefined}>
-          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-            Pet icon
-          </Field.Label>
+          <Field.Label textStyle="fieldLabel">Pet icon</Field.Label>
           <Controller
             name="petAvatarIcon"
             control={control}
@@ -109,12 +83,11 @@ export function PeripheryExpandedFields({
                       key={iconType}
                       type="button"
                       variant={isSelected ? 'solid' : 'outline'}
+                      colorPalette="brandPalette"
                       size="sm"
-                      borderRadius="full"
+                      shape="pill"
                       px={3}
-                      bg={isSelected ? 'accent.primary' : undefined}
-                      color={isSelected ? 'text.light' : color}
-                      borderColor="border.primary"
+                      color={isSelected ? undefined : color}
                       aria-pressed={isSelected}
                       aria-label={RECRUIT_AVATAR_MAP[iconType].label}
                       onClick={() => {
@@ -132,19 +105,8 @@ export function PeripheryExpandedFields({
         </Field.Root>
       ) : null}
       <Field.Root invalid={formState.errors.birthDate !== undefined}>
-        <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-          Birth date
-        </Field.Label>
-        <Input
-          type="date"
-          variant="outline"
-          borderRadius="full"
-          py="2"
-          px="3.5"
-          fontSize="sm"
-          borderColor="border.primary"
-          {...register('birthDate')}
-        />
+        <Field.Label textStyle="fieldLabel">Birth date</Field.Label>
+        <Input type="date" shape="pill" {...register('birthDate')} />
         <Field.ErrorText>{formState.errors.birthDate?.message}</Field.ErrorText>
       </Field.Root>
       {removeConfirmContent != null ? (
@@ -156,7 +118,7 @@ export function PeripheryExpandedFields({
               type="button"
               variant="ghost"
               size="sm"
-              color="status.error"
+              colorPalette="destructivePalette"
               fontWeight="medium"
               onClick={onRemoveClick}
             >
@@ -166,17 +128,14 @@ export function PeripheryExpandedFields({
             <Box />
           )}
           <HStack gap={2} justify="flex-end" flex="1" minW={0}>
-            <Button type="button" variant="ghost" size="sm" borderRadius="full" onClick={onCancel}>
+            <Button type="button" variant="ghost" size="sm" shape="pill" onClick={onCancel}>
               Cancel
             </Button>
             <Button
               type="submit"
-              form={formId}
               variant="solid"
               size="sm"
-              borderRadius="full"
-              bg="accent.primary"
-              color="text.light"
+              shape="pill"
               disabled={isSaveDisabled}
               loading={isSaveLoading}
             >

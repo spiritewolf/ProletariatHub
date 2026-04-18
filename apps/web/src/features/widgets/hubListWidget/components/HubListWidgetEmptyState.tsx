@@ -17,7 +17,7 @@ export function HubListWidgetEmptyState(): ReactElement {
       <Box color="text.tertiary" display="flex" aria-hidden>
         <ShoppingBag size={48} strokeWidth={1.25} />
       </Box>
-      <Text color="text.secondary" fontSize="sm" maxW="260px">
+      <Text textStyle="helperText" maxW="260px">
         Your hub list is empty. Add something you need.
       </Text>
       <Button

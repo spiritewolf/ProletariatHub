@@ -76,6 +76,14 @@ type FindManyHubInventoryCategoriesQueryOpts = Parameters<
   typeof trpc.hubInventory.findManyCategories.useQuery
 >[1];
 
+type FindManyHubInventoryProductsQueryInput = Parameters<
+  typeof trpc.hubInventory.findManyProducts.useQuery
+>[0];
+
+type FindManyHubInventoryProductsQueryOpts = Parameters<
+  typeof trpc.hubInventory.findManyProducts.useQuery
+>[1];
+
 export type FindManyHubInventoryCategoriesData =
   inferRouterOutputs<AppRouter>['hubInventory']['findManyCategories'];
 
@@ -106,6 +114,10 @@ export function useFindManyCategories(
   return { ...query, data };
 }
 
+type FindManyHubInventoryVendorsQueryInput = Parameters<
+  typeof trpc.hubInventory.findManyVendors.useQuery
+>[0];
+
 type FindManyHubInventoryVendorsQueryOpts = Parameters<
   typeof trpc.hubInventory.findManyVendors.useQuery
 >[1];
@@ -131,11 +143,43 @@ interface UseFindManyVendorsResult extends Omit<
 }
 
 export function useFindManyVendors(
+  input?: FindManyHubInventoryVendorsQueryInput,
   opts?: FindManyHubInventoryVendorsQueryOpts,
 ): UseFindManyVendorsResult {
-  const query = trpc.hubInventory.findManyVendors.useQuery(undefined, opts ?? {});
+  const query = trpc.hubInventory.findManyVendors.useQuery(input, opts ?? {});
   const data: FindManyHubInventoryVendorsData = isFindManyHubInventoryVendorsData(query.data)
     ? query.data
     : emptyFindManyHubInventoryVendorsData;
+  return { ...query, data };
+}
+
+export type FindManyHubInventoryProductsData =
+  inferRouterOutputs<AppRouter>['hubInventory']['findManyProducts'];
+
+const emptyFindManyHubInventoryProductsData: FindManyHubInventoryProductsData = [];
+
+const findManyHubInventoryProductsResponseGuard = z.array(z.object({ id: z.string() }));
+
+function isFindManyHubInventoryProductsData(
+  value: unknown,
+): value is FindManyHubInventoryProductsData {
+  return findManyHubInventoryProductsResponseGuard.safeParse(value).success;
+}
+
+interface UseFindManyProductsResult extends Omit<
+  ReturnType<typeof trpc.hubInventory.findManyProducts.useQuery>,
+  'data'
+> {
+  data: FindManyHubInventoryProductsData;
+}
+
+export function useFindManyProducts(
+  input?: FindManyHubInventoryProductsQueryInput,
+  opts?: FindManyHubInventoryProductsQueryOpts,
+): UseFindManyProductsResult {
+  const query = trpc.hubInventory.findManyProducts.useQuery(input, opts ?? {});
+  const data: FindManyHubInventoryProductsData = isFindManyHubInventoryProductsData(query.data)
+    ? query.data
+    : emptyFindManyHubInventoryProductsData;
   return { ...query, data };
 }

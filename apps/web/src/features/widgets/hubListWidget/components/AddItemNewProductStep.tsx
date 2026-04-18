@@ -1,22 +1,21 @@
 import { Button, Field, Input, NativeSelect, Stack } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { HubInventoryProductFrequency, HubListItemPriority } from '@proletariat-hub/types';
-import { useCreateOneProduct, useFindManyCategories, useFindManyVendors } from '@proletariat-hub/web/shared/trpc';
+import { useCreateOneProduct, useFindManyCategories } from '@proletariat-hub/web/shared/trpc';
 import { toaster } from '@proletariat-hub/web/shared/ui';
 import type { ReactElement } from 'react';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 
-import { PILL_INPUT_PROPS } from '../constants';
 import {
   addItemNewProductFormSchema,
   type AddItemNewProductFormValues,
   type AddItemNewProductParsedValues,
   HUB_INVENTORY_FREQUENCY_LABEL,
 } from '../types';
-import type { AutocompleteSelectItem } from './AutocompleteSelect';
-import { AutocompleteSelect } from './AutocompleteSelect';
+import { CategoryAutocomplete } from './CategoryAutocomplete';
 import { InlineVendorCreator } from './InlineVendorCreator';
+import { VendorAutocomplete } from './VendorAutocomplete';
 
 export type AddItemListItemContext = {
   priority: HubListItemPriority;
@@ -55,18 +54,7 @@ export function AddItemNewProductStep({
   listItemContext,
   onSubmitSuccess,
 }: AddItemNewProductStepProps): ReactElement {
-  const { data: categories } = useFindManyCategories();
-  const { data: vendors } = useFindManyVendors();
-  const [vendorSearchText, setVendorSearchText] = useState('');
-
-  const categoryItems: AutocompleteSelectItem[] = useMemo(
-    () => categories.map((c) => ({ id: c.id, name: c.name })),
-    [categories],
-  );
-  const vendorItems: AutocompleteSelectItem[] = useMemo(
-    () => vendors.map((v) => ({ id: v.id, name: v.name })),
-    [vendors],
-  );
+  const [vendorCreatorDraft, setVendorCreatorDraft] = useState<string | null>(null);
 
   const form = useForm<AddItemNewProductFormValues, unknown, AddItemNewProductParsedValues>({
     resolver: zodResolver(addItemNewProductFormSchema),
@@ -75,49 +63,13 @@ export function AddItemNewProductStep({
 
   const { register, control, handleSubmit, setValue, formState } = form;
 
-  const categoryId = useWatch({
-    control,
-    name: 'categoryId',
-    defaultValue: null,
-  });
-  const vendorId = useWatch({
-    control,
-    name: 'vendorId',
-    defaultValue: null,
-  });
+  const categoryId = useWatch({ control, name: 'categoryId' });
+  const vendorId = useWatch({ control, name: 'vendorId' });
+  const purchaseFrequency = useWatch({ control, name: 'purchaseFrequency' });
 
-  const selectedCategoryItem = useMemo((): AutocompleteSelectItem | null => {
-    if (categoryId === null) {
-      return null;
-    }
-    const category = categories.find((c) => c.id === categoryId);
-    if (category === undefined) {
-      return null;
-    }
-    return { id: category.id, name: category.name };
-  }, [categoryId, categories]);
+  const { data: categories = [] } = useFindManyCategories();
 
-  const selectedVendorItem = useMemo((): AutocompleteSelectItem | null => {
-    if (vendorId === null) {
-      return null;
-    }
-    const vendor = vendors.find((v) => v.id === vendorId);
-    if (vendor === undefined) {
-      return null;
-    }
-    return { id: vendor.id, name: vendor.name };
-  }, [vendorId, vendors]);
-
-  const vendorMatchCount = useMemo(() => {
-    const query = vendorSearchText.trim().toLowerCase();
-    if (query.length < 2) {
-      return 0;
-    }
-    return vendorItems.filter((v) => v.name.toLowerCase().includes(query)).length;
-  }, [vendorSearchText, vendorItems]);
-
-  const showVendorCreator =
-    vendorSearchText.trim().length >= 2 && vendorMatchCount === 0 && selectedVendorItem === null;
+  const showVendorCreator = Boolean(vendorCreatorDraft) && !vendorId;
 
   const createOneProduct = useCreateOneProduct({
     onSuccess: () => {
@@ -133,12 +85,6 @@ export function AddItemNewProductStep({
         title: error.message,
       });
     },
-  });
-
-  const purchaseFrequency = useWatch({
-    control,
-    name: 'purchaseFrequency',
-    defaultValue: HubInventoryProductFrequency.ONE_TIME,
   });
 
   const onSubmit = (values: AddItemNewProductParsedValues): void => {
@@ -160,49 +106,39 @@ export function AddItemNewProductStep({
   };
 
   return (
-    <form
-      onSubmit={(event) => {
-        void handleSubmit(onSubmit)(event);
-      }}
-    >
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Stack gap="4" align="stretch">
         <Field.Root invalid={formState.errors.name !== undefined}>
-          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-            Name
-          </Field.Label>
-          <Input {...register('name')} {...PILL_INPUT_PROPS} />
+          <Field.Label textStyle="fieldLabel">Name</Field.Label>
+          <Input {...register('name')} shape="pill" />
           <Field.ErrorText>{formState.errors.name?.message}</Field.ErrorText>
         </Field.Root>
 
-        <Controller
-          name="categoryId"
-          control={control}
-          render={() => (
-            <AutocompleteSelect
-              label="Category"
-              items={categoryItems}
-              selectedItem={selectedCategoryItem}
-              onSelect={(item) => {
-                setValue('categoryId', item.id);
-              }}
-              onClear={() => {
-                setValue('categoryId', null);
-              }}
-              placeholder="Search categories..."
-            />
-          )}
-        />
+        {categories.length === 0 ? (
+          <Field.Root>
+            <Field.Label textStyle="fieldLabel">Category</Field.Label>
+            <Input shape="pill" disabled placeholder="Loading categories..." />
+          </Field.Root>
+        ) : (
+          <CategoryAutocomplete
+            label="Category"
+            items={categories}
+            value={categoryId}
+            onChange={(id) => {
+              setValue('categoryId', id);
+            }}
+            placeholder="Search categories..."
+          />
+        )}
 
         <Field.Root>
-          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-            Brand (optional)
-          </Field.Label>
+          <Field.Label textStyle="fieldLabel">Brand (optional)</Field.Label>
           <Controller
             name="brandName"
             control={control}
             render={({ field }) => (
               <Input
-                {...PILL_INPUT_PROPS}
+                shape="pill"
                 value={field.value ?? ''}
                 onChange={(event) => {
                   const next = event.target.value;
@@ -213,45 +149,35 @@ export function AddItemNewProductStep({
           />
         </Field.Root>
 
-        <Controller
-          name="vendorId"
-          control={control}
-          render={() => (
-            <>
-              <AutocompleteSelect
-                label="Vendor"
-                items={vendorItems}
-                selectedItem={selectedVendorItem}
-                onSelect={(item) => {
-                  setValue('vendorId', item.id);
-                  setVendorSearchText('');
-                }}
-                onClear={() => {
-                  setValue('vendorId', null);
-                  setVendorSearchText('');
-                }}
-                placeholder="Search vendors..."
-                onSearchChange={(value) => {
-                  setVendorSearchText(value);
-                }}
-              />
-              <InlineVendorCreator
-                visible={showVendorCreator}
-                draftName={vendorSearchText}
-                onDraftNameChange={setVendorSearchText}
-                onVendorCreated={(id) => {
-                  setValue('vendorId', id);
-                  setVendorSearchText('');
-                }}
-              />
-            </>
-          )}
-        />
+        <Stack gap="2" align="stretch">
+          <VendorAutocomplete
+            label="Vendor"
+            value={vendorId}
+            onChange={(id) => {
+              setValue('vendorId', id);
+              setVendorCreatorDraft(null);
+            }}
+            onNoResults={(text) => {
+              setVendorCreatorDraft(text);
+            }}
+            placeholder="Search vendors..."
+          />
+          {showVendorCreator && vendorCreatorDraft != null ? (
+            <InlineVendorCreator
+              draftName={vendorCreatorDraft}
+              onDraftNameChange={(name) => {
+                setVendorCreatorDraft(name);
+              }}
+              onVendorCreated={(newVendorId) => {
+                setValue('vendorId', newVendorId);
+                setVendorCreatorDraft(null);
+              }}
+            />
+          ) : null}
+        </Stack>
 
         <Field.Root invalid={formState.errors.purchaseFrequency !== undefined}>
-          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-            How often?
-          </Field.Label>
+          <Field.Label textStyle="fieldLabel">How often?</Field.Label>
           <Controller
             name="purchaseFrequency"
             control={control}
@@ -281,28 +207,22 @@ export function AddItemNewProductStep({
 
         {purchaseFrequency === HubInventoryProductFrequency.CUSTOM ? (
           <Field.Root invalid={formState.errors.customFrequencyDays !== undefined}>
-            <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-              Custom frequency (days)
-            </Field.Label>
+            <Field.Label textStyle="fieldLabel">Custom frequency (days)</Field.Label>
             <Controller
               name="customFrequencyDays"
               control={control}
               render={({ field }) => (
                 <Input
-                  {...PILL_INPUT_PROPS}
+                  shape="pill"
                   type="number"
                   min={1}
                   step={1}
-                  value={field.value ?? ''}
-                  onChange={(event) => {
-                    const raw = event.target.value;
-                    if (raw === '') {
-                      field.onChange(null);
-                      return;
-                    }
-                    const parsed = Number.parseInt(raw, 10);
-                    field.onChange(Number.isNaN(parsed) ? null : parsed);
-                  }}
+                  value={
+                    typeof field.value === 'string' || typeof field.value === 'number'
+                      ? field.value
+                      : ''
+                  }
+                  onChange={field.onChange}
                 />
               )}
             />
@@ -311,16 +231,8 @@ export function AddItemNewProductStep({
         ) : null}
 
         <Field.Root invalid={formState.errors.quantityInStock !== undefined}>
-          <Field.Label fontSize="xs" fontWeight="medium" color="text.primary">
-            Qty in stock
-          </Field.Label>
-          <Input
-            {...register('quantityInStock', { valueAsNumber: true })}
-            {...PILL_INPUT_PROPS}
-            type="number"
-            min={0}
-            step="any"
-          />
+          <Field.Label textStyle="fieldLabel">Qty in stock</Field.Label>
+          <Input {...register('quantityInStock')} shape="pill" type="number" min={0} step="any" />
           <Field.ErrorText>{formState.errors.quantityInStock?.message}</Field.ErrorText>
         </Field.Root>
 
@@ -328,8 +240,7 @@ export function AddItemNewProductStep({
           type="submit"
           w="full"
           size="lg"
-          borderRadius="full"
-          colorPalette="brandPalette"
+          shape="pill"
           variant="solid"
           mt="2"
           loading={createOneProduct.isPending}

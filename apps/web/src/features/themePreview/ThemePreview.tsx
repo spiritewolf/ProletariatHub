@@ -59,7 +59,7 @@ export function ThemePreview(): ReactElement {
           <Heading as="h1" size="3xl">
             ProletariatHub theme preview
           </Heading>
-          <Text color="text.secondary" textStyle="sm">
+          <Text textStyle="helperText">
             Marxist warmth in light mode; Radical neon in dark. Toggle mode with the floating
             controls.
           </Text>
@@ -138,7 +138,7 @@ export function ThemePreview(): ReactElement {
             <Text color="text.primary" fontWeight="bold">
               Lorem ipsum dolor sit amet
             </Text>
-            <Text color="text.secondary" fontSize="sm">
+            <Text textStyle="helperText">
               Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
             </Text>
           </Box>
@@ -157,7 +157,7 @@ export function ThemePreview(): ReactElement {
             <Text color="text.primary" fontWeight="bold">
               Lorem ipsum dolor sit amet
             </Text>
-            <Text color="text.secondary" fontSize="sm">
+            <Text textStyle="helperText">
               Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
             </Text>
           </Box>
@@ -176,7 +176,7 @@ export function ThemePreview(): ReactElement {
             <Text color="text.primary" fontWeight="bold">
               Lorem ipsum dolor sit amet
             </Text>
-            <Text color="text.secondary" fontSize="sm">
+            <Text textStyle="helperText">
               Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
             </Text>
           </Box>
@@ -195,9 +195,7 @@ export function ThemePreview(): ReactElement {
               Heading lg
             </Heading>
             <Text color="text.primary">Body text for primary content.</Text>
-            <Text color="text.secondary" fontSize="sm">
-              For captions and hints.
-            </Text>
+            <Text textStyle="helperText">For captions and hints.</Text>
           </Stack>
         </Box>
       </Stack>

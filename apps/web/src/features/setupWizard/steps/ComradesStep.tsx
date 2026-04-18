@@ -39,7 +39,7 @@ export function ComradesStep(): ReactElement {
   return (
     <SetupStepCard title="Recruit your Comrades">
       <Stack gap={5}>
-        <Text color="text.secondary" fontSize="sm" lineHeight="tall">
+        <Text textStyle="helperText" lineHeight="tall">
           Recruit your Comrades by adding them to your hub with their username only, they can change
           this later. Each new Comrade&apos;s default password is{' '}
           <Text as="span" fontWeight="semibold" color="text.primary">
@@ -73,9 +73,7 @@ export function ComradesStep(): ReactElement {
             ))}
           </Stack>
         ) : (
-          <Text fontSize="sm" color="text.secondary">
-            No Comrades added yet.
-          </Text>
+          <Text textStyle="helperText">No Comrades added yet.</Text>
         )}
         <Stack gap={3} borderWidth="1px" borderColor="border.primary" borderRadius="md" p={4}>
           <Text fontWeight="semibold" color="text.primary">
@@ -90,8 +88,7 @@ export function ComradesStep(): ReactElement {
                   value={recruitUsername}
                   onChange={(e) => setRecruitUsername(e.target.value)}
                   autoComplete="off"
-                  variant="outline"
-                  borderRadius="full"
+                  shape="pill"
                 />
               </Box>
               <Button

@@ -11,14 +11,16 @@ export {
   useUpdateOnePeriphery,
 } from './mutations';
 export {
+  useFindManyCategories,
+  useFindManyPeriphery,
+  useFindManyProducts,
+  useFindManyVendors,
+  useFindUniqueHubList,
   type FindManyHubInventoryCategoriesData,
+  type FindManyHubInventoryProductsData,
   type FindManyHubInventoryVendorsData,
   type FindManyPeripheryData,
   type FindUniqueHubListData,
-  useFindManyCategories,
-  useFindManyPeriphery,
-  useFindManyVendors,
-  useFindUniqueHubList,
 } from './queries';
 export { appQueryClient } from './queryClient';
 export { appTrpcClient, trpc, trpcQueryUtils } from './trpcClient';

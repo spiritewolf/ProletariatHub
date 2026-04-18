@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import type { HubPeripheryCategory, Periphery } from '@proletariat-hub/types';
+import type { HubPeripheryCategory, PeripheryAvatarIcon } from '@proletariat-hub/types';
 import {
   ComradeAvatarIconType,
   HubPeripheryCategory as HubPeripheryCategoryConst,
@@ -10,7 +10,7 @@ import type { ReactElement } from 'react';
 
 type PeripheryGlyphProps = {
   category: HubPeripheryCategory;
-  avatarIcon: Periphery['settings']['avatarIcon'];
+  avatarIcon: PeripheryAvatarIcon;
 };
 
 function isRecruitMapKey(key: string): key is keyof typeof RECRUIT_AVATAR_MAP {
