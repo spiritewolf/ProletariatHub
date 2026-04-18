@@ -1,13 +1,12 @@
 import { Box, Flex, HStack, IconButton, Text, useDisclosure } from '@chakra-ui/react';
-import type { HubListItem } from '@proletariat-hub/types';
+import { HubListItemStatus, type HubListItem } from '@proletariat-hub/types';
 import { Trash2 } from 'lucide-react';
 import type { ReactElement } from 'react';
 
-import { RemoveListItemDialog } from '../componentstwo/RemoveListItemDialog';
-import { HubListItemDisplayStatus } from '../types';
 import { ComradeAssigneeBadge } from './ComradeAssigneeBadge';
 import { HubListCheckbox } from './HubListCheckbox';
 import { PriorityBadge } from './PriorityBadge';
+import { RemoveListItemDialog } from './RemoveListItemDialog';
 
 type HubListWidgetItemProps = {
   hubListId: string;
@@ -20,8 +19,8 @@ export function HubListWidgetItem({
   item,
   isLastRowInSection,
 }: HubListWidgetItemProps): ReactElement {
-  const isPurchased = item.status === HubListItemDisplayStatus.PURCHASED;
-  const isClaimed = item.status === HubListItemDisplayStatus.CLAIMED;
+  const isPurchased = item.status === HubListItemStatus.PURCHASED;
+  const isClaimed = item.status === HubListItemStatus.CLAIMED;
   const removeListItemModal = useDisclosure();
 
   const showListQuantity = item.quantity && item.quantity > 0;
@@ -72,16 +71,16 @@ export function HubListWidgetItem({
             ) : null}
           </HStack>
           <HStack gap="2" flexShrink={0} justify="flex-end">
-            {item.status === HubListItemDisplayStatus.ACTIVE ? (
+            {item.status === HubListItemStatus.ACTIVE ? (
               <PriorityBadge priority={item.priority} />
             ) : null}
-            {item.status === HubListItemDisplayStatus.CLAIMED && item.claimedBy ? (
+            {item.status === HubListItemStatus.CLAIMED && item.claimedBy ? (
               <ComradeAssigneeBadge
                 displayInitial={item.claimedBy.displayInitial}
                 username={item.claimedBy.username}
               />
             ) : null}
-            {item.status === HubListItemDisplayStatus.ACTIVE ? (
+            {item.status === HubListItemStatus.ACTIVE ? (
               <IconButton
                 type="button"
                 aria-label={`Remove ${item.productName} from list`}

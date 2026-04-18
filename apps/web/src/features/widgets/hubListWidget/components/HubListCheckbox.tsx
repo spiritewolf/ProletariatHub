@@ -1,15 +1,14 @@
 import { Box, Flex } from '@chakra-ui/react';
+import { HubListItemStatus } from '@proletariat-hub/types';
 import { Check } from 'lucide-react';
 import type { ReactElement } from 'react';
 
-import { HubListItemDisplayStatus } from '../types';
-
 type HubListCheckboxProps = {
-  displayStatus: HubListItemDisplayStatus;
+  displayStatus: HubListItemStatus;
 };
 
 export function HubListCheckbox({ displayStatus }: HubListCheckboxProps): ReactElement {
-  if (displayStatus === HubListItemDisplayStatus.PURCHASED) {
+  if (displayStatus === HubListItemStatus.PURCHASED) {
     return (
       <Flex
         align="center"
@@ -25,7 +24,7 @@ export function HubListCheckbox({ displayStatus }: HubListCheckboxProps): ReactE
       </Flex>
     );
   }
-  if (displayStatus === HubListItemDisplayStatus.CLAIMED) {
+  if (displayStatus === HubListItemStatus.CLAIMED) {
     return (
       <Flex
         align="center"

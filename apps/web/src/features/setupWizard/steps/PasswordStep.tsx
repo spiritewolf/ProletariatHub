@@ -1,11 +1,12 @@
-import { Button, Field, Input, Stack } from '@chakra-ui/react';
+import { Button, Stack } from '@chakra-ui/react';
+import { InputWithLabel } from '@proletariat-hub/web/shared/ui';
 import { ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useSetupWizard } from '../hooks/useSetupWizard';
-import { SetupWizardFormValues } from '../schema';
 import { SetupStepCard } from '../SetupStepCard';
+import { SetupWizardFormValues } from '../types';
 
 export function PasswordStep(): ReactElement {
   const {
@@ -24,31 +25,29 @@ export function PasswordStep(): ReactElement {
       description="Update your username and set a new password."
     >
       <Stack gap={5}>
-        <Field.Root invalid={errors.username !== undefined}>
-          <Field.Label color="text.primary">Username</Field.Label>
-          <Input autoComplete="username" shape="pill" {...register('username')} />
-          <Field.ErrorText>{errors.username?.message}</Field.ErrorText>
-        </Field.Root>
-        <Field.Root invalid={errors.newPassword !== undefined}>
-          <Field.Label color="text.primary">New password</Field.Label>
-          <Input
-            type="password"
-            autoComplete="new-password"
-            shape="pill"
-            {...register('newPassword')}
-          />
-          <Field.ErrorText>{errors.newPassword?.message}</Field.ErrorText>
-        </Field.Root>
-        <Field.Root invalid={errors.confirmPassword !== undefined}>
-          <Field.Label color="text.primary">Confirm password</Field.Label>
-          <Input
-            type="password"
-            autoComplete="new-password"
-            shape="pill"
-            {...register('confirmPassword')}
-          />
-          <Field.ErrorText>{errors.confirmPassword?.message}</Field.ErrorText>
-        </Field.Root>
+        <InputWithLabel
+          isRootInvalid={errors.username !== undefined}
+          inputLabel="Username"
+          inputAutoComplete="username"
+          registerMethods={register('username')}
+          errorMessage={errors.username?.message}
+        />
+        <InputWithLabel
+          isRootInvalid={errors.newPassword !== undefined}
+          inputLabel="New password"
+          inputType="password"
+          inputAutoComplete="new-password"
+          registerMethods={register('newPassword')}
+          errorMessage={errors.newPassword?.message}
+        />
+        <InputWithLabel
+          isRootInvalid={errors.confirmPassword !== undefined}
+          inputLabel="Confirm password"
+          inputType="password"
+          inputAutoComplete="new-password"
+          registerMethods={register('confirmPassword')}
+          errorMessage={errors.confirmPassword?.message}
+        />
         <Stack gap={3} w="full" align="stretch">
           <Button
             type="button"

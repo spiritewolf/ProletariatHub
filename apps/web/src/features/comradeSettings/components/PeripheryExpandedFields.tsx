@@ -109,7 +109,7 @@ export function PeripheryExpandedFields({
         <Input type="date" shape="pill" {...register('birthDate')} />
         <Field.ErrorText>{formState.errors.birthDate?.message}</Field.ErrorText>
       </Field.Root>
-      {removeConfirmContent != null ? (
+      {removeConfirmContent ? (
         removeConfirmContent
       ) : (
         <Flex justify="space-between" align="center" gap={3} flexWrap="wrap" pt={1}>

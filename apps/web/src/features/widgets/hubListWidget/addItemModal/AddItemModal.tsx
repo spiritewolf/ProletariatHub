@@ -1,34 +1,67 @@
 import { Box, Dialog, Flex, IconButton, Portal, Text } from '@chakra-ui/react';
-import type { HubInventoryProduct } from '@proletariat-hub/types';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { HubListItemPriority } from '@proletariat-hub/types';
+import { useCreateOneListItem } from '@proletariat-hub/web/shared/trpc';
+import { toaster } from '@proletariat-hub/web/shared/ui';
 import { ArrowLeft, X } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useCallback, useState } from 'react';
+import { FormProvider, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { AddItemNewProductStep } from '../components/AddItemNewProductStep';
-import { AddItemSearchStep } from '../components/AddItemSearchStep';
+import { AddItemNewProductStep } from './AddItemNewProductStep';
+import { AddListItemStep } from './AddListItemStep';
 
-const STEP = {
-  SEARCH: 'search',
-  NEW_PRODUCT: 'newProduct',
+const LIST_ITEM_STEPS = {
+  ADD_LIST_ITEM: 'ADD_LIST_ITEM',
+  ADD_INVENTORY_PRODUCT: 'ADD_INVENTORY_PRODUCT',
 } as const;
 
-type AddItemStep = (typeof STEP)[keyof typeof STEP];
+type AddItemStep = (typeof LIST_ITEM_STEPS)[keyof typeof LIST_ITEM_STEPS];
 
 type AddItemModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
+const addItemFormSchema = z.object({
+  productId: z.string(),
+  priority: z.nativeEnum(HubListItemPriority).optional(),
+  quantity: z.number().min(1),
+  notes: z.string().optional(),
+});
+
+export type AddHubListItemFormValues = z.infer<typeof addItemFormSchema>;
+
 export function AddItemModal({ isOpen, onClose }: AddItemModalProps): ReactElement {
-  const [step, setStep] = useState<AddItemStep>(STEP.SEARCH);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState<HubInventoryProduct | null>(null);
-  const [listQuantity, setListQuantity] = useState(1);
-  const [listPriority, setListPriority] = useState<
-    (typeof HubListItemPriority)[keyof typeof HubListItemPriority]
-  >(HubListItemPriority.MEDIUM);
-  const [listNotes, setListNotes] = useState<string | null>(null);
+  const [step, setStep] = useState<AddItemStep>(LIST_ITEM_STEPS.ADD_LIST_ITEM);
+  const [listItemText, setListItemText] = useState<string | null>(null);
+
+  const listItemFormMethods = useForm<AddHubListItemFormValues>({
+    defaultValues: {
+      productId: undefined,
+      priority: undefined,
+      quantity: 1,
+      notes: undefined,
+    },
+    resolver: zodResolver(addItemFormSchema),
+  });
+
+  const createListItem = useCreateOneListItem({
+    onSuccess: () => {
+      toaster.create({
+        type: 'success',
+        title: 'Item has been added to your hub list!',
+      });
+      onClose();
+    },
+    onError: (error) => {
+      toaster.create({
+        type: 'error',
+        title: error.message,
+      });
+    },
+  });
 
   const onOpenChange = useCallback(
     (details: { open: boolean }): void => {
@@ -40,10 +73,25 @@ export function AddItemModal({ isOpen, onClose }: AddItemModalProps): ReactEleme
   );
 
   const goBackToSearch = (): void => {
-    setStep(STEP.SEARCH);
+    setStep(LIST_ITEM_STEPS.ADD_LIST_ITEM);
   };
 
-  const headerTitle = step === STEP.NEW_PRODUCT ? 'New product' : 'Add to hub list';
+  const headerTitle =
+    step === LIST_ITEM_STEPS.ADD_INVENTORY_PRODUCT ? 'Create New Product' : 'Add List Item';
+
+  const onSubmit = (values: AddHubListItemFormValues): void => {
+    createListItem.mutate({
+      productId: values.productId,
+      priority: values.priority,
+      quantity: values.quantity,
+      notes: values.notes,
+    });
+  };
+
+  const onAddNewProduct = (productName: string): void => {
+    setListItemText(productName);
+    setStep(LIST_ITEM_STEPS.ADD_INVENTORY_PRODUCT);
+  };
 
   return (
     <Dialog.Root
@@ -79,7 +127,7 @@ export function AddItemModal({ isOpen, onClose }: AddItemModalProps): ReactEleme
               pb={3}
             >
               <Flex align="center" gap={2} minH="10">
-                {step === STEP.SEARCH ? (
+                {step === LIST_ITEM_STEPS.ADD_LIST_ITEM ? (
                   <Box w="10" flexShrink={0} aria-hidden />
                 ) : (
                   <IconButton
@@ -121,38 +169,17 @@ export function AddItemModal({ isOpen, onClose }: AddItemModalProps): ReactEleme
             </Dialog.Header>
 
             <Dialog.Body flex="1" minH={0} overflowY="auto" px={{ base: 4, md: 5 }} py={5}>
-              {step === STEP.SEARCH ? (
-                <AddItemSearchStep
-                  searchQuery={searchQuery}
-                  onSearchQueryChange={setSearchQuery}
-                  listQuantity={listQuantity}
-                  onListQuantityChange={setListQuantity}
-                  listPriority={listPriority}
-                  onListPriorityChange={setListPriority}
-                  listNotes={listNotes}
-                  onListNotesChange={setListNotes}
-                  selectedProduct={selectedProduct}
-                  onSelectProduct={(product) => {
-                    setSelectedProduct(product);
-                  }}
-                  onClearSelectedProduct={() => {
-                    setSelectedProduct(null);
-                  }}
-                  onCreateNew={() => {
-                    setStep(STEP.NEW_PRODUCT);
-                  }}
-                  onAddedToList={onClose}
-                />
+              {step === LIST_ITEM_STEPS.ADD_LIST_ITEM ? (
+                <FormProvider {...listItemFormMethods}>
+                  <form onSubmit={listItemFormMethods.handleSubmit(onSubmit)}>
+                    <AddListItemStep onCreateNew={onAddNewProduct} />
+                  </form>
+                </FormProvider>
               ) : null}
-              {step === STEP.NEW_PRODUCT ? (
+              {step === LIST_ITEM_STEPS.ADD_INVENTORY_PRODUCT ? (
                 <AddItemNewProductStep
-                  initialName={searchQuery}
-                  listItemContext={{
-                    priority: listPriority,
-                    quantity: listQuantity,
-                    notes: listNotes,
-                  }}
-                  onSubmitSuccess={onClose}
+                  initialName={listItemText ?? ''}
+                  onSubmitSuccess={() => setStep(LIST_ITEM_STEPS.ADD_LIST_ITEM)}
                 />
               ) : null}
             </Dialog.Body>

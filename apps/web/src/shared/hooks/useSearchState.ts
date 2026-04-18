@@ -1,6 +1,4 @@
-import { useState } from 'react';
-
-import { useDebounced } from './useDebounced';
+import { useEffect, useState } from 'react';
 
 type UseSearchStateOptions = {
   defaultSearchText?: string;
@@ -15,7 +13,17 @@ export type UseSearchStateResult = {
 
 export function useSearchState(options: UseSearchStateOptions = {}): UseSearchStateResult {
   const [searchText, setSearchText] = useState(options.defaultSearchText ?? '');
-  const searchTextDebounced = useDebounced(searchText, options.debounceMs ?? 300);
+  const delayMs = options.debounceMs ?? 300;
+  const [debouncedValue, setDebouncedValue] = useState(searchText);
 
-  return { searchText, setSearchText, searchTextDebounced };
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setDebouncedValue(searchText);
+    }, delayMs);
+    return () => {
+      clearTimeout(t);
+    };
+  }, [searchText, delayMs]);
+
+  return { searchText, setSearchText, searchTextDebounced: debouncedValue };
 }

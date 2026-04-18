@@ -6,8 +6,8 @@ import { useState } from 'react';
 import { useFieldArray, useFormContext } from 'react-hook-form';
 
 import { useSetupWizard } from '../hooks/useSetupWizard';
-import { recruitSchema, type SetupWizardFormValues } from '../schema';
 import { SetupStepCard } from '../SetupStepCard';
+import { recruitSchema, type SetupWizardFormValues } from '../types';
 import { RecruitAvatarGlyph } from './components/RecruitAvatarGlyph';
 import { RecruitAvatarPicker } from './components/RecruitAvatarPicker';
 
@@ -101,9 +101,7 @@ export function ComradesStep(): ReactElement {
                 Recruit <Plus size={18} aria-hidden style={{ display: 'inline' }} />
               </Button>
             </HStack>
-            {recruitLineError !== null ? (
-              <Field.ErrorText>{recruitLineError}</Field.ErrorText>
-            ) : null}
+            {recruitLineError ? <Field.ErrorText>{recruitLineError}</Field.ErrorText> : null}
           </Field.Root>
         </Stack>
         <HStack justifyContent="space-between">

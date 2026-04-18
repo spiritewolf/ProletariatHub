@@ -1,11 +1,12 @@
-import { Button, Field, HStack, Input, Stack, Text } from '@chakra-ui/react';
+import { Button, HStack, Stack, Text } from '@chakra-ui/react';
+import { InputWithLabel } from '@proletariat-hub/web/shared/ui';
 import { ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useSetupWizard } from '../hooks/useSetupWizard';
-import { SetupWizardFormValues } from '../schema';
 import { SetupStepCard } from '../SetupStepCard';
+import { SetupWizardFormValues } from '../types';
 
 export function ContactStep(): ReactElement {
   const {
@@ -24,26 +25,34 @@ export function ContactStep(): ReactElement {
       description="Optional for now — add phone, email, or handles so your Comrades can coordinate with you."
     >
       <Stack gap={5}>
-        <Field.Root invalid={errors.phoneNumber !== undefined}>
-          <Field.Label color="text.primary">Phone (SMS)</Field.Label>
-          <Input type="tel" autoComplete="tel" shape="pill" {...register('phoneNumber')} />
-          <Field.ErrorText>{errors.phoneNumber?.message}</Field.ErrorText>
-        </Field.Root>
-        <Field.Root invalid={errors.email !== undefined}>
-          <Field.Label color="text.primary">Email</Field.Label>
-          <Input type="email" autoComplete="email" shape="pill" {...register('email')} />
-          <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
-        </Field.Root>
-        <Field.Root invalid={errors.signalUsername !== undefined}>
-          <Field.Label color="text.primary">Signal username</Field.Label>
-          <Input shape="pill" {...register('signalUsername')} />
-          <Field.ErrorText>{errors.signalUsername?.message}</Field.ErrorText>
-        </Field.Root>
-        <Field.Root invalid={errors.telegramUsername !== undefined}>
-          <Field.Label color="text.primary">Telegram username</Field.Label>
-          <Input shape="pill" {...register('telegramUsername')} />
-          <Field.ErrorText>{errors.telegramUsername?.message}</Field.ErrorText>
-        </Field.Root>
+        <InputWithLabel
+          isRootInvalid={errors.phoneNumber !== undefined}
+          inputLabel="Phone (SMS)"
+          inputType="tel"
+          inputAutoComplete="tel"
+          registerMethods={register('phoneNumber')}
+          errorMessage={errors.phoneNumber?.message}
+        />
+        <InputWithLabel
+          isRootInvalid={errors.email !== undefined}
+          inputLabel="Email"
+          inputType="email"
+          inputAutoComplete="email"
+          registerMethods={register('email')}
+          errorMessage={errors.email?.message}
+        />
+        <InputWithLabel
+          isRootInvalid={errors.signalUsername !== undefined}
+          inputLabel="Signal username"
+          registerMethods={register('signalUsername')}
+          errorMessage={errors.signalUsername?.message}
+        />
+        <InputWithLabel
+          isRootInvalid={errors.telegramUsername !== undefined}
+          inputLabel="Telegram username"
+          registerMethods={register('telegramUsername')}
+          errorMessage={errors.telegramUsername?.message}
+        />
         <Text fontSize="xs" color="text.secondary">
           You can fill these in later from Settings if you prefer.
         </Text>

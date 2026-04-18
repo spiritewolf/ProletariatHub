@@ -8,7 +8,7 @@ import { HubListWidgetEmptyState } from './components/HubListWidgetEmptyState';
 import { HubListWidgetHeader } from './components/HubListWidgetHeader';
 import { HubListWidgetItem } from './components/HubListWidgetItem';
 import { HubListWidgetSection } from './components/HubListWidgetSection';
-import { HubListWidgetWrapper } from './componentstwo/HubListWidgetWrapper';
+import { HubListWidgetWrapper } from './components/HubListWidgetWrapper';
 
 export function HubListWidget(): ReactElement {
   const addListItemModal = useDisclosure();

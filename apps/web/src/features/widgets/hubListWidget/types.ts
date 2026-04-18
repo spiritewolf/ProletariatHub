@@ -1,15 +1,6 @@
 import { HubInventoryProductFrequency, HubListItemPriority } from '@proletariat-hub/types';
 import { z } from 'zod';
 
-export const HubListItemDisplayStatus = {
-  ACTIVE: 'ACTIVE',
-  CLAIMED: 'CLAIMED',
-  PURCHASED: 'PURCHASED',
-} as const;
-
-export type HubListItemDisplayStatus =
-  (typeof HubListItemDisplayStatus)[keyof typeof HubListItemDisplayStatus];
-
 export const HUB_LIST_PRIORITY_LABEL: Record<HubListItemPriority, string> = {
   [HubListItemPriority.LOW]: 'Low',
   [HubListItemPriority.MEDIUM]: 'Med',
@@ -31,29 +22,24 @@ export const addItemNewProductFormSchema = z
     brandName: z.string().nullable(),
     categoryId: z.string().uuid().nullable(),
     vendorId: z.string().uuid().nullable(),
-    purchaseFrequency: z.enum([
-      HubInventoryProductFrequency.ONE_TIME,
-      HubInventoryProductFrequency.WEEKLY,
-      HubInventoryProductFrequency.BIWEEKLY,
-      HubInventoryProductFrequency.MONTHLY,
-      HubInventoryProductFrequency.CUSTOM,
-    ]),
+    purchaseFrequency: z.nativeEnum(HubInventoryProductFrequency),
     customFrequencyDays: z.preprocess((value) => {
-      if (value === '' || value == null) {
+      if (value === '' || !value) {
         return null;
       }
       return Number(value);
     }, z.number().int().positive().nullable()),
     quantityInStock: z.preprocess((value) => {
-      if (value === '' || value == null) {
+      if (value === '' || !value) {
         return 0;
       }
       return Number(value);
     }, z.number().min(0)),
+    notes: z.string().nullable(),
   })
   .superRefine((data, ctx) => {
     if (data.purchaseFrequency === HubInventoryProductFrequency.CUSTOM) {
-      if (data.customFrequencyDays == null) {
+      if (!data.customFrequencyDays) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Enter a number of days for custom frequency',
@@ -63,5 +49,5 @@ export const addItemNewProductFormSchema = z
     }
   });
 
-export type AddItemNewProductFormValues = z.input<typeof addItemNewProductFormSchema>;
-export type AddItemNewProductParsedValues = z.output<typeof addItemNewProductFormSchema>;
+export type AddItemNewProductFormInputValues = z.input<typeof addItemNewProductFormSchema>;
+export type AddItemNewProductFormValues = z.output<typeof addItemNewProductFormSchema>;

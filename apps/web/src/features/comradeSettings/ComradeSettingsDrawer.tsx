@@ -1,7 +1,8 @@
-import { Box, Button, Drawer, Field, Flex, HStack, Input, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Drawer, Flex, HStack, Stack, Text } from '@chakra-ui/react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { Comrade } from '@proletariat-hub/types';
 import { trpc } from '@proletariat-hub/web/shared/trpc';
+import { InputWithLabel } from '@proletariat-hub/web/shared/ui';
 import { Settings, Sparkle, X } from 'lucide-react';
 import { type ReactElement, useEffect, useRef } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -190,31 +191,20 @@ export function ComradeSettingsDrawer({
                         >
                           Profile
                         </Text>
-                        <Field.Root>
-                          <Field.Label textStyle="fieldLabel">Username</Field.Label>
-                          <Input
-                            readOnly
-                            disabled
-                            shape="pill"
-                            bg="bg.secondary"
-                            py="2"
-                            px="3.5"
-                            fontSize="sm"
-                            {...register('username')}
-                          />
-                        </Field.Root>
-                        <Field.Root invalid={formState.errors.birthDate !== undefined}>
-                          <Field.Label textStyle="fieldLabel">Birth date</Field.Label>
-                          <Input
-                            type="date"
-                            shape="pill"
-                            py="2"
-                            px="3.5"
-                            fontSize="sm"
-                            {...register('birthDate')}
-                          />
-                          <Field.ErrorText>{formState.errors.birthDate?.message}</Field.ErrorText>
-                        </Field.Root>
+                        <InputWithLabel
+                          inputLabel="Username"
+                          inputReadOnly
+                          inputDisabled
+                          inputBg="bg.secondary"
+                          registerMethods={register('username')}
+                        />
+                        <InputWithLabel
+                          isRootInvalid={formState.errors.birthDate !== undefined}
+                          inputLabel="Birth date"
+                          inputType="date"
+                          registerMethods={register('birthDate')}
+                          errorMessage={formState.errors.birthDate?.message}
+                        />
                       </Stack>
 
                       <Stack gap={3}>
@@ -227,62 +217,38 @@ export function ComradeSettingsDrawer({
                         >
                           Contact info
                         </Text>
-                        <Field.Root invalid={formState.errors.phoneNumber !== undefined}>
-                          <Field.Label textStyle="fieldLabel">Phone (SMS)</Field.Label>
-                          <Input
-                            type="tel"
-                            autoComplete="tel"
-                            placeholder="+1 (555) 000-0000"
-                            shape="pill"
-                            py="2"
-                            px="3.5"
-                            fontSize="sm"
-                            {...register('phoneNumber')}
-                          />
-                          <Field.ErrorText>{formState.errors.phoneNumber?.message}</Field.ErrorText>
-                        </Field.Root>
-                        <Field.Root invalid={formState.errors.email !== undefined}>
-                          <Field.Label textStyle="fieldLabel">Email</Field.Label>
-                          <Input
-                            type="email"
-                            autoComplete="email"
-                            placeholder="comrade@hub.local"
-                            shape="pill"
-                            py="2"
-                            px="3.5"
-                            fontSize="sm"
-                            {...register('email')}
-                          />
-                          <Field.ErrorText>{formState.errors.email?.message}</Field.ErrorText>
-                        </Field.Root>
-                        <Field.Root invalid={formState.errors.signalUsername !== undefined}>
-                          <Field.Label textStyle="fieldLabel">Signal username</Field.Label>
-                          <Input
-                            placeholder="@comrade.01"
-                            shape="pill"
-                            py="2"
-                            px="3.5"
-                            fontSize="sm"
-                            {...register('signalUsername')}
-                          />
-                          <Field.ErrorText>
-                            {formState.errors.signalUsername?.message}
-                          </Field.ErrorText>
-                        </Field.Root>
-                        <Field.Root invalid={formState.errors.telegramUsername !== undefined}>
-                          <Field.Label textStyle="fieldLabel">Telegram username</Field.Label>
-                          <Input
-                            placeholder="@comrade_01"
-                            shape="pill"
-                            py="2"
-                            px="3.5"
-                            fontSize="sm"
-                            {...register('telegramUsername')}
-                          />
-                          <Field.ErrorText>
-                            {formState.errors.telegramUsername?.message}
-                          </Field.ErrorText>
-                        </Field.Root>
+                        <InputWithLabel
+                          isRootInvalid={formState.errors.phoneNumber !== undefined}
+                          inputLabel="Phone (SMS)"
+                          inputType="tel"
+                          inputAutoComplete="tel"
+                          inputPlaceholder="+1 (555) 000-0000"
+                          registerMethods={register('phoneNumber')}
+                          errorMessage={formState.errors.phoneNumber?.message}
+                        />
+                        <InputWithLabel
+                          isRootInvalid={formState.errors.email !== undefined}
+                          inputLabel="Email"
+                          inputType="email"
+                          inputAutoComplete="email"
+                          inputPlaceholder="comrade@hub.local"
+                          registerMethods={register('email')}
+                          errorMessage={formState.errors.email?.message}
+                        />
+                        <InputWithLabel
+                          isRootInvalid={formState.errors.signalUsername !== undefined}
+                          inputLabel="Signal username"
+                          inputPlaceholder="@comrade.01"
+                          registerMethods={register('signalUsername')}
+                          errorMessage={formState.errors.signalUsername?.message}
+                        />
+                        <InputWithLabel
+                          isRootInvalid={formState.errors.telegramUsername !== undefined}
+                          inputLabel="Telegram username"
+                          inputPlaceholder="@comrade_01"
+                          registerMethods={register('telegramUsername')}
+                          errorMessage={formState.errors.telegramUsername?.message}
+                        />
                       </Stack>
 
                       <Stack gap={3}>
@@ -295,39 +261,26 @@ export function ComradeSettingsDrawer({
                         >
                           Security
                         </Text>
-                        <Field.Root invalid={formState.errors.newPassword !== undefined}>
-                          <Field.Label textStyle="fieldLabel">New password</Field.Label>
-                          <Input
-                            type="password"
-                            autoComplete="new-password"
-                            placeholder="New password"
-                            shape="pill"
-                            py="2"
-                            px="3.5"
-                            fontSize="sm"
-                            {...register('newPassword')}
-                          />
-                          <Field.ErrorText>{formState.errors.newPassword?.message}</Field.ErrorText>
-                        </Field.Root>
-                        <Field.Root invalid={formState.errors.confirmPassword !== undefined}>
-                          <Field.Label textStyle="fieldLabel">Confirm password</Field.Label>
-                          <Input
-                            type="password"
-                            autoComplete="new-password"
-                            placeholder="Confirm password"
-                            shape="pill"
-                            py="2"
-                            px="3.5"
-                            fontSize="sm"
-                            {...register('confirmPassword')}
-                          />
-                          <Field.ErrorText>
-                            {formState.errors.confirmPassword?.message}
-                          </Field.ErrorText>
-                        </Field.Root>
+                        <InputWithLabel
+                          isRootInvalid={formState.errors.newPassword !== undefined}
+                          inputLabel="New password"
+                          inputType="password"
+                          inputAutoComplete="new-password"
+                          inputPlaceholder="New password"
+                          registerMethods={register('newPassword')}
+                          errorMessage={formState.errors.newPassword?.message}
+                        />
+                        <InputWithLabel
+                          isRootInvalid={formState.errors.confirmPassword !== undefined}
+                          inputLabel="Confirm password"
+                          inputType="password"
+                          inputPlaceholder="Confirm password"
+                          registerMethods={register('confirmPassword')}
+                          errorMessage={formState.errors.confirmPassword?.message}
+                        />
                       </Stack>
 
-                      {saveErrorMessage !== null ? (
+                      {saveErrorMessage ? (
                         <Text fontSize="sm" color="status.error" role="alert">
                           {saveErrorMessage}
                         </Text>

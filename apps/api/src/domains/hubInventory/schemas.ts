@@ -7,7 +7,6 @@ import {
   HubInventoryProductFrequency,
   HubInventoryStorageLocation,
   HubInventoryVendorFulfillmentType,
-  HubListItemPriority,
 } from '@proletariat-hub/types';
 import { z } from 'zod';
 
@@ -101,13 +100,6 @@ export const findManyHubInventoryVendorsInputSchema = z
   })
   .optional();
 
-const hubListItemPriorityForProductCreateSchema = z.enum([
-  HubListItemPriority.URGENT,
-  HubListItemPriority.HIGH,
-  HubListItemPriority.MEDIUM,
-  HubListItemPriority.LOW,
-]);
-
 export const createOneProductInputSchema = z
   .object({
     name: z.string().min(1),
@@ -117,13 +109,11 @@ export const createOneProductInputSchema = z
     purchaseFrequency: hubInventoryProductFrequencySchema,
     customFrequencyDays: z.number().int().positive().nullable(),
     quantityInStock: z.number().min(0).default(0),
-    priority: hubListItemPriorityForProductCreateSchema,
-    quantity: z.number().min(1).default(1),
     notes: z.string().nullable(),
   })
   .superRefine((data, ctx) => {
     if (data.purchaseFrequency === HubInventoryProductFrequency.CUSTOM) {
-      if (data.customFrequencyDays == null) {
+      if (data.customFrequencyDays === null) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Custom frequency requires a number of days',

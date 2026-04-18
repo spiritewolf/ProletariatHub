@@ -6,8 +6,8 @@ import type { ReactElement } from 'react';
 import { useFormContext, useWatch } from 'react-hook-form';
 
 import { useSetupWizard } from '../hooks/useSetupWizard';
-import { type SetupWizardFormValues } from '../schema';
 import { SetupStepCard } from '../SetupStepCard';
+import { type SetupWizardFormValues } from '../types';
 import { RecruitAvatarGlyph } from './components/RecruitAvatarGlyph';
 
 export function LaunchStep(): ReactElement {

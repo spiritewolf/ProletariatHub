@@ -44,23 +44,11 @@ export const hubInventoryRouter = router({
     .input(createOneProductInputSchema)
     .output(hubInventoryProductOutputSchema)
     .mutation(async ({ ctx, input }) => {
-      const { priority, quantity, notes, ...productFields } = input;
       const product = await ctx.hubInventoryAccessLayer.createOneProduct({
         where: { hubId: ctx.comrade.hubId },
         data: {
           createdById: ctx.comrade.id,
-          ...productFields,
-          notes: null,
-        },
-      });
-      await ctx.hubListAccessLayer.createOneListItem({
-        where: { hubId: ctx.comrade.hubId },
-        data: {
-          createdById: ctx.comrade.id,
-          productId: product.id,
-          priority,
-          quantity,
-          notes,
+          ...input,
         },
       });
       return product;

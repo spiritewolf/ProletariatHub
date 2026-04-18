@@ -45,7 +45,7 @@ export const setupWizardSchema = z
     email: z
       .union([z.string(), z.undefined(), z.null()])
       .transform((value): string | undefined => {
-        if (value === null || value === undefined) {
+        if (!value) {
           return undefined;
         }
         const trimmed = value.trim();

@@ -7,8 +7,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 
 import { SETUP_STEPS_ADMIN, SETUP_STEPS_MEMBER } from './constants';
 import { useSubmitSetupWizard } from './hooks/useSubmitSetupWizard';
-import { SetupWizardFormValues, setupWizardSchema } from './schema';
 import { SetupWizardContext } from './SetupWizardContext';
+import { SetupWizardFormValues, setupWizardSchema } from './types';
 
 type SetupWizardProviderProps = {
   children: ReactNode;

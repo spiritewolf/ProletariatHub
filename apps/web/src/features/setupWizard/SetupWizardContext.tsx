@@ -1,8 +1,8 @@
 import type { UseStepsReturn } from '@chakra-ui/react';
 import { createContext } from 'react';
 
-import type { CompleteWizardMutation } from './completeWizardMutation';
 import type { SetupSteps } from './constants';
+import { CompleteWizardMutation } from './hooks/useSetupWizard';
 
 export type SetupWizardContextValue = {
   stepper: UseStepsReturn;

@@ -1,4 +1,4 @@
-import type { SetupWizardFormValues } from './schema';
+import type { SetupWizardFormValues } from './types';
 
 export const SetupSteps = {
   PASSWORD: 'PASSWORD',

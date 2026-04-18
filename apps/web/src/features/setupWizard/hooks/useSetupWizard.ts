@@ -1,16 +1,18 @@
 import type { UseStepsReturn } from '@chakra-ui/react';
 import { ComradeAvatarIconType } from '@proletariat-hub/types';
+import { trpc } from '@proletariat-hub/web/shared/trpc';
 import { useCallback, useContext } from 'react';
 import { useFormContext } from 'react-hook-form';
 
-import type { CompleteWizardMutation } from '../completeWizardMutation';
 import { SetupSteps, STEP_FORM_FIELDS } from '../constants';
-import type { SetupWizardFormValues } from '../schema';
 import { assertSetupWizardContext, SetupWizardContext } from '../SetupWizardContext';
+import type { SetupWizardFormValues } from '../types';
 
 export type SubmitCompleteSetupOptions = {
   onMutationSuccess?: () => void;
 };
+
+export type CompleteWizardMutation = ReturnType<typeof trpc.comrade.completeAdminSetup.useMutation>;
 
 export type SetupWizardHookProps = {
   stepper: UseStepsReturn;

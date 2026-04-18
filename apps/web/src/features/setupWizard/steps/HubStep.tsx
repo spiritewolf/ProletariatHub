@@ -1,11 +1,12 @@
-import { Button, Field, HStack, Input, Stack } from '@chakra-ui/react';
+import { Button, HStack, Stack } from '@chakra-ui/react';
+import { InputWithLabel } from '@proletariat-hub/web/shared/ui';
 import { ArrowRight } from 'lucide-react';
 import type { ReactElement } from 'react';
 import { useFormContext } from 'react-hook-form';
 
 import { useSetupWizard } from '../hooks/useSetupWizard';
-import { SetupWizardFormValues } from '../schema';
 import { SetupStepCard } from '../SetupStepCard';
+import { SetupWizardFormValues } from '../types';
 
 export function HubStep(): ReactElement {
   const {
@@ -17,14 +18,13 @@ export function HubStep(): ReactElement {
   return (
     <SetupStepCard title="Name Your Hub" description="Pick something your Comrades will recognize!">
       <Stack gap={5}>
-        <Field.Root invalid={errors.hubName !== undefined}>
-          <Field.Label color="text.primary">Hub name</Field.Label>
-          <Input shape="pill" {...register('hubName')} />
-          <Field.HelperText textStyle="helperText">
-            This is your hub&apos;s name. You can change it later in Settings.
-          </Field.HelperText>
-          <Field.ErrorText>{errors.hubName?.message}</Field.ErrorText>
-        </Field.Root>
+        <InputWithLabel
+          isRootInvalid={errors.hubName !== undefined}
+          inputLabel="Hub name"
+          inputHelperText="This is your hub's name. You can change it later in Settings."
+          registerMethods={register('hubName')}
+          errorMessage={errors.hubName?.message}
+        />
         <HStack w="full" justifyContent="flex-end">
           <Button type="button" variant="outline" size="sm" onClick={goToPrevWizardStep}>
             Back
