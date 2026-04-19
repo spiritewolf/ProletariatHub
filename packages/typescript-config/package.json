@@ -1,5 +1,10 @@
 {
   "name": "@proletariat-hub/typescript-config",
   "private": true,
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "exports": {
+    "./base.json": "./base.json",
+    "./library.json": "./library.json",
+    "./react.json": "./react.json"
+  }
 }

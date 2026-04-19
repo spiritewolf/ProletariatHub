@@ -30,6 +30,7 @@ blob-report/
 # Tooling caches (ESLint, bundlers, generic caches)
 .eslintcache
 .cache/
+v8-compile-cache-0/
 .parcel-cache/
 .vite/
 **/.vite/

@@ -15,7 +15,7 @@ fi
 # Named volumes can retain another OS/arch optional @esbuild/* or @rollup/*; reinstall on native mismatch.
 if [ -d node_modules ]; then
   set +e
-  tsx /app/docker/check-esbuild-heal.mts
+  pnpm exec tsx /app/docker/check-esbuild-heal.mts
   native_heal_rc=$?
   set -e
   if [ "$native_heal_rc" -eq 2 ]; then
