@@ -11,15 +11,16 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
-    "build": "prisma generate --no-hints && tsc && node ./scripts/sync-prisma-generated.mjs",
+    "build": "tsx ./scripts/build.mts",
     "lint": "eslint .",
-    "typecheck": "prisma generate --no-hints && tsc --noEmit"
+    "typecheck": "tsx ./scripts/typecheck.mts"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
     "@proletariat-hub/types": "workspace:*"
   },
   "devDependencies": {
+    "@proletariat-hub/typescript-config": "workspace:*",
     "bcryptjs": "^3.0.2",
     "eslint": "^9.39.1",
     "prisma": "^6.19.0",

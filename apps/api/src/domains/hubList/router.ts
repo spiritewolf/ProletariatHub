@@ -11,7 +11,6 @@ export const hubListRouter = router({
   findUniqueHubList: protectedProcedure.output(hubListOutputSchema).query(async ({ ctx }) => {
     return ctx.hubListAccessLayer.findFirst({
       where: { hubId: ctx.comrade.hubId },
-      orderBy: { priority: 'asc' },
     });
   }),
 

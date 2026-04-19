@@ -1,11 +1,9 @@
 {
-  "extends": "../../tsconfig.base.json",
+  "extends": "@proletariat-hub/typescript-config/library.json",
   "compilerOptions": {
-    "module": "ESNext",
     "outDir": "./dist",
     "rootDir": "./src",
-    "noEmit": false,
-    "types": ["node"]
+    "noEmit": false
   },
   "include": ["src/**/*.ts"]
 }

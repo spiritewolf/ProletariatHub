@@ -1,5 +1,5 @@
 import { Box, Center, Spinner, Stack, useDisclosure } from '@chakra-ui/react';
-import { HubListItemStatus } from '@proletariat-hub/types';
+import { HubListItemPriority, HubListItemStatus } from '@proletariat-hub/types';
 import { useFindUniqueHubList } from '@proletariat-hub/web/shared/trpc/queries';
 import type { ReactElement } from 'react';
 
@@ -10,12 +10,25 @@ import { HubListWidgetItem } from './components/HubListWidgetItem';
 import { HubListWidgetSection } from './components/HubListWidgetSection';
 import { HubListWidgetWrapper } from './components/HubListWidgetWrapper';
 
+const HUB_LIST_PRIORITY_ORDER: HubListItemPriority[] = [
+  HubListItemPriority.URGENT,
+  HubListItemPriority.HIGH,
+  HubListItemPriority.MEDIUM,
+  HubListItemPriority.LOW,
+];
+
 export function HubListWidget(): ReactElement {
   const addListItemModal = useDisclosure();
   const { data: hubList, isLoading } = useFindUniqueHubList();
   const listItems = hubList.items;
 
-  const activeListItems = listItems.filter((item) => item.status === HubListItemStatus.ACTIVE);
+  const activeListItems = listItems
+    .filter((item) => item.status === HubListItemStatus.ACTIVE)
+    .sort(
+      (leftItem, rightItem) =>
+        HUB_LIST_PRIORITY_ORDER.indexOf(leftItem.priority) -
+        HUB_LIST_PRIORITY_ORDER.indexOf(rightItem.priority),
+    );
   const claimedListItems = listItems.filter((item) => item.status === HubListItemStatus.CLAIMED);
   const purchasedListItems = listItems.filter(
     (item) => item.status === HubListItemStatus.PURCHASED,

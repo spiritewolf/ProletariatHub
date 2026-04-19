@@ -4,16 +4,17 @@
   "type": "module",
   "scripts": {
     "postinstall": "pnpm --filter @proletariat-hub/web run typegen",
-    "build": "node ./scripts/turbo-with-env.mjs build",
-    "lint": "node ./scripts/turbo-with-env.mjs lint",
-    "typecheck": "node ./scripts/turbo-with-env.mjs typecheck",
-    "test": "node ./scripts/turbo-with-env.mjs test",
+    "build": "tsx ./scripts/turbo-with-env.mts build",
+    "lint": "tsx ./scripts/turbo-with-env.mts lint",
+    "typecheck": "tsx ./scripts/turbo-with-env.mts typecheck",
+    "typecheck:scripts": "tsc --project tsconfig.scripts.json",
+    "test": "tsx ./scripts/turbo-with-env.mts test",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "db:generate": "node ./scripts/turbo-with-env.mjs db:generate",
-    "db:migrate": "node ./scripts/turbo-with-env.mjs db:migrate",
-    "db:migrate:deploy": "node ./scripts/turbo-with-env.mjs db:migrate:deploy",
-    "db:seed": "node ./scripts/turbo-with-env.mjs db:seed"
+    "db:generate": "tsx ./scripts/turbo-with-env.mts db:generate",
+    "db:migrate": "tsx ./scripts/turbo-with-env.mts db:migrate",
+    "db:migrate:deploy": "tsx ./scripts/turbo-with-env.mts db:migrate:deploy",
+    "db:seed": "tsx ./scripts/turbo-with-env.mts db:seed"
   },
   "packageManager": "pnpm@9.15.0",
   "engines": {
@@ -30,6 +31,7 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "jiti": "^2.6.1",
     "prettier": "^3.7.4",
+    "tsx": "^4.21.0",
     "turbo": "^2.7.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.50.0"

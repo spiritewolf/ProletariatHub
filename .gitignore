@@ -74,6 +74,7 @@ ehthumbs.db
 docker-compose.override.yml
 
 .compose-dev-build-lock/
+.database-build.lock
 
 # AI / coding assistants (if you're going to use them don't commit them)
 .cursor/

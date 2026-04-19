@@ -70,13 +70,13 @@ export function ComradeSettingsDrawer({
   const onSubmitForm = (values: ComradeSettingsParsedValues): void => {
     updateOneMutation.mutate(
       {
-        email: values.email || null,
-        phoneNumber: values.phoneNumber || null,
-        signalUsername: values.signalUsername || null,
-        telegramUsername: values.telegramUsername || null,
-        birthDate: values.birthDate || null,
-        newPassword: values.newPassword || undefined,
-        confirmPassword: values.confirmPassword || undefined,
+        email: values.email,
+        phoneNumber: values.phoneNumber,
+        signalUsername: values.signalUsername,
+        telegramUsername: values.telegramUsername,
+        birthDate: values.birthDate,
+        newPassword: values.newPassword,
+        confirmPassword: values.confirmPassword,
       },
       {
         onSuccess: () => {

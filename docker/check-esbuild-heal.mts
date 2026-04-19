@@ -12,7 +12,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 
-function shouldHealNodeModules(message) {
+function shouldHealNodeModules(message: string): boolean {
   return (
     /another platform than the one you're currently using/i.test(message) ||
     /package is present but this platform needs/i.test(message) ||
@@ -25,15 +25,36 @@ function shouldHealNodeModules(message) {
   );
 }
 
-function errorText(e) {
-  const parts = [];
-  let cur = e;
+function getMessage(error: unknown): string | null {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string' &&
+    error.message.length > 0
+  ) {
+    return error.message;
+  }
+  return null;
+}
+
+function getCause(error: unknown): unknown {
+  if (typeof error === 'object' && error !== null && 'cause' in error) {
+    return error.cause;
+  }
+  return null;
+}
+
+function errorText(e: unknown): string {
+  const parts: string[] = [];
+  let cur: unknown = e;
   let depth = 0;
-  while (cur && depth < 6) {
-    if (typeof cur.message === 'string' && cur.message.length > 0) {
-      parts.push(cur.message);
+  while (cur !== null && depth < 6) {
+    const message = getMessage(cur);
+    if (message !== null) {
+      parts.push(message);
     }
-    cur = cur.cause;
+    cur = getCause(cur);
     depth += 1;
   }
   if (parts.length > 0) {
@@ -45,9 +66,9 @@ function errorText(e) {
 try {
   const esbuild = require('esbuild');
   esbuild.transformSync('export {}\n', { loader: 'js' });
-} catch (e) {
-  const m = errorText(e);
-  if (shouldHealNodeModules(m)) {
+} catch (e: unknown) {
+  const message = errorText(e);
+  if (shouldHealNodeModules(message)) {
     process.exit(2);
   }
   process.exit(1);
@@ -55,9 +76,9 @@ try {
 
 try {
   require('rollup');
-} catch (e) {
-  const m = errorText(e);
-  if (shouldHealNodeModules(m)) {
+} catch (e: unknown) {
+  const message = errorText(e);
+  if (shouldHealNodeModules(message)) {
     process.exit(2);
   }
   process.exit(1);
