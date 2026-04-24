@@ -4,15 +4,17 @@ import type { ReactElement, ReactNode } from 'react';
 type HubListWidgetSectionProps = {
   dividerLabel: string;
   children: ReactNode;
+  shouldDisplaySeparator: boolean;
 };
 
 export function HubListWidgetSection({
   dividerLabel,
   children,
+  shouldDisplaySeparator,
 }: HubListWidgetSectionProps): ReactElement {
   return (
     <Stack gap="3" pt="4" w="full">
-      <Separator borderColor="hubList.border" />
+      {shouldDisplaySeparator ? <Separator borderColor="hubList.border" /> : null}
       <Text
         fontSize="xs"
         fontWeight="semibold"

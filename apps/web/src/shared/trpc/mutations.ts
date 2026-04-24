@@ -70,6 +70,16 @@ type CreateOneVendorMutationOpts = Parameters<
 type RemoveOneListItemMutationOpts = Parameters<
   typeof trpc.hubList.removeOneListItem.useMutation
 >[0];
+type ClaimOneListItemMutationOpts = Parameters<typeof trpc.hubList.claimOneListItem.useMutation>[0];
+type ClaimManyListItemsMutationOpts = Parameters<
+  typeof trpc.hubList.claimManyListItems.useMutation
+>[0];
+type UnclaimOneListItemMutationOpts = Parameters<
+  typeof trpc.hubList.unclaimOneListItem.useMutation
+>[0];
+type UnclaimManyListItemsMutationOpts = Parameters<
+  typeof trpc.hubList.unclaimManyListItems.useMutation
+>[0];
 
 export function useInvalidateHubList(): () => Promise<void> {
   const utils = trpc.useUtils();
@@ -129,6 +139,58 @@ export function useRemoveOneListItem(
 ): ReturnType<typeof trpc.hubList.removeOneListItem.useMutation> {
   const invalidateHubList = useInvalidateHubList();
   return trpc.hubList.removeOneListItem.useMutation({
+    ...opts,
+    onSuccess: async (...args) => {
+      await invalidateHubList();
+      await opts?.onSuccess?.(...args);
+    },
+  });
+}
+
+export function useClaimOneListItem(
+  opts?: ClaimOneListItemMutationOpts,
+): ReturnType<typeof trpc.hubList.claimOneListItem.useMutation> {
+  const invalidateHubList = useInvalidateHubList();
+  return trpc.hubList.claimOneListItem.useMutation({
+    ...opts,
+    onSuccess: async (...args) => {
+      await invalidateHubList();
+      await opts?.onSuccess?.(...args);
+    },
+  });
+}
+
+export function useClaimManyListItems(
+  opts?: ClaimManyListItemsMutationOpts,
+): ReturnType<typeof trpc.hubList.claimManyListItems.useMutation> {
+  const invalidateHubList = useInvalidateHubList();
+  return trpc.hubList.claimManyListItems.useMutation({
+    ...opts,
+    onSuccess: async (...args) => {
+      await invalidateHubList();
+      await opts?.onSuccess?.(...args);
+    },
+  });
+}
+
+export function useUnclaimOneListItem(
+  opts?: UnclaimOneListItemMutationOpts,
+): ReturnType<typeof trpc.hubList.unclaimOneListItem.useMutation> {
+  const invalidateHubList = useInvalidateHubList();
+  return trpc.hubList.unclaimOneListItem.useMutation({
+    ...opts,
+    onSuccess: async (...args) => {
+      await invalidateHubList();
+      await opts?.onSuccess?.(...args);
+    },
+  });
+}
+
+export function useUnclaimManyListItems(
+  opts?: UnclaimManyListItemsMutationOpts,
+): ReturnType<typeof trpc.hubList.unclaimManyListItems.useMutation> {
+  const invalidateHubList = useInvalidateHubList();
+  return trpc.hubList.unclaimManyListItems.useMutation({
     ...opts,
     onSuccess: async (...args) => {
       await invalidateHubList();

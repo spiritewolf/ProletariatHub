@@ -34,6 +34,7 @@ export const hubListItemOutputSchema: z.ZodType<HubListItem> = z.object({
   categoryName: z.string().nullable(),
   claimedBy: hubListComradeSnippetSchema.nullable(),
   purchasedBy: hubListComradeSnippetSchema.nullable(),
+  claimedAt: z.date().nullable(),
 });
 
 export const hubListOutputSchema: z.ZodType<HubList> = z.object({
@@ -48,4 +49,20 @@ export const createOneListItemInputSchema = z.object({
   priority: hubListItemPrioritySchema.default(HubListItemPriority.MEDIUM),
   quantity: z.number().nullable().default(null),
   notes: z.string().nullable().default(null),
+});
+
+export const claimOneListItemInputSchema = z.object({
+  listItemId: z.string().uuid(),
+});
+
+export const claimManyListItemsInputSchema = z.object({
+  listItemIds: z.array(z.string().uuid()).nonempty(),
+});
+
+export const unclaimOneListItemInputSchema = z.object({
+  listItemId: z.string().uuid(),
+});
+
+export const unclaimManyListItemsInputSchema = z.object({
+  listItemIds: z.array(z.string().uuid()).nonempty(),
 });

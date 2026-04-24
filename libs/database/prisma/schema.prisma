@@ -10,9 +10,9 @@ datasource db {
 
 model Hub {
   id         String    @id @default(uuid()) @db.Uuid
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt DateTime? @db.Timestamptz(3)
 
   name String
 
@@ -32,9 +32,9 @@ model Hub {
 
 model HubSettings {
   id         String    @id @default(uuid()) @db.Uuid
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt DateTime? @db.Timestamptz(3)
 
   dashboardTheme String @default("SYSTEM") // enum DashboardTheme
 
@@ -52,9 +52,9 @@ model HubSettings {
 
 model Comrade {
   id         String    @id @default(uuid()) @db.Uuid
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt DateTime? @db.Timestamptz(3)
 
   username      String @unique
   password      String
@@ -86,11 +86,11 @@ model Comrade {
 
 model ComradeSettingsConfig {
   id         String    @id @default(uuid()) @db.Uuid
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt DateTime? @db.Timestamptz(3)
 
-  birthDate        DateTime?
+  birthDate        DateTime? @db.Timestamptz(3)
   avatarIcon       String? // enum ComradeAvatarIconType
   avatarColor      String?
   phoneNumber      String?
@@ -103,9 +103,9 @@ model ComradeSettingsConfig {
 
 model HubPeriphery {
   id         String    @id @default(uuid()) @db.Uuid
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt DateTime? @db.Timestamptz(3)
 
   name              String
   peripheryCategory String // enum HubPeripheryCategory (PERSON, PET)
@@ -127,11 +127,11 @@ model HubPeriphery {
 
 model HubPeripherySettingsConfig {
   id         String    @id @default(uuid()) @db.Uuid
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt DateTime? @db.Timestamptz(3)
 
-  birthDate   DateTime?
+  birthDate   DateTime? @db.Timestamptz(3)
   avatarIcon  String?
   avatarColor String?
   phoneNumber String?
@@ -142,9 +142,9 @@ model HubPeripherySettingsConfig {
 
 model Role {
   id         String    @id @default(uuid()) @db.Uuid
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt DateTime? @db.Timestamptz(3)
 
   roleType    String  @unique // enum ComradeRole
   description String?
@@ -160,9 +160,9 @@ model Role {
 
 model HubList {
   id         String    @id @default(uuid()) @db.Uuid
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt DateTime? @db.Timestamptz(3)
 
   name String
 
@@ -177,8 +177,8 @@ model HubList {
 
 model HubListItem {
   id        String   @id @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   status   String // ACTIVE, CLAIMED, PURCHASED
   priority String // URGENT, HIGH, MEDIUM, LOW
@@ -194,7 +194,7 @@ model HubListItem {
   createdById String  @db.Uuid
   createdBy   Comrade @relation("ListItemCreatedBy", fields: [createdById], references: [id])
 
-  claimedAt   DateTime?
+  claimedAt   DateTime? @db.Timestamptz(3)
   claimedById String?   @db.Uuid
   claimedBy   Comrade?  @relation("ListItemClaimedBy", fields: [claimedById], references: [id])
 
@@ -211,9 +211,9 @@ model HubListItem {
 
 model HubInventoryProduct {
   id         String    @id @default(uuid()) @db.Uuid
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  archivedAt DateTime?
+  createdAt  DateTime  @default(now()) @db.Timestamptz(3)
+  updatedAt  DateTime  @updatedAt @db.Timestamptz(3)
+  archivedAt DateTime? @db.Timestamptz(3)
 
   name                String
   brandName           String?
@@ -226,13 +226,13 @@ model HubInventoryProduct {
 
   // Stock
   quantityInStock      Float     @default(0)
-  lastPurchasedAt      DateTime?
+  lastPurchasedAt      DateTime? @db.Timestamptz(3)
   lastPurchasedById    String?   @db.Uuid
   lastPurchasedBy      Comrade?  @relation("ProductLastPurchasedBy", fields: [lastPurchasedById], references: [id])
   minStockThreshold    Float?
   urgentStockThreshold Float?
-  expiresAt            DateTime?
-  openedAt             DateTime?
+  expiresAt            DateTime? @db.Timestamptz(3)
+  openedAt             DateTime? @db.Timestamptz(3)
 
   // Storage
   storageLocation       String? // FRIDGE, FREEZER, BEDROOM, BATHROOM, LAUNDRY, GARAGE, OTHER
@@ -267,8 +267,8 @@ model HubInventoryProduct {
 
 model HubInventoryProductCategory {
   id        String   @id @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   name String
 
@@ -283,8 +283,8 @@ model HubInventoryProductCategory {
 
 model HubInventoryVendor {
   id        String   @id @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
+  updatedAt DateTime @updatedAt @db.Timestamptz(3)
 
   name            String
   website         String?
@@ -303,7 +303,7 @@ model HubInventoryVendor {
 
 model HubPurchaseLog {
   id        String   @id @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz(3)
 
   quantityPurchased Float
   price             Float?

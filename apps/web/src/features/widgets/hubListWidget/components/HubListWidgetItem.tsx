@@ -1,9 +1,9 @@
 import { Box, Flex, HStack, IconButton, Text, useDisclosure } from '@chakra-ui/react';
-import { HubListItemStatus, type HubListItem } from '@proletariat-hub/types';
+import { type HubListItem, HubListItemStatus } from '@proletariat-hub/types';
 import { Trash2 } from 'lucide-react';
+import { DateTime } from 'luxon';
 import type { ReactElement } from 'react';
 
-import { ComradeAssigneeBadge } from './ComradeAssigneeBadge';
 import { HubListCheckbox } from './HubListCheckbox';
 import { PriorityBadge } from './PriorityBadge';
 import { RemoveListItemDialog } from './RemoveListItemDialog';
@@ -12,12 +12,20 @@ type HubListWidgetItemProps = {
   hubListId: string;
   item: HubListItem;
   isLastRowInSection: boolean;
+  itemSelection?: { isSelected: boolean; onToggle: () => void };
 };
+
+export function formatClaimedAtDate(date: Date): string {
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  return DateTime.fromJSDate(date).setZone(timeZone).toFormat('MMM d, yyyy @ h:mma');
+}
 
 export function HubListWidgetItem({
   hubListId,
   item,
   isLastRowInSection,
+  itemSelection,
 }: HubListWidgetItemProps): ReactElement {
   const isPurchased = item.status === HubListItemStatus.PURCHASED;
   const isClaimed = item.status === HubListItemStatus.CLAIMED;
@@ -35,7 +43,11 @@ export function HubListWidgetItem({
       borderColor={isLastRowInSection ? undefined : 'hubList.border'}
     >
       <Flex align="center" gap="3" py="2.5" px="2" w="full" minW="0">
-        <HubListCheckbox displayStatus={item.status} />
+        <HubListCheckbox
+          status={item.status}
+          isSelected={itemSelection?.isSelected}
+          onToggle={itemSelection?.onToggle}
+        />
         <HStack flex="1" minW="0" gap="2" align="center" justify="space-between">
           <HStack flex="1" minW="0" gap="2" align="baseline" flexWrap="wrap">
             {showListQuantity ? (
@@ -75,10 +87,31 @@ export function HubListWidgetItem({
               <PriorityBadge priority={item.priority} />
             ) : null}
             {item.status === HubListItemStatus.CLAIMED && item.claimedBy ? (
-              <ComradeAssigneeBadge
-                displayInitial={item.claimedBy.displayInitial}
-                username={item.claimedBy.username}
-              />
+              <HStack gap="2">
+                <Flex
+                  w="4.5"
+                  h="4.5"
+                  borderRadius="full"
+                  bg="accent.secondary"
+                  color="text.light"
+                  align="center"
+                  justify="center"
+                  fontSize="2xs"
+                  fontWeight="medium"
+                  flexShrink={0}
+                  aria-hidden
+                >
+                  {item.claimedBy.displayInitial}
+                </Flex>
+                <Text fontSize="xs" color="text.secondary" maxW="24" lineClamp={1}>
+                  {item.claimedBy.username}
+                </Text>
+                {item.claimedAt ? (
+                  <Text fontSize="xs" color="text.secondary">
+                    {formatClaimedAtDate(item.claimedAt)}
+                  </Text>
+                ) : null}
+              </HStack>
             ) : null}
             {item.status === HubListItemStatus.ACTIVE ? (
               <IconButton

@@ -62,6 +62,7 @@ export type HubListItem = {
   vendorName: string | null;
   categoryName: string | null;
   claimedBy: HubListComradeSnippet | null;
+  claimedAt: Date | null;
   purchasedBy: HubListComradeSnippet | null;
 };
 

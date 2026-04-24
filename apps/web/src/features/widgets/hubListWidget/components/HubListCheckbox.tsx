@@ -1,14 +1,16 @@
-import { Box, Flex } from '@chakra-ui/react';
+import { Box, Checkbox, Flex } from '@chakra-ui/react';
 import { HubListItemStatus } from '@proletariat-hub/types';
 import { Check } from 'lucide-react';
 import type { ReactElement } from 'react';
 
 type HubListCheckboxProps = {
-  displayStatus: HubListItemStatus;
+  status: HubListItemStatus;
+  isSelected?: boolean;
+  onToggle?: () => void;
 };
 
-export function HubListCheckbox({ displayStatus }: HubListCheckboxProps): ReactElement {
-  if (displayStatus === HubListItemStatus.PURCHASED) {
+export function HubListCheckbox(props: HubListCheckboxProps): ReactElement {
+  if (props.status === HubListItemStatus.PURCHASED) {
     return (
       <Flex
         align="center"
@@ -16,7 +18,7 @@ export function HubListCheckbox({ displayStatus }: HubListCheckboxProps): ReactE
         boxSize="4.5"
         borderRadius="sm"
         flexShrink={0}
-        bg="success.fg"
+        bg="success.solid"
         color="text.light"
         aria-hidden
       >
@@ -24,7 +26,7 @@ export function HubListCheckbox({ displayStatus }: HubListCheckboxProps): ReactE
       </Flex>
     );
   }
-  if (displayStatus === HubListItemStatus.CLAIMED) {
+  if (props.status === HubListItemStatus.CLAIMED) {
     return (
       <Flex
         align="center"
@@ -32,7 +34,7 @@ export function HubListCheckbox({ displayStatus }: HubListCheckboxProps): ReactE
         boxSize="4.5"
         borderRadius="sm"
         flexShrink={0}
-        bg="info.fg"
+        bg="info.solid"
         aria-hidden
       >
         <Box boxSize="2.5" borderRadius="sm" bg="text.light" />
@@ -40,16 +42,23 @@ export function HubListCheckbox({ displayStatus }: HubListCheckboxProps): ReactE
     );
   }
   return (
-    <Flex
-      align="center"
-      justify="center"
-      boxSize="4.5"
-      borderRadius="sm"
-      borderWidth="1px"
-      borderColor="border.primary"
-      flexShrink={0}
-      bg="transparent"
-      aria-hidden
-    />
+    <Flex align="center" justify="center" boxSize="4.5" flexShrink={0}>
+      <Checkbox.Root
+        size="sm"
+        variant="outline"
+        colorPalette="brandPalette"
+        cursor="pointer"
+        checked={props.isSelected ?? false}
+        onCheckedChange={() => {
+          props.onToggle?.();
+        }}
+        aria-label="Select hub list item"
+      >
+        <Checkbox.HiddenInput />
+        <Checkbox.Control cursor="pointer" boxSize="4.5">
+          <Checkbox.Indicator />
+        </Checkbox.Control>
+      </Checkbox.Root>
+    </Flex>
   );
 }

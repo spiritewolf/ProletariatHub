@@ -2,7 +2,13 @@ import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { ShoppingBag } from 'lucide-react';
 import type { ReactElement } from 'react';
 
-export function HubListWidgetEmptyState(): ReactElement {
+type HubListWidgetEmptyStateProps = {
+  onAddClick: () => void;
+};
+
+export function HubListWidgetEmptyState({
+  onAddClick,
+}: HubListWidgetEmptyStateProps): ReactElement {
   return (
     <Flex
       direction="column"
@@ -24,7 +30,7 @@ export function HubListWidgetEmptyState(): ReactElement {
         variant="outline"
         color="accent.primary"
         borderColor="accent.primary"
-        onClick={() => {}}
+        onClick={onAddClick}
         aria-label="Add item to hub list"
       >
         Add item

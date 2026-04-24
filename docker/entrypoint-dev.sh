@@ -8,8 +8,12 @@ if ! command -v pnpm >/dev/null 2>&1; then
   corepack prepare pnpm@9.15.0 --activate
 fi
 
-if [ ! -d node_modules/.pnpm ]; then
+LOCKFILE_HASH_FILE=node_modules/.lockfile-hash
+CURRENT_LOCKFILE_HASH=$(sha256sum pnpm-lock.yaml | awk '{ print $1 }')
+
+if [ ! -d node_modules/.pnpm ] || [ ! -f "$LOCKFILE_HASH_FILE" ] || [ "$(cat "$LOCKFILE_HASH_FILE")" != "$CURRENT_LOCKFILE_HASH" ]; then
   pnpm install --frozen-lockfile
+  printf '%s' "$CURRENT_LOCKFILE_HASH" > "$LOCKFILE_HASH_FILE"
 fi
 
 # Named volumes can retain another OS/arch optional @esbuild/* or @rollup/*; reinstall on native mismatch.
@@ -22,6 +26,8 @@ if [ -d node_modules ]; then
     echo "native optional deps mismatch — reinstalling node_modules"
     rm -rf node_modules
     pnpm install --frozen-lockfile
+    CURRENT_LOCKFILE_HASH=$(sha256sum pnpm-lock.yaml | awk '{ print $1 }')
+    printf '%s' "$CURRENT_LOCKFILE_HASH" > "$LOCKFILE_HASH_FILE"
   fi
 fi
 

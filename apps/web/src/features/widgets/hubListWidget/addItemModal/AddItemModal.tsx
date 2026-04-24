@@ -5,7 +5,7 @@ import { useCreateOneListItem } from '@proletariat-hub/web/shared/trpc';
 import { toaster } from '@proletariat-hub/web/shared/ui';
 import { ArrowLeft, X } from 'lucide-react';
 import type { ReactElement } from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -39,13 +39,16 @@ export function AddItemModal({ isOpen, onClose }: AddItemModalProps): ReactEleme
 
   const listItemFormMethods = useForm<AddHubListItemFormValues>({
     defaultValues: {
-      productId: undefined,
-      priority: undefined,
       quantity: 1,
-      notes: undefined,
     },
     resolver: zodResolver(addItemFormSchema),
   });
+
+  useEffect(() => {
+    listItemFormMethods.reset({
+      quantity: 1,
+    });
+  }, [listItemFormMethods, isOpen]);
 
   const createListItem = useCreateOneListItem({
     onSuccess: () => {

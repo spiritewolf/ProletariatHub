@@ -39,6 +39,7 @@ export function parseHubListItem(dbRecord: HubListItemDbRecord): HubListItem {
     vendorName: dbRecord.product.vendor?.name ?? null,
     categoryName: dbRecord.product.category?.name ?? null,
     claimedBy: mapComradeSnippet(dbRecord.claimedBy),
+    claimedAt: dbRecord.claimedAt,
     purchasedBy: mapComradeSnippet(dbRecord.purchasedBy),
   };
 }

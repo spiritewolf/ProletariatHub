@@ -46,3 +46,15 @@ export type CreateOneHubListItemAccessInputData = {
   quantity: number | null;
   notes: string | null;
 };
+
+export type UpdateOneHubListItemInputData = {
+  claimedById: string | null;
+  claimedAt: Date | null;
+  status: string;
+};
+
+export type UpdateManyHubListItemsInputData = {
+  claimedById: string | null;
+  claimedAt: Date | null;
+  status: string;
+};

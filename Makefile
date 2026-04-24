@@ -1,5 +1,6 @@
 .PHONY: lint typecheck format format_check check \
-        db_generate db_migrate db_migrate_deploy db_seed db_reset db_studio clean
+        db_generate db_migrate db_migrate_deploy db_seed db_reset db_studio \
+        build_ui generate_ui_types all_up all_down deps_refresh clean
 
 COMPOSE := docker compose
 
@@ -51,6 +52,11 @@ all_up:
 
 all_down:
 	$(COMPOSE) down
+
+deps_refresh:
+	$(COMPOSE) down
+	docker volume ls -q | awk '/(_api_node_modules|_web_node_modules|_web_app_node_modules|_worker_node_modules)$$/ { print }' | xargs -r docker volume rm
+	$(COMPOSE) up -d
 
 clean:
 	find . -name "node_modules" -type d -prune -exec rm -rf {} +
